@@ -2,49 +2,71 @@ import React from 'react';
 
 /**
  * PageBackgroundAnimation Component
- * Renders a subtle, futuristic ambient animation for all secondary pages
- * (Floating cyan and violet energy orbs, glowing scanline sweep, and cyber accents)
+ * Renders a vivid, visible, futuristic cyber ambient animation for all secondary pages
+ * (Bright glowing cyan & violet aurora orbs, laser scanline beam, floating Phoenix watermark, and cyber sparks)
  * First page (Home) does NOT use this to keep its opening portal unique.
  */
 export default function PageBackgroundAnimation() {
+  const sparks = [
+    { left: '15%', delay: '0s', duration: '7s', size: '4px', color: '#00f0ff' },
+    { left: '30%', delay: '2.5s', duration: '9s', size: '3px', color: '#a78bfa' },
+    { left: '55%', delay: '1.2s', duration: '8s', size: '5px', color: '#38bdf8' },
+    { left: '72%', delay: '3.8s', duration: '10s', size: '3px', color: '#818cf8' },
+    { left: '88%', delay: '1.8s', duration: '7.5s', size: '4px', color: '#00f0ff' },
+  ];
+
   return (
     <div className="secondary-page-bg" aria-hidden="true">
-      {/* Shifting Cyber Cyan Ambient Orb */}
+      {/* Vivid Shifting Cyber Cyan Ambient Orb */}
       <div className="secondary-orb-cyan" />
 
-      {/* Shifting Cyber Violet Ambient Orb */}
+      {/* Vivid Shifting Cyber Violet Ambient Orb */}
       <div className="secondary-orb-violet" />
 
-      {/* Central Cyber Energy Core */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-100px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '600px',
-          height: '350px',
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-          pointerEvents: 'none',
-        }}
+      {/* Central Electric Blue Ambient Pulse */}
+      <div className="secondary-orb-center" />
+
+      {/* Soaring Phoenix Emblem Watermark (Branded, gently floating in background) */}
+      <img
+        src="/assets/phoenix-hero-bg.jpg"
+        alt=""
+        className="secondary-phoenix-watermark"
       />
 
-      {/* Glowing Horizon Sweep Beam */}
+      {/* Bright Glowing Laser Horizon Beam */}
       <div className="secondary-scanline-pulse" />
+
+      {/* Rising Floating Cyber Energy Sparks */}
+      {sparks.map((spark, idx) => (
+        <div
+          key={idx}
+          className="secondary-spark"
+          style={{
+            left: spark.left,
+            bottom: 0,
+            width: spark.size,
+            height: spark.size,
+            backgroundColor: spark.color,
+            boxShadow: `0 0 10px ${spark.color}, 0 0 20px ${spark.color}`,
+            animationDelay: spark.delay,
+            animationDuration: spark.duration,
+          }}
+        />
+      ))}
 
       {/* Subtle Floating Tech Coordinate Reticles in Background */}
       <div
         style={{
           position: 'absolute',
-          top: '35px',
-          left: '4%',
+          top: '20px',
+          left: '3%',
           fontFamily: 'monospace',
-          fontSize: '0.65rem',
-          color: 'rgba(56, 189, 248, 0.25)',
-          letterSpacing: '0.15em',
+          fontSize: '0.7rem',
+          color: 'rgba(0, 240, 255, 0.45)',
+          letterSpacing: '0.18em',
           pointerEvents: 'none',
           userSelect: 'none',
+          textShadow: '0 0 8px rgba(0, 240, 255, 0.3)',
         }}
       >
         SYS_STATUS: ACTIVE // SECTOR_01
@@ -53,14 +75,15 @@ export default function PageBackgroundAnimation() {
       <div
         style={{
           position: 'absolute',
-          top: '35px',
-          right: '4%',
+          top: '20px',
+          right: '3%',
           fontFamily: 'monospace',
-          fontSize: '0.65rem',
-          color: 'rgba(139, 92, 246, 0.25)',
-          letterSpacing: '0.15em',
+          fontSize: '0.7rem',
+          color: 'rgba(167, 139, 250, 0.45)',
+          letterSpacing: '0.18em',
           pointerEvents: 'none',
           userSelect: 'none',
+          textShadow: '0 0 8px rgba(167, 139, 250, 0.3)',
         }}
       >
         ENCRYPTION: 2048_BIT // ISE_TECHNO_VISTA
