@@ -170,7 +170,7 @@ export default function Registration() {
           </p>
 
           {/* Big CTA Button */}
-          <div style={{ display: 'inline-block' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <a
               href={GOOGLE_FORM_URL}
               target="_blank"
@@ -185,6 +185,34 @@ export default function Registration() {
               <span>Open Official Google Form</span>
               <ExternalLink size={20} />
             </a>
+
+            {/* Direct Form Link Display & Copy */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                background: 'rgba(0, 0, 0, 0.45)',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                padding: '0.4rem 0.9rem',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
+                color: '#38bdf8',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <span style={{ color: '#94a3b8', fontSize: '0.78rem' }}>Direct Link:</span>
+              <a
+                href={GOOGLE_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#38bdf8', textDecoration: 'underline' }}
+              >
+                {GOOGLE_FORM_URL}
+              </a>
+            </div>
           </div>
 
           <div
