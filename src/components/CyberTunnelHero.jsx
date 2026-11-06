@@ -65,11 +65,6 @@ export default function CyberTunnelHero() {
           />
         </div>
 
-        {/* College Name in Sci-Fi Uppercase */}
-        <h2 className="cyber-college-text">
-          {festData.college}, {festData.location}
-        </h2>
-
         {/* Department Name */}
         <div className="cyber-dept-text">
           DEPARTMENT OF INFORMATION SCIENCE AND ENGINEERING
