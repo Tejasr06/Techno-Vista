@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import TechBackground from './components/TechBackground';
 import ScrollToTop from './components/ScrollToTop';
+import PageBackgroundAnimation from './components/PageBackgroundAnimation';
+import PageTransition from './components/PageTransition';
 
 // Pages
 import Home from './pages/Home';
@@ -36,20 +38,26 @@ export default function App() {
         <ScrollToTop />
 
         {/* Page Content Viewport */}
-        <main style={{ flexGrow: 1 }}>
-          <Routes>
+        <main style={{ flexGrow: 1, position: 'relative' }}>
+          {/* Simple, gorgeous ambient animation on all secondary pages (Home page untouched) */}
+          {!isHomePage && <PageBackgroundAnimation />}
+
+          <Routes location={location} key={location.pathname}>
+            {/* First Page (Home) is untouched */}
             <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/events/:eventId" element={<EventDetails />} />
-            <Route path="/registration" element={<Registration />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/contact" element={<Contact />} />
+
+            {/* Secondary Pages wrapped with smooth entrance animation */}
+            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+            <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+            <Route path="/events/:eventId" element={<PageTransition><EventDetails /></PageTransition>} />
+            <Route path="/registration" element={<PageTransition><Registration /></PageTransition>} />
+            <Route path="/schedule" element={<PageTransition><Schedule /></PageTransition>} />
+            <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
+            <Route path="/announcements" element={<PageTransition><Announcements /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
             {/* Secret Passcode-Protected Admin Portal */}
-            <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
+            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </main>
 
