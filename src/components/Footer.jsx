@@ -53,15 +53,22 @@ export default function Footer() {
                 style={{
                   width: '38px',
                   height: '38px',
-                  borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
+                  borderRadius: '50%',
+                  border: '1.5px solid #f2c438',
+                  boxShadow: '0 0 12px rgba(242, 196, 56, 0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#ffffff',
+                  overflow: 'hidden',
+                  backgroundColor: '#000000',
+                  flexShrink: 0,
                 }}
               >
-                <Zap size={20} fill="#ffffff" />
+                <img
+                  src="/assets/ise-logo.png"
+                  alt="ISE Logo"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               </div>
               <span
                 style={{

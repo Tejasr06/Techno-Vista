@@ -104,17 +104,23 @@ export default function Navbar() {
               style={{
                 width: '42px',
                 height: '42px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
+                borderRadius: '50%',
+                border: '1.5px solid #f2c438',
+                boxShadow: '0 0 14px rgba(242, 196, 56, 0.45)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 16px rgba(0, 212, 255, 0.45)',
-                color: '#ffffff',
                 flexShrink: 0,
+                backgroundColor: '#000000',
+                overflow: 'hidden',
+                transition: 'transform 0.3s ease',
               }}
             >
-              <Zap size={22} fill="#ffffff" />
+              <img
+                src="/assets/ise-logo.png"
+                alt="ISE Logo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>

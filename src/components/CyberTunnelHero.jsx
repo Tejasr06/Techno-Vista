@@ -54,9 +54,15 @@ export default function CyberTunnelHero() {
           alignItems: 'center',
         }}
       >
-        {/* Top Glowing Microchip Icon Badge */}
-        <div className="cyber-chip-badge" title="Information Science & Engineering">
-          <Cpu size={24} />
+        {/* Animated Official ISE Department Logo */}
+        <div className="hero-ise-logo-wrapper" title="Department of Information Science & Engineering, Sri Sairam College of Engineering">
+          <div className="hero-ise-logo-orbit" aria-hidden="true" />
+          <div className="hero-ise-logo-orbit-outer" aria-hidden="true" />
+          <img
+            src="/assets/ise-logo.png"
+            alt="Department of Information Science & Engineering Logo - Sri Sairam College of Engineering"
+            className="hero-ise-logo-img"
+          />
         </div>
 
         {/* College Name in Sci-Fi Uppercase */}
