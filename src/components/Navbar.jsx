@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
-import { Menu, X, ExternalLink, Zap, QrCode } from 'lucide-react';
+import { Menu, X, ExternalLink, Zap, QrCode, ShieldCheck, Lock, Eye, EyeOff } from 'lucide-react';
 import QrCodeModal from './QrCodeModal';
+
+const ADMIN_PASSWORD = '$TechnoVista@2k26';
 
 export default function Navbar() {
   const { googleFormUrl } = useFest();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminError, setAdminError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Close mobile drawer when route changes
   useEffect(() => {
@@ -28,6 +35,22 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPassword === ADMIN_PASSWORD) {
+      sessionStorage.setItem('techno_vista_admin_auth', 'true');
+      setAdminModalOpen(false);
+      setAdminPassword('');
+      setAdminError('');
+      setShowPassword(false);
+      setMobileMenuOpen(false);
+      navigate('/admin');
+    } else {
+      setAdminError('Incorrect password. Access denied.');
+      setAdminPassword('');
+    }
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -194,6 +217,34 @@ export default function Navbar() {
 
           {/* Desktop Action & Mobile Toggle */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Admin Panel Trigger */}
+            <button
+              onClick={() => {
+                setAdminModalOpen(true);
+                setAdminError('');
+                setAdminPassword('');
+                setShowPassword(false);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.55rem 0.9rem',
+                fontSize: '0.84rem',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                border: '1px solid rgba(139, 92, 246, 0.35)',
+                color: '#a78bfa',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              title="Admin Panel"
+              aria-label="Open Admin Panel"
+            >
+              <ShieldCheck size={16} />
+              <span className="hidden sm:inline">Admin</span>
+            </button>
+
             {/* QR Code Trigger Button */}
             <button
               onClick={() => setQrModalOpen(true)}
@@ -344,6 +395,33 @@ export default function Navbar() {
               <ExternalLink size={16} />
             </a>
 
+            <button
+              onClick={() => {
+                setAdminModalOpen(true);
+                setAdminError('');
+                setAdminPassword('');
+                setShowPassword(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                width: '100%',
+                padding: '0.85rem',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                border: '1px solid rgba(139, 92, 246, 0.35)',
+                color: '#a78bfa',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <ShieldCheck size={18} />
+              <span>Admin Panel</span>
+            </button>
+
             <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#94a3b8' }}>
               Sri Sairam College of Engineering • Anekal
             </div>
@@ -353,6 +431,168 @@ export default function Navbar() {
 
       {/* QR Code Modal for Participants / Posters */}
       <QrCodeModal isOpen={qrModalOpen} onClose={() => setQrModalOpen(false)} />
+
+      {/* Admin Password Modal */}
+      {adminModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(3, 7, 18, 0.9)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+          }}
+          onClick={() => {
+            setAdminModalOpen(false);
+            setAdminPassword('');
+            setAdminError('');
+            setShowPassword(false);
+          }}
+        >
+          <div
+            className="glass-card"
+            style={{
+              maxWidth: '420px',
+              width: '100%',
+              backgroundColor: '#0a1024',
+              border: '1px solid rgba(139, 92, 246, 0.45)',
+              borderRadius: '20px',
+              padding: '2.5rem 2rem',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.2)',
+              textAlign: 'center',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon */}
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(0, 212, 255, 0.15))',
+                border: '1px solid rgba(139, 92, 246, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.25rem',
+              }}
+            >
+              <Lock size={28} style={{ color: '#a78bfa' }} />
+            </div>
+
+            <h3 style={{ fontSize: '1.35rem', color: '#ffffff', marginBottom: '0.4rem', fontWeight: 700 }}>
+              Admin Access
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: '#94a3b8', marginBottom: '1.5rem' }}>
+              Enter the admin password to continue
+            </p>
+
+            <form onSubmit={handleAdminLogin}>
+              <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={adminPassword}
+                  onChange={(e) => {
+                    setAdminPassword(e.target.value);
+                    setAdminError('');
+                  }}
+                  placeholder="Enter password"
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 3rem 0.85rem 1rem',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: adminError
+                      ? '1px solid rgba(239, 68, 68, 0.6)'
+                      : '1px solid rgba(139, 92, 246, 0.3)',
+                    color: '#ffffff',
+                    fontSize: '0.95rem',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.2s ease',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              {adminError && (
+                <div
+                  style={{
+                    fontSize: '0.84rem',
+                    color: '#f87171',
+                    marginBottom: '1rem',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                  }}
+                >
+                  {adminError}
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAdminModalOpen(false);
+                    setAdminPassword('');
+                    setAdminError('');
+                    setShowPassword(false);
+                  }}
+                  className="btn-secondary"
+                  style={{
+                    padding: '0.75rem',
+                    fontSize: '0.9rem',
+                    borderRadius: '10px',
+                    width: '100%',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{
+                    padding: '0.75rem',
+                    fontSize: '0.9rem',
+                    borderRadius: '10px',
+                    width: '100%',
+                  }}
+                >
+                  <ShieldCheck size={16} />
+                  <span>Enter</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Responsive Inline CSS helper for media queries */}
       <style>{`

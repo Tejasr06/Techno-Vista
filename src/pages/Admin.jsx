@@ -26,7 +26,7 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 
-const ADMIN_PIN_DEFAULT = 'ise2026';
+const ADMIN_PIN_DEFAULT = '$TechnoVista@2k26';
 
 export default function Admin() {
   const {
