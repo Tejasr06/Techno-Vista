@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
 import Countdown from './Countdown';
+import HeroBackgroundAnimation from './HeroBackgroundAnimation';
 import {
   Cpu,
   Calendar,
@@ -38,6 +39,11 @@ export default function CyberTunnelHero() {
           className="hero-phoenix-bg-img"
         />
       </div>
+
+      {/* =========================================================================
+          ATTRACTIVE BACKGROUND ANIMATION (Particles, Constellation & Celestial Orbits)
+          ========================================================================= */}
+      <HeroBackgroundAnimation />
 
       {/* =========================================================================
           CENTER HERO CONTENT: FOREGROUND FEST STAGE & CALLS TO ACTION
