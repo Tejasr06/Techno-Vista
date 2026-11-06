@@ -116,26 +116,87 @@ export function FestProvider({ children }) {
     setFestData((prev) => ({ ...prev, ...newData }));
   };
 
+  // Event CRUD
   const updateEvent = (eventId, updatedFields) => {
     setEventsData((prev) =>
       prev.map((ev) => (ev.id === eventId ? { ...ev, ...updatedFields } : ev))
     );
   };
 
+  const addEvent = (newEvent) => {
+    setEventsData((prev) => [...prev, newEvent]);
+  };
+
+  const deleteEvent = (eventId) => {
+    setEventsData((prev) => prev.filter((ev) => ev.id !== eventId));
+  };
+
   const updateSchedule = (newTimeline) => {
     setScheduleData((prev) => ({ ...prev, timeline: newTimeline }));
   };
 
+  // Announcements CRUD
   const addAnnouncement = (newAnnouncement) => {
     setAnnouncementsData((prev) => [newAnnouncement, ...prev]);
+  };
+
+  const updateAnnouncement = (id, updatedFields) => {
+    setAnnouncementsData((prev) =>
+      prev.map((ann) => (ann.id === id ? { ...ann, ...updatedFields } : ann))
+    );
   };
 
   const deleteAnnouncement = (id) => {
     setAnnouncementsData((prev) => prev.filter((a) => a.id !== id));
   };
 
+  // Contact CRUD
   const updateContactData = (newData) => {
     setContactData((prev) => ({ ...prev, ...newData }));
+  };
+
+  const addFacultyCoordinator = (coordinator) => {
+    setContactData((prev) => ({
+      ...prev,
+      facultyCoordinators: [...prev.facultyCoordinators, coordinator],
+    }));
+  };
+
+  const updateFacultyCoordinator = (index, updatedCoordinator) => {
+    setContactData((prev) => {
+      const updated = [...prev.facultyCoordinators];
+      updated[index] = updatedCoordinator;
+      return { ...prev, facultyCoordinators: updated };
+    });
+  };
+
+  const deleteFacultyCoordinator = (index) => {
+    setContactData((prev) => ({
+      ...prev,
+      facultyCoordinators: prev.facultyCoordinators.filter((_, idx) => idx !== index),
+    }));
+  };
+
+  const addStudentCoordinator = (coordinator) => {
+    setContactData((prev) => ({
+      ...prev,
+      studentCoordinators: [...prev.studentCoordinators, coordinator],
+    }));
+  };
+
+  const updateStudentCoordinator = (index, updatedCoordinator) => {
+    setContactData((prev) => {
+      const updated = [...prev.studentCoordinators];
+      updated[index] = updatedCoordinator;
+      return { ...prev, studentCoordinators: updated };
+    });
+  };
+
+  const deleteStudentCoordinator = (index) => {
+    setContactData((prev) => ({
+      ...prev,
+      studentCoordinators: prev.studentCoordinators.filter((_, idx) => idx !== index),
+    }));
   };
 
   const resetToDefaults = () => {
@@ -164,10 +225,19 @@ export function FestProvider({ children }) {
         updateGoogleFormUrl,
         updateFestData,
         updateEvent,
+        addEvent,
+        deleteEvent,
         updateSchedule,
         addAnnouncement,
+        updateAnnouncement,
         deleteAnnouncement,
         updateContactData,
+        addFacultyCoordinator,
+        updateFacultyCoordinator,
+        deleteFacultyCoordinator,
+        addStudentCoordinator,
+        updateStudentCoordinator,
+        deleteStudentCoordinator,
         resetToDefaults,
         getEventById,
       }}
