@@ -118,14 +118,14 @@ export default function CyberTunnelHero() {
           }}
         >
           <div
+            className="cyber-subtitle-animated"
             style={{
               fontFamily: 'var(--font-cyber)',
               fontSize: 'clamp(0.88rem, 1.8vw, 1.25rem)',
-              fontWeight: 700,
+              fontWeight: 800,
               letterSpacing: '0.3em',
               textTransform: 'uppercase',
-              color: '#00f0ff',
-              textShadow: '0 0 14px rgba(0, 240, 255, 0.5)',
+              filter: 'drop-shadow(0 0 12px rgba(0, 240, 255, 0.45))',
             }}
           >
             JOIN THE CYBER BATTLE
