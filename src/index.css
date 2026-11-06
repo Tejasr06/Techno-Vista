@@ -29,7 +29,7 @@
   --border-glass: rgba(255, 255, 255, 0.08);
 
   /* Fonts */
-  --font-cyber: 'Orbitron', 'Space Grotesk', sans-serif;
+  --font-cyber: 'Rajdhani', 'Chakra Petch', 'Space Grotesk', sans-serif;
   --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -519,27 +519,47 @@ button {
   100% { transform: translateY(120px); opacity: 0; }
 }
 
-/* Striking Glowing Cyber Title in Vibrant Neon Amber / Orange */
-.cyber-title-orange {
+/* Refined, Crisp Cyber Title - High Contrast, Razor Sharp Typography */
+.cyber-title-perfect {
   font-family: var(--font-cyber);
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 0.95;
-  color: #ff8c00;
-  background: linear-gradient(180deg, #ffe47a 0%, #ff9e00 35%, #ff5500 75%, #cc3300 100%);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffffff 0%, #e0f2fe 35%, #38bdf8 70%, #00d4ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: 
-    drop-shadow(0 0 10px rgba(255, 140, 0, 0.9))
-    drop-shadow(0 0 25px rgba(255, 100, 0, 0.75))
-    drop-shadow(0 0 55px rgba(255, 60, 0, 0.45));
-  text-shadow: 0 0 20px rgba(255, 120, 0, 0.6);
-  display: block;
+  filter: drop-shadow(0 4px 18px rgba(0, 212, 255, 0.42));
+  display: inline-block;
+  transition: all 0.3s ease;
 }
 
-/* Glowing Neon Orange Cyber Pill Button (Exact Match to Reference) */
-.btn-cyber-orange {
+.cyber-title-accent {
+  font-family: var(--font-cyber);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  background: linear-gradient(180deg, #38bdf8 0%, #00d4ff 35%, #818cf8 75%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(139, 92, 246, 0.45));
+  display: inline-block;
+}
+
+.cyber-year-badge {
+  font-family: var(--font-cyber);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  background: linear-gradient(180deg, #ffffff 0%, #7dd3fc 45%, #00d4ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(0, 212, 255, 0.5));
+  display: inline-block;
+}
+
+/* Glowing Neon Electric Cyber Pill Button */
+.btn-cyber-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -547,16 +567,16 @@ button {
   padding: 0.9rem 2.5rem;
   border-radius: 9999px;
   font-family: var(--font-cyber);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #ffa726;
-  background: rgba(255, 110, 0, 0.12);
-  border: 2px solid #ff7700;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.18) 0%, rgba(139, 92, 246, 0.18) 100%);
+  border: 1.5px solid #00d4ff;
   box-shadow: 
-    0 0 20px rgba(255, 110, 0, 0.5),
-    inset 0 0 15px rgba(255, 110, 0, 0.25);
+    0 0 20px rgba(0, 212, 255, 0.35),
+    inset 0 0 15px rgba(0, 212, 255, 0.15);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -564,14 +584,13 @@ button {
   overflow: hidden;
 }
 
-.btn-cyber-orange:hover {
-  background: rgba(255, 120, 0, 0.3);
+.btn-cyber-primary:hover {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.35) 0%, rgba(139, 92, 246, 0.35) 100%);
   color: #ffffff;
-  border-color: #ffa000;
+  border-color: #38bdf8;
   box-shadow: 
-    0 0 35px rgba(255, 120, 0, 0.9),
-    0 0 70px rgba(255, 80, 0, 0.4),
-    inset 0 0 25px rgba(255, 150, 0, 0.45);
+    0 0 32px rgba(0, 212, 255, 0.7),
+    inset 0 0 20px rgba(0, 212, 255, 0.3);
   transform: translateY(-2px) scale(1.03);
 }
 

@@ -328,29 +328,34 @@ export default function CyberTunnelHero() {
           <div className="cyber-presents-line" />
         </div>
 
-        {/* Huge Sci-Fi 3D Title in Vibrant Neon Amber / Orange (Exact match to reference "TECH YUVA 2026") */}
-        <div style={{ marginBottom: '0.6rem' }}>
+        {/* Refined, Razor-Sharp Futuristic Cyber Title in Electric Cyan & Ice White */}
+        <div style={{ marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h1
-            className="cyber-title-orange"
             style={{
-              fontSize: 'clamp(2.8rem, 8.5vw, 6.2rem)',
-              letterSpacing: '0.04em',
+              fontSize: 'clamp(2.75rem, 8vw, 5.8rem)',
+              lineHeight: 1.05,
               margin: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: '0.4em',
             }}
           >
-            TECHNO VISTA
+            <span className="cyber-title-perfect">TECHNO</span>
+            <span className="cyber-title-accent">VISTA</span>
           </h1>
-          <h1
-            className="cyber-title-orange"
-            style={{
-              fontSize: 'clamp(2.6rem, 7.5vw, 5.2rem)',
-              letterSpacing: '0.12em',
-              marginTop: '0.1rem',
-              marginBottom: 0,
-            }}
-          >
-            2K26
-          </h1>
+
+          <div style={{ marginTop: '0.2rem' }}>
+            <span
+              className="cyber-year-badge"
+              style={{
+                fontSize: 'clamp(2.2rem, 6.5vw, 4.4rem)',
+                lineHeight: 1,
+              }}
+            >
+              2K26
+            </span>
+          </div>
         </div>
 
         {/* Tagline / Subtitle with Sci-Fi Spacing */}
@@ -359,19 +364,19 @@ export default function CyberTunnelHero() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.35rem',
-            marginBottom: '1.75rem',
+            gap: '0.45rem',
+            marginBottom: '2rem',
           }}
         >
           <div
             style={{
               fontFamily: 'var(--font-cyber)',
-              fontSize: 'clamp(0.88rem, 2vw, 1.35rem)',
-              fontWeight: 800,
-              letterSpacing: '0.32em',
+              fontSize: 'clamp(0.9rem, 1.8vw, 1.25rem)',
+              fontWeight: 700,
+              letterSpacing: '0.3em',
               textTransform: 'uppercase',
-              color: '#00f0ff',
-              textShadow: '0 0 15px rgba(0, 240, 255, 0.7)',
+              color: '#38bdf8',
+              textShadow: '0 0 14px rgba(56, 189, 248, 0.5)',
             }}
           >
             JOIN THE CYBER BATTLE
@@ -380,11 +385,10 @@ export default function CyberTunnelHero() {
           <div
             style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(0.85rem, 1.5vw, 1.05rem)',
-              color: '#cbd5e1',
-              letterSpacing: '0.14em',
+              fontSize: 'clamp(0.85rem, 1.4vw, 1.02rem)',
+              color: '#94a3b8',
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              opacity: 0.9,
             }}
           >
             {festData.tagline} • NATIONAL-LEVEL TECHNICAL FEST
@@ -394,24 +398,24 @@ export default function CyberTunnelHero() {
         {/* Center Cyber Shield Emblem (SSCE / ISE Crest) */}
         <div
           style={{
-            marginBottom: '2rem',
+            marginBottom: '2.25rem',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0.5rem 0.9rem',
-            borderRadius: '8px',
-            border: '1px solid rgba(0, 240, 255, 0.4)',
-            background: 'rgba(3, 14, 33, 0.75)',
-            boxShadow: '0 0 20px rgba(0, 240, 255, 0.25)',
+            padding: '0.45rem 1rem',
+            borderRadius: '9999px',
+            border: '1px solid rgba(56, 189, 248, 0.35)',
+            background: 'rgba(6, 16, 38, 0.75)',
+            boxShadow: '0 0 16px rgba(56, 189, 248, 0.2)',
           }}
         >
           <div
             style={{
               fontFamily: 'var(--font-cyber)',
-              fontWeight: 900,
-              fontSize: '1rem',
-              letterSpacing: '0.2em',
-              background: 'linear-gradient(135deg, #00f0ff, #ff9e00)',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              letterSpacing: '0.22em',
+              background: 'linear-gradient(135deg, #00f0ff, #8b5cf6)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -420,7 +424,7 @@ export default function CyberTunnelHero() {
           </div>
         </div>
 
-        {/* Glowing Cyber Action Buttons (Orange Pill Button like in Reference Image) */}
+        {/* Glowing Cyber Action Buttons */}
         <div
           style={{
             display: 'flex',
@@ -431,8 +435,8 @@ export default function CyberTunnelHero() {
             marginBottom: '2.5rem',
           }}
         >
-          {/* Main Glowing Orange Pill Button matching the reference */}
-          <Link to="/events" className="btn-cyber-orange">
+          {/* Main Glowing Electric Cyber Pill Button */}
+          <Link to="/events" className="btn-cyber-primary">
             <span>EXPLORE EVENTS</span>
             <ArrowRight size={18} />
           </Link>
@@ -504,3 +508,4 @@ export default function CyberTunnelHero() {
     </div>
   );
 }
+
