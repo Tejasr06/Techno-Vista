@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { GOOGLE_FORM_URL, FEST_DATA } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import { QrCode, X, Copy, Check, Download, ExternalLink, Sparkles } from 'lucide-react';
 
 export default function QrCodeModal({ isOpen, onClose }) {
+  const { googleFormUrl } = useFest();
   const [activeTab, setActiveTab] = useState('form'); // 'form' or 'site'
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
   const siteUrl = window.location.origin;
-  const targetUrl = activeTab === 'form' ? GOOGLE_FORM_URL : siteUrl;
+  const targetUrl = activeTab === 'form' ? googleFormUrl : siteUrl;
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
     targetUrl
@@ -240,3 +241,4 @@ export default function QrCodeModal({ isOpen, onClose }) {
     </div>
   );
 }
+

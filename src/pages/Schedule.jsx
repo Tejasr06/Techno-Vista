@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
@@ -12,14 +12,29 @@ import {
   Award,
   Coffee,
   CheckCircle,
+  Filter,
 } from 'lucide-react';
 
 export default function Schedule() {
   const { scheduleData, googleFormUrl } = useFest();
+  const [selectedFilter, setSelectedFilter] = useState('All');
 
   useEffect(() => {
     document.title = `Event Schedule | TECHNO VISTA 2K26 | Sri Sairam CE`;
   }, []);
+
+  const filterCategories = [
+    'All',
+    'Ceremony',
+    'Competitions',
+    'Finals',
+    'Registration',
+  ];
+
+  const filteredTimeline = scheduleData.timeline.filter((slot) => {
+    if (selectedFilter === 'All') return true;
+    return slot.category === selectedFilter;
+  });
 
   return (
     <div style={{ padding: '3.5rem 0 6rem 0' }}>
@@ -28,7 +43,7 @@ export default function Schedule() {
         <SectionTitle
           tag="Program Timeline"
           title="TECHNO VISTA 2K26 Schedule"
-          subtitle={`Detailed timeline of activities, sessions, and championship finals for ${SCHEDULE_DATA.festDate}.`}
+          subtitle={`Detailed timeline of activities, sessions, and championship finals for ${scheduleData.festDate}.`}
         />
 
         {/* Schedule Disclaimer / Editable Notice */}
@@ -45,8 +60,44 @@ export default function Schedule() {
         >
           <Info size={22} className="text-cyan-400" style={{ flexShrink: 0 }} />
           <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <strong>Organizer Note:</strong> All timeline slots and venues can be easily adjusted by editing <code style={{ color: '#38bdf8' }}>src/data/scheduleData.js</code>. {SCHEDULE_DATA.note}
+            <strong>Organizer Note:</strong> All timeline slots and venues can be easily adjusted by editing <code style={{ color: '#38bdf8' }}>src/data/scheduleData.js</code>. {scheduleData.note}
           </div>
+        </div>
+
+        {/* Filter Chips */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.6rem',
+            marginBottom: '2.5rem',
+            alignItems: 'center',
+          }}
+        >
+          <Filter size={16} style={{ color: '#94a3b8', flexShrink: 0 }} />
+          {filterCategories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedFilter(cat)}
+              style={{
+                padding: '0.35rem 1rem',
+                borderRadius: '20px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backgroundColor:
+                  selectedFilter === cat ? 'rgba(0, 212, 255, 0.18)' : 'rgba(255,255,255,0.04)',
+                border:
+                  selectedFilter === cat
+                    ? '1px solid #00d4ff'
+                    : '1px solid rgba(255,255,255,0.1)',
+                color: selectedFilter === cat ? '#00d4ff' : '#94a3b8',
+              }}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {/* Timeline List */}
@@ -73,7 +124,16 @@ export default function Schedule() {
             className="timeline-guide-line"
           />
 
-          {SCHEDULE_DATA.timeline.map((slot, index) => (
+          {filteredTimeline.length === 0 && (
+            <div
+              className="glass-panel"
+              style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}
+            >
+              No schedule slots match the selected filter.
+            </div>
+          )}
+
+          {filteredTimeline.map((slot, index) => (
             <div
               key={slot.id}
               className="glass-card"
