@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
+import CyberPhoenix from './CyberPhoenix';
 import Countdown from './Countdown';
 import {
   Cpu,
@@ -14,10 +15,24 @@ import {
   Layers,
   Sparkles,
   ArrowRight,
+  ChevronDown,
 } from 'lucide-react';
 
-export default function CyberTunnelHero() {
+export default function CyberTunnelHero({ onExploreClick }) {
   const { festData, googleFormUrl } = useFest();
+
+  const handleExplore = (e) => {
+    if (onExploreClick) {
+      e.preventDefault();
+      onExploreClick(e);
+    } else {
+      const el = document.getElementById('events-arena');
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <div className="cyber-hero-stage">
@@ -328,17 +343,22 @@ export default function CyberTunnelHero() {
           <div className="cyber-presents-line" />
         </div>
 
+        {/* =====================================================================
+            ANIMATED CYBER PHOENIX MASCOT (ORIGINAL EMBLEM - ZERO YELLOW)
+            ===================================================================== */}
+        <CyberPhoenix />
+
         {/* Refined, Razor-Sharp Futuristic Cyber Title in Electric Cyan & Ice White */}
         <div style={{ marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h1
             style={{
-              fontSize: 'clamp(2.75rem, 8vw, 5.8rem)',
+              fontSize: 'clamp(2.5rem, 7.5vw, 5.4rem)',
               lineHeight: 1.05,
               margin: 0,
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              gap: '0.4em',
+              gap: '0.35em',
             }}
           >
             <span className="cyber-title-perfect">TECHNO</span>
@@ -349,7 +369,7 @@ export default function CyberTunnelHero() {
             <span
               className="cyber-year-badge"
               style={{
-                fontSize: 'clamp(2.2rem, 6.5vw, 4.4rem)',
+                fontSize: 'clamp(2rem, 6vw, 4rem)',
                 lineHeight: 1,
               }}
             >
@@ -365,18 +385,18 @@ export default function CyberTunnelHero() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '0.45rem',
-            marginBottom: '2rem',
+            marginBottom: '1.75rem',
           }}
         >
           <div
             style={{
               fontFamily: 'var(--font-cyber)',
-              fontSize: 'clamp(0.9rem, 1.8vw, 1.25rem)',
+              fontSize: 'clamp(0.88rem, 1.8vw, 1.25rem)',
               fontWeight: 700,
               letterSpacing: '0.3em',
               textTransform: 'uppercase',
-              color: '#38bdf8',
-              textShadow: '0 0 14px rgba(56, 189, 248, 0.5)',
+              color: '#00f0ff',
+              textShadow: '0 0 14px rgba(0, 240, 255, 0.5)',
             }}
           >
             JOIN THE CYBER BATTLE
@@ -386,7 +406,7 @@ export default function CyberTunnelHero() {
             style={{
               fontFamily: 'var(--font-heading)',
               fontSize: 'clamp(0.85rem, 1.4vw, 1.02rem)',
-              color: '#94a3b8',
+              color: '#cbd5e1',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
@@ -398,7 +418,7 @@ export default function CyberTunnelHero() {
         {/* Center Cyber Shield Emblem (SSCE / ISE Crest) */}
         <div
           style={{
-            marginBottom: '2.25rem',
+            marginBottom: '2rem',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -436,10 +456,15 @@ export default function CyberTunnelHero() {
           }}
         >
           {/* Main Glowing Electric Cyber Pill Button */}
-          <Link to="/events" className="btn-cyber-primary">
+          <button
+            onClick={handleExplore}
+            className="btn-cyber-primary"
+            style={{ cursor: 'pointer' }}
+            title="Click to reveal all events & fest schedule"
+          >
             <span>EXPLORE EVENTS</span>
             <ArrowRight size={18} />
-          </Link>
+          </button>
 
           {/* Secondary Register Now Button */}
           <a
@@ -495,15 +520,26 @@ export default function CyberTunnelHero() {
               boxShadow: '0 0 12px rgba(0, 240, 255, 0.1)',
             }}
           >
-            <MapPin size={15} style={{ color: '#ff9e00' }} />
+            <MapPin size={15} style={{ color: '#38bdf8' }} />
             <span>{festData.venue}</span>
           </div>
         </div>
 
         {/* Live Countdown Timer */}
-        <div style={{ width: '100%', maxWidth: '780px' }}>
+        <div style={{ width: '100%', maxWidth: '780px', marginBottom: '2.5rem' }}>
           <Countdown />
         </div>
+
+        {/* Scroll / Explore Downward Cue */}
+        <a
+          href="#events-arena"
+          onClick={handleExplore}
+          className="scroll-indicator-pill"
+          title="Scroll or click to explore events"
+        >
+          <span>ENTER ARENA & EXPLORE</span>
+          <ChevronDown size={14} />
+        </a>
       </div>
     </div>
   );

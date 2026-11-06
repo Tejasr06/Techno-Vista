@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
 import CyberTunnelHero from '../components/CyberTunnelHero';
@@ -21,21 +21,55 @@ import {
 
 export default function Home() {
   const { festData, googleFormUrl, eventsData } = useFest();
+  const [contentRevealed, setContentRevealed] = useState(false);
 
   useEffect(() => {
     document.title = `${festData.name} | ${festData.tagline} | Sri Sairam College of Engineering`;
   }, [festData]);
 
+  // Reveal content if participant scrolls or visits directly
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setContentRevealed(true);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleExploreEvents = (e) => {
+    if (e) e.preventDefault();
+    setContentRevealed(true);
+    setTimeout(() => {
+      const arena = document.getElementById('events-arena');
+      if (arena) {
+        arena.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 60);
+  };
+
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }}>
       {/* =========================================================================
-          CYBER TUNNEL OPENING / HERO SECTION (MATCHING REFERENCE DESIGN)
+          FIRST OPENING PAGE: 3D CYBER TUNNEL & ANIMATED PHOENIX MASCOT
+          (MATCHING USER'S REFERENCE DESIGN - ZERO YELLOW)
           ========================================================================= */}
-      <CyberTunnelHero />
+      <CyberTunnelHero onExploreClick={handleExploreEvents} />
 
       {/* =========================================================================
-          KEY STATS / HIGHLIGHTS BAR
+          MAIN FEST CONTENT (REVEALED ON EXPLORE EVENTS / SCROLL)
           ========================================================================= */}
+      <div
+        id="events-arena"
+        style={{
+          opacity: contentRevealed ? 1 : 0.95,
+          transition: 'opacity 0.8s ease',
+        }}
+      >
+        {/* =========================================================================
+            KEY STATS / HIGHLIGHTS BAR
+            ========================================================================= */}
       <section
         style={{
           borderTop: '1px solid rgba(56, 189, 248, 0.15)',
@@ -420,6 +454,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }

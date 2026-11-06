@@ -693,9 +693,130 @@ button {
   font-family: var(--font-cyber);
   font-size: 0.72rem;
   letter-spacing: 0.35em;
-  color: #ff9e00;
+  color: #00f0ff;
   text-transform: uppercase;
   font-weight: 700;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+/* ==========================================================================
+   CYBER PHOENIX MASCOT ANIMATIONS (ZERO YELLOW, PURE CYBER AURA)
+   ========================================================================== */
+
+@keyframes phoenixLevitate {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 35px rgba(139, 92, 246, 0.4));
+  }
+  50% {
+    transform: translateY(-10px) scale(1.025);
+    filter: drop-shadow(0 0 28px rgba(0, 240, 255, 0.85)) drop-shadow(0 0 55px rgba(139, 92, 246, 0.65));
+  }
+}
+
+.cyber-phoenix-canvas {
+  animation: phoenixLevitate 4.5s infinite ease-in-out;
+}
+
+@keyframes phoenixScanSweep {
+  0% {
+    top: -15%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 115%;
+    opacity: 0;
+  }
+}
+
+.phoenix-scan-beam {
+  position: absolute;
+  left: 5%;
+  width: 90%;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, #00f0ff 25%, #ffffff 50%, #8b5cf6 75%, transparent);
+  box-shadow: 0 0 16px #00f0ff;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 5;
+  animation: phoenixScanSweep 4s infinite linear;
+}
+
+/* Wing Pulse / Energy Rings */
+@keyframes ringExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.65);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
+}
+
+.phoenix-energy-ring {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  pointer-events: none;
+  animation: ringExpand 3.2s infinite ease-out;
+}
+
+/* Portal Entry & Smooth Reveal of Rest of Website */
+.portal-opening-stage {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.portal-reveal-content {
+  opacity: 1;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-indicator-pill {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  color: #38bdf8;
+  font-family: var(--font-cyber);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: rgba(6, 16, 38, 0.75);
+  padding: 0.45rem 1.1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.15);
+  cursor: pointer;
+  animation: bounceSubtle 2.5s infinite ease-in-out;
+  text-decoration: none;
+}
+
+@keyframes bounceSubtle {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -6px); }
 }
 
 /* Hide side HUD walls on smaller mobile devices for clean readability */
