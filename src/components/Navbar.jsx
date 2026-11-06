@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { GOOGLE_FORM_URL, FEST_DATA } from '../data/festData';
-import { Menu, X, ExternalLink, Zap } from 'lucide-react';
+import { useFest } from '../context/FestContext';
+import { Menu, X, ExternalLink, Zap, QrCode } from 'lucide-react';
+import QrCodeModal from './QrCodeModal';
 
 export default function Navbar() {
+  const { googleFormUrl } = useFest();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
   const location = useLocation();
 
   // Close mobile drawer when route changes
@@ -190,10 +193,33 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop Action & Mobile Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* QR Code Trigger Button */}
+            <button
+              onClick={() => setQrModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.55rem 0.9rem',
+                fontSize: '0.84rem',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                color: '#38bdf8',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              title="View Fest & Registration QR Code"
+              aria-label="View QR Code"
+            >
+              <QrCode size={16} />
+              <span className="hidden sm:inline">QR Code</span>
+            </button>
+
             {/* Register Now Primary Button */}
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
@@ -308,7 +334,7 @@ export default function Navbar() {
             }}
           >
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
@@ -324,6 +350,9 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      {/* QR Code Modal for Participants / Posters */}
+      <QrCodeModal isOpen={qrModalOpen} onClose={() => setQrModalOpen(false)} />
 
       {/* Responsive Inline CSS helper for media queries */}
       <style>{`

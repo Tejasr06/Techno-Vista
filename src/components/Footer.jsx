@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FEST_DATA, GOOGLE_FORM_URL } from '../data/festData';
-import { CONTACT_DATA } from '../data/contactData';
-import { EVENTS_DATA } from '../data/eventsData';
+import { useFest } from '../context/FestContext';
 import {
   Zap,
   MapPin,
@@ -17,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function Footer() {
+  const { festData, googleFormUrl, eventsData, contactData } = useFest();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -83,24 +82,24 @@ export default function Footer() {
                 lineHeight: 1.6,
               }}
             >
-              {FEST_DATA.tagline}. A premier National-Level Technical Fest organized by the Department of Information Science and Engineering, Sri Sairam College of Engineering.
+              {festData.tagline}. A premier National-Level Technical Fest organized by the Department of Information Science and Engineering, Sri Sairam College of Engineering.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.86rem', color: '#cbd5e1' }}>
                 <Calendar size={15} className="text-cyan-400" />
-                <span>{FEST_DATA.dateText} ({FEST_DATA.timeText})</span>
+                <span>{festData.dateText} ({festData.timeText})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.86rem', color: '#cbd5e1' }}>
                 <MapPin size={15} className="text-cyan-400" />
-                <span>{FEST_DATA.venue}, {FEST_DATA.college}</span>
+                <span>{festData.venue}, {festData.college}</span>
               </div>
             </div>
 
             {/* Social Icons */}
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
               <a
-                href={CONTACT_DATA.socialLinks.instagram}
+                href={contactData.socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -129,7 +128,7 @@ export default function Footer() {
               </a>
 
               <a
-                href={CONTACT_DATA.socialLinks.linkedin}
+                href={contactData.socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -158,7 +157,7 @@ export default function Footer() {
               </a>
 
               <a
-                href={CONTACT_DATA.socialLinks.collegeWebsite}
+                href={contactData.socialLinks.collegeWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="College Website"
@@ -248,7 +247,7 @@ export default function Footer() {
               Official Events
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {EVENTS_DATA.map((event) => (
+              {eventsData.map((event) => (
                 <li key={event.id}>
                   <Link
                     to={`/events/${event.id}`}
@@ -301,7 +300,7 @@ export default function Footer() {
             </p>
 
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FEST_DATA, GOOGLE_FORM_URL } from '../data/festData';
-import { EVENTS_DATA } from '../data/eventsData';
+import { useFest } from '../context/FestContext';
 import Countdown from '../components/Countdown';
 import EventCard from '../components/EventCard';
 import SectionTitle from '../components/SectionTitle';
@@ -21,9 +20,11 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const { festData, googleFormUrl, eventsData } = useFest();
+
   useEffect(() => {
-    document.title = `${FEST_DATA.name} | ${FEST_DATA.tagline} | Sri Sairam College of Engineering`;
-  }, []);
+    document.title = `${festData.name} | ${festData.tagline} | Sri Sairam College of Engineering`;
+  }, [festData]);
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }}>
@@ -208,7 +209,7 @@ export default function Home() {
             }}
           >
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
@@ -295,7 +296,7 @@ export default function Home() {
               gap: '2rem',
             }}
           >
-            {EVENTS_DATA.map((event) => (
+            {eventsData.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
@@ -606,7 +607,7 @@ export default function Home() {
             }}
           >
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"

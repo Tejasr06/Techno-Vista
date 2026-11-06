@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { CONTACT_DATA } from '../data/contactData';
-import { FEST_DATA, GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
   MapPin,
@@ -20,6 +19,8 @@ import {
 } from 'lucide-react';
 
 export default function Contact() {
+  const { contactData, festData, googleFormUrl } = useFest();
+
   useEffect(() => {
     document.title = `Contact & Location | TECHNO VISTA 2K26 | Sri Sairam CE`;
   }, []);

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import { ArrowRight, ExternalLink, Users, MapPin } from 'lucide-react';
 
 export default function EventCard({ event }) {
+  const { googleFormUrl } = useFest();
   const {
     id,
     name,
@@ -204,7 +205,7 @@ export default function EventCard({ event }) {
           </Link>
 
           <a
-            href={GOOGLE_FORM_URL}
+            href={googleFormUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

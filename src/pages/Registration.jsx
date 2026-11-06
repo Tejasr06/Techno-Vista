@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { GOOGLE_FORM_URL, isGoogleFormConfigured, FEST_DATA } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
   ExternalLink,
@@ -15,7 +15,11 @@ import {
 } from 'lucide-react';
 
 export default function Registration() {
-  const isConfigured = isGoogleFormConfigured();
+  const { googleFormUrl, festData } = useFest();
+  const isConfigured =
+    googleFormUrl &&
+    googleFormUrl !== 'PASTE_GOOGLE_FORM_LINK_HERE' &&
+    googleFormUrl.startsWith('http');
 
   useEffect(() => {
     document.title = `Registration | TECHNO VISTA 2K26 | Sri Sairam CE`;
@@ -172,7 +176,7 @@ export default function Registration() {
           {/* Big CTA Button */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <a
-              href={GOOGLE_FORM_URL}
+              href={googleFormUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
@@ -205,12 +209,12 @@ export default function Registration() {
             >
               <span style={{ color: '#94a3b8', fontSize: '0.78rem' }}>Direct Link:</span>
               <a
-                href={GOOGLE_FORM_URL}
+                href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#38bdf8', textDecoration: 'underline' }}
               >
-                {GOOGLE_FORM_URL}
+                {googleFormUrl}
               </a>
             </div>
           </div>

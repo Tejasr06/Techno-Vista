@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { EVENTS_DATA } from '../data/eventsData';
-import { GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import EventCard from '../components/EventCard';
 import SectionTitle from '../components/SectionTitle';
 import { Search, ExternalLink, Sparkles, Filter } from 'lucide-react';
 
 export default function Events() {
+  const { eventsData, googleFormUrl } = useFest();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -23,7 +23,7 @@ export default function Events() {
     'Gaming & Esports',
   ];
 
-  const filteredEvents = EVENTS_DATA.filter((event) => {
+  const filteredEvents = eventsData.filter((event) => {
     const matchesCategory =
       selectedCategory === 'All' || event.category === selectedCategory;
     const matchesSearch =
@@ -212,7 +212,7 @@ export default function Events() {
           </div>
 
           <a
-            href={GOOGLE_FORM_URL}
+            href={googleFormUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

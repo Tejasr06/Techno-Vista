@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { SCHEDULE_DATA } from '../data/scheduleData';
-import { GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
   Clock,
@@ -16,6 +15,8 @@ import {
 } from 'lucide-react';
 
 export default function Schedule() {
+  const { scheduleData, googleFormUrl } = useFest();
+
   useEffect(() => {
     document.title = `Event Schedule | TECHNO VISTA 2K26 | Sri Sairam CE`;
   }, []);
@@ -230,7 +231,7 @@ export default function Schedule() {
             Be present on time to ensure smooth registration and orientation. Register your team through the Google Form now.
           </p>
           <a
-            href={GOOGLE_FORM_URL}
+            href={googleFormUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

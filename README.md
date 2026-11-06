@@ -51,6 +51,30 @@ The website uses a **single centralized configuration variable** for all registr
 
 ---
 
+## 🔒 Secret Organizer Admin Panel & QR Generator
+
+The website includes a **hidden, passcode-protected Admin Panel** designed specifically for the organizing committee:
+- **Hidden from Participants:** There is **NO** link to the Admin Panel in the public navigation bar or footer. Participants will only see the public fest portal.
+- **Access Route:** Navigate directly to `http://localhost:3000/admin` (or `https://your-domain.vercel.app/admin`).
+- **Default Passcode:** `ise2026`
+
+### Features in the Admin Panel:
+1. **Participant QR & Share Hub:**
+   - Generates high-resolution, print-ready QR codes for:
+     1. The Public Participant Fest Website
+     2. The Official Google Form Registration Link
+   - 1-click **Download QR Code** (PNG image at 500x500px for printing on flex banners, college posters, and flyers).
+   - 1-click **Copy Participant Link** for sharing on WhatsApp and social media.
+2. **Live Information Editing:**
+   - Edit the **Google Form URL** anytime with immediate live preview.
+   - Edit Fest timings, reporting window, tagline, and venue.
+   - Update rules, team size limits, and coordinators for each of the 6 events.
+   - Add or remove live announcements on the notice board.
+3. **Instant Persistence:**
+   - Any edits saved in the Admin Panel immediately persist in `localStorage` and update all components on the participant website without needing to restart the server!
+
+---
+
 ## 📁 Centralized Content Management Guide
 
 You do **not** need to search through React component or page files to update fest details. All content is organized cleanly in `src/data/`:

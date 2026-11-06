@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FEST_DATA, GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
   Sparkles,
@@ -16,9 +16,11 @@ import {
 } from 'lucide-react';
 
 export default function About() {
+  const { festData, googleFormUrl } = useFest();
+
   useEffect(() => {
-    document.title = `About TECHNO VISTA 2K26 | Department of ISE, Sri Sairam CE`;
-  }, []);
+    document.title = `About ${festData.name} | Department of ISE, Sri Sairam CE`;
+  }, [festData]);
 
   return (
     <div style={{ padding: '3.5rem 0 6rem 0' }}>
@@ -86,7 +88,7 @@ export default function About() {
 
             <div style={{ marginTop: '2rem' }}>
               <a
-                href={GOOGLE_FORM_URL}
+                href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"

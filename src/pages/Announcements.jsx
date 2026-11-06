@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ANNOUNCEMENTS_DATA } from '../data/announcementsData';
+import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
 import {
   Bell,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function Announcements() {
+  const { announcementsData } = useFest();
   const [filterBadge, setFilterBadge] = useState('All');
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Announcements() {
 
   const badges = ['All', 'Registration', 'Event Guideline', 'Important', 'Update', 'Certification'];
 
-  const filteredAnnouncements = ANNOUNCEMENTS_DATA.filter(
+  const filteredAnnouncements = announcementsData.filter(
     (item) => filterBadge === 'All' || item.badge === filterBadge
   );
 

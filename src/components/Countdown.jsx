@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FEST_DATA } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import { Clock, Radio } from 'lucide-react';
 
 export default function Countdown() {
+  const { festData } = useFest();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -13,7 +14,7 @@ export default function Countdown() {
 
   useEffect(() => {
     // Parse target date in IST
-    const target = new Date(FEST_DATA.targetDate).getTime();
+    const target = new Date(festData.targetDate).getTime();
 
     const calculateTime = () => {
       const now = new Date().getTime();
@@ -50,7 +51,7 @@ export default function Countdown() {
     calculateTime();
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [festData.targetDate]);
 
   const formatDigit = (num) => String(num).padStart(2, '0');
 

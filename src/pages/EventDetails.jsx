@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getEventById, EVENTS_DATA } from '../data/eventsData';
-import { GOOGLE_FORM_URL } from '../data/festData';
+import { useFest } from '../context/FestContext';
 import {
   ArrowLeft,
   ExternalLink,
@@ -22,6 +21,7 @@ import {
 export default function EventDetails() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { getEventById, eventsData, googleFormUrl } = useFest();
   const event = getEventById(eventId);
 
   useEffect(() => {
@@ -223,7 +223,7 @@ export default function EventDetails() {
             {/* Action Call */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
               <a
-                href={GOOGLE_FORM_URL}
+                href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
@@ -437,7 +437,7 @@ export default function EventDetails() {
               </p>
 
               <a
-                href={GOOGLE_FORM_URL}
+                href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
@@ -540,7 +540,7 @@ export default function EventDetails() {
                 Other Fest Tracks
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {EVENTS_DATA.filter((e) => e.id !== event.id).map((other) => (
+                {eventsData.filter((e) => e.id !== event.id).map((other) => (
                   <Link
                     key={other.id}
                     to={`/events/${other.id}`}
