@@ -4,9 +4,8 @@
  */
 
 // CENTRALIZED GOOGLE FORM REGISTRATION LINK
-// Replace "PASTE_GOOGLE_FORM_LINK_HERE" with your actual Google Form URL.
-// Every 'Register Now' button across the entire website will automatically use this URL.
-export const GOOGLE_FORM_URL = "PASTE_GOOGLE_FORM_LINK_HERE";
+// Every 'Register Now' button across the entire website automatically uses this URL.
+export const GOOGLE_FORM_URL = "https://forms.gle/Lji4KKgnRdzk4Gw97";
 
 // Check if a real link has been pasted or if it's still the placeholder
 export const isGoogleFormConfigured = () => {

@@ -41,14 +41,11 @@ To run the website on your local computer using VS Code:
 The website uses a **single centralized configuration variable** for all registration buttons:
 
 1. Open `src/data/festData.js` in VS Code.
-2. Locate line 9:
+2. The active Google Form URL is set to:
    ```javascript
-   export const GOOGLE_FORM_URL = "PASTE_GOOGLE_FORM_LINK_HERE";
+   export const GOOGLE_FORM_URL = "https://forms.gle/Lji4KKgnRdzk4Gw97";
    ```
-3. Replace `"PASTE_GOOGLE_FORM_LINK_HERE"` with your actual Google Form URL:
-   ```javascript
-   export const GOOGLE_FORM_URL = "https://forms.gle/yourActualFormLinkHere";
-   ```
+3. Whenever you need to update it in the future, change this URL.
 4. Save the file (`Ctrl + S`).
 5. **Every 'Register Now' button** on the Navbar, Hero section, Event Cards, Individual Event Detail pages, Schedule page, and Registration page will **instantly and automatically** redirect participants to your form in a new tab!
 
