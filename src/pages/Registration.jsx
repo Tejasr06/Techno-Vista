@@ -55,7 +55,7 @@ export default function Registration() {
     },
     {
       q: 'Can one person participate in more than one event?',
-      a: 'Yes! Participants can register for multiple tracks, provided the event timings and laboratory sessions do not conflict. Check the schedule page for slot timings.',
+      a: 'Yes! Participants can register for multiple tracks, provided the event timings and laboratory sessions do not conflict. Check individual event details for slot timings.',
     },
     {
       q: 'Will all participants receive certificates?',

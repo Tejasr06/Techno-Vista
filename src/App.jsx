@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { FestProvider } from './context/FestContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -51,7 +51,8 @@ export default function App() {
             <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
             <Route path="/events/:eventId" element={<PageTransition><EventDetails /></PageTransition>} />
             <Route path="/registration" element={<PageTransition><Registration /></PageTransition>} />
-            <Route path="/schedule" element={<PageTransition><Schedule /></PageTransition>} />
+            {/* Schedule redirected to events */}
+            <Route path="/schedule" element={<Navigate to="/events" replace />} />
             <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
             <Route path="/announcements" element={<PageTransition><Announcements /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />

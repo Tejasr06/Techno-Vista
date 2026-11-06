@@ -233,8 +233,8 @@ export default function EventDetails() {
                 <ExternalLink size={16} />
               </a>
 
-              <Link to="/schedule" className="btn-secondary" style={{ padding: '0.85rem 1.8rem' }}>
-                <span>View Fest Schedule</span>
+              <Link to="/events" className="btn-secondary" style={{ padding: '0.85rem 1.8rem' }}>
+                <span>Explore All Events</span>
               </Link>
             </div>
           </div>
