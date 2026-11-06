@@ -964,5 +964,69 @@ button {
   }
 }
 
+/* ==========================================================================
+   SAI INTELLIVERSE-STYLE CYBER KINETIC ANIMATIONS
+   Rotating celestial astrolabes, reverse geometric orbits, radar sweeps & halftone grain
+   ========================================================================== */
+@keyframes spinSlow {
+  0% { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinSlowReverse {
+  0% { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes floatSlow {
+  0%, to { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-14px) scale(1.02); }
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes comicJitter {
+  0% { transform: translate(0) rotate(0); }
+  25% { transform: translate(-1.5px, 1px) rotate(-.5deg); }
+  50% { transform: translate(1px, -1.5px) rotate(.4deg); }
+  75% { transform: translate(-1px, -1px) rotate(-.3deg); }
+  to { transform: translate(0) rotate(0); }
+}
+
+.animate-spin-slow {
+  animation: 35s linear infinite spinSlow;
+}
+
+.animate-spin-slow-reverse {
+  animation: 45s linear infinite spinSlowReverse;
+}
+
+.animate-float-slow {
+  animation: 8s ease-in-out infinite floatSlow;
+}
+
+.animate-radar {
+  animation: 6s linear infinite radarSweep;
+}
+
+.comic-grain-bg {
+  background-image: radial-gradient(rgba(244, 253, 255, 0.08) 1px, transparent 0);
+  background-size: 8px 8px;
+}
+
+.comic-halftone-pattern {
+  background-image: radial-gradient(#00f0ff 1.5px, transparent 1.5px), radial-gradient(#8b5cf6 1px, transparent 1px);
+  background-position: 0 0, 5px 5px;
+  background-size: 10px 10px;
+}
+
+.comic-ink-glow {
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.45));
+}
+
+
 
 
