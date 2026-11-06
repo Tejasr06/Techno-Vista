@@ -88,3 +88,4 @@ export const FEST_DATA = {
     "Decisions made by the judging panels and event coordinators will be final and binding."
   ]
 };
+

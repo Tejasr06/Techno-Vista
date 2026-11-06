@@ -76,3 +76,4 @@ export const ANNOUNCEMENTS_DATA = [
     actionLink: "/events",
   },
 ];
+

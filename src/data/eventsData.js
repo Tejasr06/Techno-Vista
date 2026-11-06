@@ -420,3 +420,4 @@ export const EVENTS_DATA = [
 export const getEventById = (id) => {
   return EVENTS_DATA.find((e) => e.id === id);
 };
+

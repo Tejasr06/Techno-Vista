@@ -123,3 +123,4 @@ export const GALLERY_DATA = [
     year: "Department Pride",
   },
 ];
+

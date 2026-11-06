@@ -180,3 +180,4 @@ Vercel will **automatically build and deploy** the changes to your live site wit
 - Engineered specifically for delegates scanning event posters on Android & iOS devices.
 - Zero horizontal scrolling with clean touch-friendly navigation drawer.
 - High-contrast, dark mode futuristic theme designed for outdoor and indoor visibility.
+
