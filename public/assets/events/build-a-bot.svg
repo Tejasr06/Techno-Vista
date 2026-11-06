@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1404"/>
+      <stop offset="50%" stop-color="#2e1d05"/>
+      <stop offset="100%" stop-color="#120c02"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+    <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- Circuit Track Layout -->
+  <g stroke="#f59e0b" stroke-width="2" opacity="0.3" fill="none">
+    <path d="M50 150 H200 L250 200 H350"/>
+    <circle cx="350" cy="200" r="4" fill="#f59e0b"/>
+    <path d="M750 350 H600 L550 300 H450"/>
+    <circle cx="450" cy="300" r="4" fill="#f59e0b"/>
+  </g>
+  <!-- Futuristic Robot Head / Rover -->
+  <g transform="translate(400, 210)">
+    <!-- Rover Platform / Tread Wheels -->
+    <rect x="-140" y="70" width="280" height="26" rx="10" fill="#2d1c04" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="-100" cy="83" r="8" fill="#f59e0b"/>
+    <circle cx="-50" cy="83" r="8" fill="#f59e0b"/>
+    <circle cx="0" cy="83" r="8" fill="#f59e0b"/>
+    <circle cx="50" cy="83" r="8" fill="#f59e0b"/>
+    <circle cx="100" cy="83" r="8" fill="#f59e0b"/>
+
+    <!-- Bot Torso / Chassis -->
+    <polygon points="-110,65 -80,-40 80,-40 110,65" fill="#1b1206" stroke="url(#gold)" stroke-width="3" filter="url(#neon)"/>
+    
+    <!-- Bot Head / Sensor Visor -->
+    <rect x="-65" y="-115" width="130" height="65" rx="12" fill="#0c0803" stroke="#facc15" stroke-width="2.5"/>
+    <!-- Cyber Optical Eyes / Visor Beam -->
+    <rect x="-48" y="-95" width="96" height="24" rx="10" fill="#f59e0b" filter="url(#neon)"/>
+    <circle cx="-25" cy="-83" r="5" fill="#fff"/>
+    <circle cx="25" cy="-83" r="5" fill="#fff"/>
+    <!-- Antenna -->
+    <line x1="0" y1="-115" x2="0" y2="-140" stroke="#f59e0b" stroke-width="3"/>
+    <circle cx="0" cy="-145" r="7" fill="#facc15" filter="url(#neon)"/>
+
+    <!-- Microcontroller / Core Status Light -->
+    <circle cx="0" cy="20" r="14" fill="#3b2302" stroke="#f59e0b" stroke-width="2"/>
+    <polygon points="0,10 9,25 -9,25" fill="#facc15"/>
+  </g>
+  <text x="400" y="440" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="28" fill="#f8fafc" text-anchor="middle" letter-spacing="3">BUILD A BOT</text>
+  <text x="400" y="470" font-family="'Inter', sans-serif" font-weight="500" font-size="14" fill="#fde68a" text-anchor="middle" letter-spacing="1.5">ROBOTICS, AUTONOMOUS HARDWARE &amp; AI TRACK</text>
+</svg>

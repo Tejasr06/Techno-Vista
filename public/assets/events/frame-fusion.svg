@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e0824"/>
+      <stop offset="50%" stop-color="#2d0f36"/>
+      <stop offset="100%" stop-color="#120417"/>
+    </linearGradient>
+    <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- Design Canvas & UI Wireframe Interface -->
+  <g transform="translate(400, 210)">
+    <!-- Slanted UI Frames (Glassmorphism Mockups) -->
+    <!-- Frame 1 (Back) -->
+    <rect x="-170" y="-130" width="180" height="230" rx="16" fill="#180a22" stroke="#8b5cf6" stroke-width="2" opacity="0.6" transform="rotate(-8)"/>
+    
+    <!-- Frame 2 (Front) -->
+    <rect x="-80" y="-110" width="220" height="240" rx="20" fill="#15061e" stroke="url(#pinkGrad)" stroke-width="3" filter="url(#neon)"/>
+    
+    <!-- Mobile App Header inside UI Frame -->
+    <rect x="-60" y="-90" width="180" height="24" rx="8" fill="#2a083b"/>
+    <circle cx="-45" cy="-78" r="5" fill="#ec4899"/>
+    <rect x="-30" y="-81" width="50" height="6" rx="3" fill="#f472b6"/>
+    
+    <!-- Hero Banner Card -->
+    <rect x="-60" y="-55" width="180" height="65" rx="10" fill="url(#pinkGrad)" opacity="0.8"/>
+    
+    <!-- Design Pen / Stylus tool slicing diagonally -->
+    <g transform="translate(110, -40) rotate(45)">
+      <polygon points="0,-70 12,-45 -12,-45" fill="#f43f5e"/>
+      <rect x="-12" y="-45" width="24" height="90" fill="#4c1d95" stroke="#ec4899" stroke-width="1.5"/>
+      <rect x="-10" y="45" width="20" height="15" fill="#a855f7"/>
+      <line x1="0" y1="-70" x2="0" y2="-85" stroke="#fff" stroke-width="2" filter="url(#neon)"/>
+    </g>
+
+    <!-- Color Palette Swatches -->
+    <circle cx="-40" cy="40" r="14" fill="#ec4899"/>
+    <circle cx="0" cy="40" r="14" fill="#8b5cf6"/>
+    <circle cx="40" cy="40" r="14" fill="#06b6d4"/>
+    <circle cx="80" cy="40" r="14" fill="#10b981"/>
+
+    <!-- Bézier Curves & Vectors -->
+    <path d="M-150 70 Q-50 140 50 70 T250 80" fill="none" stroke="#f472b6" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
+  </g>
+  <text x="400" y="440" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="28" fill="#f8fafc" text-anchor="middle" letter-spacing="3">FRAME FUSION</text>
+  <text x="400" y="470" font-family="'Inter', sans-serif" font-weight="500" font-size="14" fill="#f472b6" text-anchor="middle" letter-spacing="1.5">UI/UX PRODUCT DESIGN &amp; MULTIMEDIA CREATIVE CHALLENGE</text>
+</svg>
