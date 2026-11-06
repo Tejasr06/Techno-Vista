@@ -22,7 +22,7 @@ export default function Contact() {
   const { contactData, festData, googleFormUrl } = useFest();
 
   useEffect(() => {
-    document.title = `Contact & Location | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Contact & Location | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   return (

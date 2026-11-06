@@ -16,7 +16,7 @@ export default function Gallery() {
   const [activeImageIndex, setActiveImageIndex] = useState(null);
 
   useEffect(() => {
-    document.title = `Photo Gallery | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Photo Gallery | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   const filteredImages = GALLERY_DATA.filter(

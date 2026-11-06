@@ -20,7 +20,7 @@ export default function Schedule() {
   const [selectedFilter, setSelectedFilter] = useState('All');
 
   useEffect(() => {
-    document.title = `Event Schedule | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Event Schedule | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   const filterCategories = [

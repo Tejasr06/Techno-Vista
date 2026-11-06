@@ -18,7 +18,7 @@ export default function Announcements() {
   const [filterBadge, setFilterBadge] = useState('All');
 
   useEffect(() => {
-    document.title = `Live Announcements | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Live Announcements | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   const badges = ['All', 'Registration', 'Event Guideline', 'Important', 'Update', 'Certification'];

@@ -20,7 +20,7 @@ export default function About() {
   const { festData, googleFormUrl } = useFest();
 
   useEffect(() => {
-    document.title = `About ${festData.name} | Department of ISE, Sri Sairam CE`;
+    document.title = `About ${festData.name} | Department of ISE, Sri Sairam College of Engineering`;
   }, [festData]);
 
   return (

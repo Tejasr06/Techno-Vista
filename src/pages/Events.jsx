@@ -10,7 +10,7 @@ export default function Events() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    document.title = `Official Events | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Official Events | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   // Helper to determine track

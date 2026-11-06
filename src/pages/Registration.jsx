@@ -22,7 +22,7 @@ export default function Registration() {
     googleFormUrl.startsWith('http');
 
   useEffect(() => {
-    document.title = `Registration | TECHNO VISTA 2K26 | Sri Sairam CE`;
+    document.title = `Registration | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
   const steps = [

@@ -111,14 +111,14 @@ export default function Navbar() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
-                backgroundColor: '#000000',
+                backgroundColor: '#ffde59',
                 overflow: 'hidden',
                 transition: 'transform 0.3s ease',
               }}
             >
               <img
-                src="/assets/ise-logo.png"
-                alt="ISE Logo"
+                src="/assets/techno-vista-badge.png"
+                alt="Techno Vista Logo"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
@@ -166,7 +166,7 @@ export default function Navbar() {
                   fontWeight: 500,
                 }}
               >
-                Dept. of ISE • Sri Sairam CE
+                Dept. of ISE • Sri Sairam College of Engineering
               </span>
             </div>
           </Link>
