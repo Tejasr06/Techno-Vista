@@ -86,7 +86,7 @@ export default function Home() {
                 color: '#38bdf8',
               }}
             >
-              {FEST_DATA.eventType}
+              {festData.eventType}
             </span>
           </div>
 
@@ -100,7 +100,7 @@ export default function Home() {
               letterSpacing: '0.02em',
             }}
           >
-            Organized by the <span style={{ color: '#ffffff', fontWeight: 600 }}>{FEST_DATA.organizedBy}</span>
+            Organized by the <span style={{ color: '#ffffff', fontWeight: 600 }}>{festData.organizedBy}</span>
           </div>
 
           <div
@@ -110,7 +110,7 @@ export default function Home() {
               marginBottom: '1.75rem',
             }}
           >
-            {FEST_DATA.college} • {FEST_DATA.location}
+            {festData.college} • {festData.location}
           </div>
 
           {/* Main Fest Title */}
@@ -150,7 +150,7 @@ export default function Home() {
               textShadow: '0 0 25px rgba(56, 189, 248, 0.4)',
             }}
           >
-            "{FEST_DATA.tagline}"
+            "{festData.tagline}"
           </p>
 
           {/* Fest Date & Venue Quick Snippet */}
@@ -178,7 +178,7 @@ export default function Home() {
               }}
             >
               <Calendar size={17} className="text-cyan-400" />
-              <span>{FEST_DATA.dateText} ({FEST_DATA.timeText})</span>
+              <span>{festData.dateText} ({festData.timeText})</span>
             </div>
 
             <div
@@ -193,7 +193,7 @@ export default function Home() {
               }}
             >
               <MapPin size={17} className="text-cyan-400" />
-              <span>{FEST_DATA.venue}</span>
+              <span>{festData.venue}</span>
             </div>
           </div>
 
@@ -256,7 +256,7 @@ export default function Home() {
               textAlign: 'center',
             }}
           >
-            {FEST_DATA.highlights.map((item, idx) => (
+            {festData.highlights.map((item, idx) => (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 <span
                   style={{
@@ -370,7 +370,7 @@ export default function Home() {
                   marginBottom: '1.25rem',
                 }}
               >
-                {FEST_DATA.aboutFest.description[0]}
+                {festData.aboutFest.description[0]}
               </p>
 
               <p
@@ -381,7 +381,7 @@ export default function Home() {
                   marginBottom: '2rem',
                 }}
               >
-                {FEST_DATA.aboutFest.description[1]}
+                {festData.aboutFest.description[1]}
               </p>
 
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -423,11 +423,11 @@ export default function Home() {
               </div>
 
               <h3 style={{ fontSize: '1.4rem', color: '#ffffff' }}>
-                {FEST_DATA.aboutDepartment.name}
+                {festData.aboutDepartment.name}
               </h3>
 
               <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-                {FEST_DATA.aboutDepartment.overview}
+                {festData.aboutDepartment.overview}
               </p>
 
               <div
@@ -572,7 +572,7 @@ export default function Home() {
               gap: '1rem',
             }}
           >
-            {FEST_DATA.importantNotes.map((note, idx) => (
+            {festData.importantNotes.map((note, idx) => (
               <div
                 key={idx}
                 className="glass-panel"

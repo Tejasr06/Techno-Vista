@@ -72,7 +72,7 @@ export default function About() {
               A National Platform For Next-Gen Technocrats
             </h2>
 
-            {FEST_DATA.aboutFest.description.map((paragraph, index) => (
+            {festData.aboutFest.description.map((paragraph, index) => (
               <p
                 key={index}
                 style={{
@@ -211,7 +211,7 @@ export default function About() {
             <h3 style={{ fontSize: '1.4rem', color: '#ffffff' }}>Our Vision</h3>
 
             <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              {FEST_DATA.aboutFest.vision}
+              {festData.aboutFest.vision}
             </p>
           </div>
 
@@ -244,7 +244,7 @@ export default function About() {
             <h3 style={{ fontSize: '1.4rem', color: '#ffffff' }}>Our Mission</h3>
 
             <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              {FEST_DATA.aboutFest.mission}
+              {festData.aboutFest.mission}
             </p>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function About() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <Building2 size={24} className="text-cyan-400" />
                 <h3 style={{ fontSize: '1.35rem', color: '#ffffff' }}>
-                  {FEST_DATA.aboutCollege.name}
+                  {festData.aboutCollege.name}
                 </h3>
               </div>
 
@@ -291,15 +291,15 @@ export default function About() {
                   letterSpacing: '0.04em',
                 }}
               >
-                {FEST_DATA.aboutCollege.affiliation}
+                {festData.aboutCollege.affiliation}
               </span>
 
               <p style={{ fontSize: '0.96rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {FEST_DATA.aboutCollege.overview}
+                {festData.aboutCollege.overview}
               </p>
 
               <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-                📍 {FEST_DATA.aboutCollege.location}
+                📍 {festData.aboutCollege.location}
               </div>
             </div>
 
@@ -316,7 +316,7 @@ export default function About() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <GraduationCap size={24} className="text-purple-400" />
                 <h3 style={{ fontSize: '1.35rem', color: '#ffffff' }}>
-                  {FEST_DATA.aboutDepartment.name}
+                  {festData.aboutDepartment.name}
                 </h3>
               </div>
 
@@ -332,7 +332,7 @@ export default function About() {
               </span>
 
               <p style={{ fontSize: '0.96rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {FEST_DATA.aboutDepartment.overview}
+                {festData.aboutDepartment.overview}
               </p>
 
               <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>

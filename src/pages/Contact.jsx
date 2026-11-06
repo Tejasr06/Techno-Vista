@@ -85,7 +85,7 @@ export default function Contact() {
                 gap: '1.5rem',
               }}
             >
-              {CONTACT_DATA.facultyCoordinators.map((fac, idx) => (
+              {contactData.facultyCoordinators.map((fac, idx) => (
                 <div
                   key={idx}
                   className="glass-card"
@@ -152,7 +152,7 @@ export default function Contact() {
                 gap: '1.5rem',
               }}
             >
-              {CONTACT_DATA.studentCoordinators.map((stu, idx) => (
+              {contactData.studentCoordinators.map((stu, idx) => (
                 <div
                   key={idx}
                   className="glass-card"
@@ -222,15 +222,15 @@ export default function Contact() {
               </div>
 
               <h4 style={{ fontSize: '1.15rem', color: '#ffffff', marginBottom: '0.5rem' }}>
-                {CONTACT_DATA.collegeName}
+                {contactData.collegeName}
               </h4>
 
               <p style={{ fontSize: '0.92rem', color: '#38bdf8', fontWeight: 600, marginBottom: '1rem' }}>
-                {CONTACT_DATA.department}
+                {contactData.department}
               </p>
 
               <p style={{ fontSize: '0.96rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                {CONTACT_DATA.address.fullAddress}
+                {contactData.address.fullAddress}
               </p>
 
               <div
@@ -245,16 +245,16 @@ export default function Contact() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#cbd5e1' }}>
                   <Mail size={16} className="text-cyan-400" />
-                  <span>{CONTACT_DATA.generalContact.officialEmail}</span>
+                  <span>{contactData.generalContact.officialEmail}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#cbd5e1' }}>
                   <Phone size={16} className="text-cyan-400" />
-                  <span>{CONTACT_DATA.generalContact.helplinePhone}</span>
+                  <span>{contactData.generalContact.helplinePhone}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#cbd5e1' }}>
                   <Globe size={16} className="text-cyan-400" />
                   <a
-                    href={CONTACT_DATA.socialLinks.collegeWebsite}
+                    href={contactData.socialLinks.collegeWebsite}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: '#38bdf8', textDecoration: 'underline' }}
@@ -267,7 +267,7 @@ export default function Contact() {
 
             <div style={{ marginTop: '2rem' }}>
               <a
-                href={CONTACT_DATA.maps.viewLink}
+                href={contactData.maps.viewLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"
@@ -291,7 +291,7 @@ export default function Contact() {
           >
             <iframe
               title="Sri Sairam College of Engineering Campus Map"
-              src={CONTACT_DATA.maps.embedUrl}
+              src={contactData.maps.embedUrl}
               width="100%"
               height="100%"
               style={{
@@ -323,7 +323,7 @@ export default function Contact() {
               gap: '1.5rem',
             }}
           >
-            {CONTACT_DATA.travelInfo.map((item, idx) => (
+            {contactData.travelInfo.map((item, idx) => (
               <div
                 key={idx}
                 className="glass-card"
