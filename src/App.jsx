@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { FestProvider } from './context/FestContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -20,6 +20,8 @@ import Admin from './pages/Admin';
 import NotFound from './pages/NotFound';
 
 export default function App() {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   return (
     <FestProvider>
       <div className="app-container" style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -51,8 +53,8 @@ export default function App() {
           </Routes>
         </main>
 
-        {/* Reusable Footer */}
-        <Footer />
+        {/* Reusable Footer (Hidden on Home page so the opening portal stays crisp and scroll-free) */}
+        {!isHomePage && <Footer />}
       </div>
     </FestProvider>
   );
