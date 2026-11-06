@@ -8,24 +8,10 @@ import {
   MapPin,
   ExternalLink,
   ArrowRight,
-  ChevronDown,
 } from 'lucide-react';
 
-export default function CyberTunnelHero({ onExploreClick }) {
+export default function CyberTunnelHero() {
   const { festData, googleFormUrl } = useFest();
-
-  const handleExplore = (e) => {
-    if (onExploreClick) {
-      e.preventDefault();
-      onExploreClick(e);
-    } else {
-      const el = document.getElementById('events-arena');
-      if (el) {
-        e.preventDefault();
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
 
   return (
     <div className="cyber-hero-stage">
@@ -197,16 +183,15 @@ export default function CyberTunnelHero({ onExploreClick }) {
             marginBottom: '2.5rem',
           }}
         >
-          {/* Main Glowing Electric Cyber Pill Button */}
-          <button
-            onClick={handleExplore}
+          {/* Main Glowing Electric Cyber Pill Button - Redirects to Events Page */}
+          <Link
+            to="/events"
             className="btn-cyber-primary"
-            style={{ cursor: 'pointer' }}
-            title="Click to reveal all events & fest schedule"
+            title="Explore All 6 Flagship Events"
           >
             <span>EXPLORE EVENTS</span>
             <ArrowRight size={18} />
-          </button>
+          </Link>
 
           {/* Secondary Register Now Button */}
           <a
@@ -268,20 +253,9 @@ export default function CyberTunnelHero({ onExploreClick }) {
         </div>
 
         {/* Live Countdown Timer */}
-        <div style={{ width: '100%', maxWidth: '780px', marginBottom: '2.5rem' }}>
+        <div style={{ width: '100%', maxWidth: '780px' }}>
           <Countdown />
         </div>
-
-        {/* Scroll / Explore Downward Cue */}
-        <a
-          href="#events-arena"
-          onClick={handleExplore}
-          className="scroll-indicator-pill"
-          title="Scroll or click to explore events"
-        >
-          <span>ENTER ARENA & EXPLORE</span>
-          <ChevronDown size={14} />
-        </a>
       </div>
     </div>
   );
