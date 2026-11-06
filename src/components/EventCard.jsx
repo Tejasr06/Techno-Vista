@@ -9,8 +9,6 @@ import {
   Video,
   Gamepad2,
   Cpu,
-  Users,
-  Phone,
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
@@ -91,12 +89,6 @@ export default function EventCard({ event, index = 0 }) {
     }
     return <Cpu size={28} color="#ffffff" />;
   };
-
-  // Extract student and faculty coordinators for this event
-  const studentCoordinators = Array.isArray(coordinators)
-    ? coordinators
-    : coordinators?.student || [];
-  const primaryCoordinator = studentCoordinators[0] || (Array.isArray(coordinators?.faculty) ? coordinators?.faculty[0] : null);
 
   return (
     <div
@@ -246,81 +238,17 @@ export default function EventCard({ event, index = 0 }) {
           fontSize: '0.88rem',
           color: '#cbd5e1',
           lineHeight: 1.6,
-          marginBottom: '1.5rem',
+          marginBottom: '1.75rem',
           flexGrow: 1,
         }}
       >
         {shortDescription}
       </p>
 
-      {/* 8. EMBEDDED EVENT COORDINATOR IN THE SAME CARD (Requested Feature) */}
+      {/* 8. ACTION BUTTONS (VIEW DETAILS > matching reference design + Register) */}
       <div
         style={{
           marginTop: 'auto',
-          marginBottom: '1.5rem',
-          padding: '0.85rem 1rem',
-          borderRadius: '12px',
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '0.72rem',
-            fontWeight: 800,
-            letterSpacing: '0.08em',
-            color: '#38bdf8',
-            textTransform: 'uppercase',
-            marginBottom: '0.45rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Users size={13} />
-            <span>EVENT COORDINATOR</span>
-          </div>
-          {teamSize && <span style={{ color: '#94a3b8', fontWeight: 600 }}>{teamSize}</span>}
-        </div>
-
-        {primaryCoordinator ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.84rem' }}>
-            <div style={{ color: '#f8fafc', fontWeight: 600 }}>
-              {primaryCoordinator.name}
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginLeft: '0.4rem', fontWeight: 400 }}>
-                ({primaryCoordinator.role || primaryCoordinator.designation || 'Lead'})
-              </span>
-            </div>
-            {primaryCoordinator.phone || primaryCoordinator.contact ? (
-              <a
-                href={`tel:${primaryCoordinator.phone || primaryCoordinator.contact}`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  color: '#00d4ff',
-                  textDecoration: 'none',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                }}
-                title="Call Coordinator"
-              >
-                <Phone size={11} />
-                <span>{primaryCoordinator.phone || primaryCoordinator.contact}</span>
-              </a>
-            ) : null}
-          </div>
-        ) : (
-          <div style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-            Student Convener Desk // ISE Labs
-          </div>
-        )}
-      </div>
-
-      {/* 9. ACTION BUTTONS (VIEW DETAILS > from screenshot + Register Now) */}
-      <div
-        style={{
           display: 'grid',
           gridTemplateColumns: '1.2fr 1fr',
           gap: '0.75rem',
@@ -332,13 +260,13 @@ export default function EventCard({ event, index = 0 }) {
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.4rem',
-            padding: '0.75rem 1rem',
+            gap: '0.45rem',
+            padding: '0.8rem 1rem',
             borderRadius: '10px',
             backgroundColor: '#111827',
             border: '1px solid rgba(255, 255, 255, 0.14)',
             color: '#fbbf24',
-            fontSize: '0.84rem',
+            fontSize: '0.86rem',
             fontWeight: 700,
             letterSpacing: '0.04em',
             textDecoration: 'none',
@@ -348,10 +276,12 @@ export default function EventCard({ event, index = 0 }) {
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#1f2937';
             e.currentTarget.style.borderColor = '#fbbf24';
+            e.currentTarget.style.color = '#fef08a';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = '#111827';
             e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+            e.currentTarget.style.color = '#fbbf24';
           }}
         >
           <span>VIEW DETAILS</span>
@@ -364,8 +294,8 @@ export default function EventCard({ event, index = 0 }) {
           rel="noopener noreferrer"
           className="btn-primary"
           style={{
-            padding: '0.75rem 0.8rem',
-            fontSize: '0.84rem',
+            padding: '0.8rem 0.8rem',
+            fontSize: '0.86rem',
             borderRadius: '10px',
             textAlign: 'center',
             justifyContent: 'center',

@@ -504,23 +504,46 @@ export default function EventDetails() {
                             Dept. of ISE Faculty
                           </div>
                         ) : (
-                          facList.map((fac, idx) => (
-                            <div
-                              key={idx}
-                              style={{
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                              }}
-                            >
-                              <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
-                                {fac.name}
+                          facList.map((fac, idx) => {
+                            const contactInfo = fac.contact || fac.phone;
+                            return (
+                              <div
+                                key={idx}
+                                style={{
+                                  padding: '0.85rem',
+                                  borderRadius: '8px',
+                                  background: 'rgba(255, 255, 255, 0.03)',
+                                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                                }}
+                              >
+                                <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600 }}>
+                                  {fac.name}
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                                  {fac.designation}
+                                </div>
+                                {contactInfo && (
+                                  <div style={{ marginTop: '0.4rem' }}>
+                                    <a
+                                      href={contactInfo.includes('@') ? `mailto:${contactInfo}` : `tel:${contactInfo}`}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.35rem',
+                                        color: '#38bdf8',
+                                        fontSize: '0.82rem',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                      }}
+                                    >
+                                      {contactInfo.includes('@') ? <Mail size={13} /> : <Phone size={13} />}
+                                      <span>{contactInfo}</span>
+                                    </a>
+                                  </div>
+                                )}
                               </div>
-                              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                                {fac.designation} {fac.contact ? `• ${fac.contact}` : ''}
-                              </div>
-                            </div>
-                          ))
+                            );
+                          })
                         )}
                       </div>
                     </div>
@@ -536,23 +559,46 @@ export default function EventDetails() {
                             Student Convener Desk
                           </div>
                         ) : (
-                          stuList.map((stu, idx) => (
-                            <div
-                              key={idx}
-                              style={{
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                              }}
-                            >
-                              <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
-                                {stu.name}
+                          stuList.map((stu, idx) => {
+                            const phoneInfo = stu.phone || stu.contact;
+                            return (
+                              <div
+                                key={idx}
+                                style={{
+                                  padding: '0.85rem',
+                                  borderRadius: '8px',
+                                  background: 'rgba(255, 255, 255, 0.03)',
+                                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                                }}
+                              >
+                                <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600 }}>
+                                  {stu.name}
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                                  {stu.role || 'Event Lead'}
+                                </div>
+                                {phoneInfo && (
+                                  <div style={{ marginTop: '0.4rem' }}>
+                                    <a
+                                      href={`tel:${phoneInfo}`}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.35rem',
+                                        color: '#c084fc',
+                                        fontSize: '0.82rem',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                      }}
+                                    >
+                                      <Phone size={13} />
+                                      <span>{phoneInfo}</span>
+                                    </a>
+                                  </div>
+                                )}
                               </div>
-                              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                                {stu.role || 'Event Lead'} {stu.contact || stu.phone ? `• ${stu.contact || stu.phone}` : ''}
-                              </div>
-                            </div>
-                          ))
+                            );
+                          })
                         )}
                       </div>
                     </div>

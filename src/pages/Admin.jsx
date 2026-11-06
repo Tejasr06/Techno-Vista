@@ -229,17 +229,37 @@ export default function Admin() {
       if (Array.isArray(cloned.coordinators)) {
         cloned.coordinators = {
           faculty: [],
-          student: cloned.coordinators.map((c) => ({
-            name: c.name || '',
-            role: c.role || 'Event Lead',
-            contact: c.contact || c.phone || '',
-          })),
+          student: cloned.coordinators.map((c) => {
+            const num = c.phone || c.contact || '';
+            return {
+              name: c.name || '',
+              role: c.role || 'Event Lead',
+              phone: num,
+              contact: num,
+            };
+          }),
         };
       } else if (!cloned.coordinators) {
         cloned.coordinators = { faculty: [], student: [] };
       } else {
-        if (!Array.isArray(cloned.coordinators.faculty)) cloned.coordinators.faculty = [];
-        if (!Array.isArray(cloned.coordinators.student)) cloned.coordinators.student = [];
+        cloned.coordinators.faculty = (cloned.coordinators.faculty || []).map((f) => {
+          const num = f.phone || f.contact || '';
+          return {
+            name: f.name || '',
+            designation: f.designation || '',
+            phone: num,
+            contact: num,
+          };
+        });
+        cloned.coordinators.student = (cloned.coordinators.student || []).map((s) => {
+          const num = s.phone || s.contact || '';
+          return {
+            name: s.name || '',
+            role: s.role || 'Event Lead',
+            phone: num,
+            contact: num,
+          };
+        });
       }
       setEventEditForm(cloned);
       setSelectedEventId(current.id);
@@ -351,16 +371,25 @@ export default function Admin() {
   };
 
   const handleUpdateEventFacultyCoordinator = (idx, field, val) => {
-    if (!eventEditForm) return;
-    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
-    const updated = [...(currentCoordinators.faculty || [])];
-    updated[idx] = { ...updated[idx], [field]: val };
-    setEventEditForm({
-      ...eventEditForm,
-      coordinators: {
-        ...currentCoordinators,
-        faculty: updated,
-      },
+    setEventEditForm((prev) => {
+      if (!prev) return prev;
+      const currentCoordinators = prev.coordinators || { faculty: [], student: [] };
+      const updated = [...(currentCoordinators.faculty || [])];
+      const item = { ...(updated[idx] || {}) };
+      if (field === 'phone' || field === 'contact') {
+        item.phone = val;
+        item.contact = val;
+      } else {
+        item[field] = val;
+      }
+      updated[idx] = item;
+      return {
+        ...prev,
+        coordinators: {
+          ...currentCoordinators,
+          faculty: updated,
+        },
+      };
     });
   };
 
@@ -373,7 +402,7 @@ export default function Admin() {
         ...currentCoordinators,
         student: [
           ...(currentCoordinators.student || []),
-          { name: 'Student Coordinator Name', role: 'Event Lead', contact: '+91 98765 43210' },
+          { name: 'Student Coordinator Name', role: 'Event Lead', contact: '+91 98765 43210', phone: '+91 98765 43210' },
         ],
       },
     });
@@ -392,16 +421,25 @@ export default function Admin() {
   };
 
   const handleUpdateEventStudentCoordinator = (idx, field, val) => {
-    if (!eventEditForm) return;
-    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
-    const updated = [...(currentCoordinators.student || [])];
-    updated[idx] = { ...updated[idx], [field]: val };
-    setEventEditForm({
-      ...eventEditForm,
-      coordinators: {
-        ...currentCoordinators,
-        student: updated,
-      },
+    setEventEditForm((prev) => {
+      if (!prev) return prev;
+      const currentCoordinators = prev.coordinators || { faculty: [], student: [] };
+      const updated = [...(currentCoordinators.student || [])];
+      const item = { ...(updated[idx] || {}) };
+      if (field === 'phone' || field === 'contact') {
+        item.phone = val;
+        item.contact = val;
+      } else {
+        item[field] = val;
+      }
+      updated[idx] = item;
+      return {
+        ...prev,
+        coordinators: {
+          ...currentCoordinators,
+          student: updated,
+        },
+      };
     });
   };
 
@@ -1307,11 +1345,8 @@ export default function Admin() {
                             <input
                               type="text"
                               placeholder="e.g. +91 98765 43210"
-                              value={stu.contact || stu.phone || ''}
-                              onChange={(e) => {
-                                handleUpdateEventStudentCoordinator(sIdx, 'contact', e.target.value);
-                                handleUpdateEventStudentCoordinator(sIdx, 'phone', e.target.value);
-                              }}
+                              value={stu.phone ?? stu.contact ?? ''}
+                              onChange={(e) => handleUpdateEventStudentCoordinator(sIdx, 'phone', e.target.value)}
                               style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#00d4ff', fontSize: '0.88rem' }}
                             />
                           </div>
@@ -1400,11 +1435,8 @@ export default function Admin() {
                             <input
                               type="text"
                               placeholder="e.g. +91 98765 43210"
-                              value={fac.contact || fac.phone || ''}
-                              onChange={(e) => {
-                                handleUpdateEventFacultyCoordinator(fIdx, 'contact', e.target.value);
-                                handleUpdateEventFacultyCoordinator(fIdx, 'phone', e.target.value);
-                              }}
+                              value={fac.phone ?? fac.contact ?? ''}
+                              onChange={(e) => handleUpdateEventFacultyCoordinator(fIdx, 'phone', e.target.value)}
                               style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#c084fc', fontSize: '0.88rem' }}
                             />
                           </div>
@@ -1954,9 +1986,9 @@ export default function Admin() {
                     />
                     <input
                       type="text"
-                      value={fac.phone}
+                      value={fac.phone || fac.contact || ''}
                       placeholder="Contact Phone"
-                      onChange={(e) => updateFacultyCoordinator(fIdx, { ...fac, phone: e.target.value })}
+                      onChange={(e) => updateFacultyCoordinator(fIdx, { ...fac, phone: e.target.value, contact: e.target.value })}
                       style={{ padding: '0.6rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
                     />
                   </div>
@@ -2031,9 +2063,9 @@ export default function Admin() {
                     />
                     <input
                       type="text"
-                      value={stu.phone}
+                      value={stu.phone || stu.contact || ''}
                       placeholder="Phone Number"
-                      onChange={(e) => updateStudentCoordinator(sIdx, { ...stu, phone: e.target.value })}
+                      onChange={(e) => updateStudentCoordinator(sIdx, { ...stu, phone: e.target.value, contact: e.target.value })}
                       style={{ padding: '0.6rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
                     />
                   </div>
