@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
-import CyberPhoenix from './CyberPhoenix';
 import Countdown from './Countdown';
 import {
   Cpu,
@@ -42,7 +41,20 @@ export default function CyberTunnelHero({ onExploreClick }) {
       </div>
 
       {/* =========================================================================
-          CENTER HERO CONTENT: ANIMATED PHOENIX & CLEAN CYBER FEST STAGE
+          GRAND ANIMATED PHOENIX MASCOT BACKGROUND
+          (Large, majestic soaring Phoenix backdrop with cosmic glow & levitation)
+          ========================================================================= */}
+      <div className="hero-phoenix-bg-wrapper" aria-hidden="true">
+        <div className="hero-phoenix-nebula" />
+        <img
+          src="/assets/phoenix-hero-bg.jpg"
+          alt="Techno Vista Soaring Phoenix Backdrop"
+          className="hero-phoenix-bg-img"
+        />
+      </div>
+
+      {/* =========================================================================
+          CENTER HERO CONTENT: FOREGROUND FEST STAGE & CALLS TO ACTION
           ========================================================================= */}
       <div
         className="container"
@@ -78,16 +90,11 @@ export default function CyberTunnelHero({ onExploreClick }) {
           <div className="cyber-presents-line" />
         </div>
 
-        {/* =====================================================================
-            ANIMATED CYBER PHOENIX MASCOT (ORIGINAL EMBLEM - ZERO YELLOW)
-            ===================================================================== */}
-        <CyberPhoenix />
-
         {/* Refined, Razor-Sharp Futuristic Cyber Title in Electric Cyan & Ice White */}
         <div style={{ marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h1
             style={{
-              fontSize: 'clamp(2.5rem, 7.5vw, 5.4rem)',
+              fontSize: 'clamp(2.6rem, 8vw, 5.8rem)',
               lineHeight: 1.05,
               margin: 0,
               display: 'flex',
@@ -104,7 +111,7 @@ export default function CyberTunnelHero({ onExploreClick }) {
             <span
               className="cyber-year-badge"
               style={{
-                fontSize: 'clamp(2rem, 6vw, 4rem)',
+                fontSize: 'clamp(2.1rem, 6.2vw, 4.2rem)',
                 lineHeight: 1,
               }}
             >

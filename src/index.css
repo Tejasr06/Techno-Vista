@@ -691,77 +691,72 @@ button {
 }
 
 /* ==========================================================================
-   CYBER PHOENIX MASCOT ANIMATIONS (ZERO YELLOW, PURE CYBER AURA)
+   GRAND PHOENIX HERO BACKGROUND ANIMATION
+   Large soaring Phoenix backdrop with cosmic glow & breathing motion
    ========================================================================== */
 
-@keyframes phoenixLevitate {
+.hero-phoenix-bg-wrapper {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(96vw, 920px);
+  max-width: 950px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+
+.hero-phoenix-bg-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.85) 72%, transparent 96%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,0,0,1) 50%, rgba(0,0,0,0.85) 72%, transparent 96%);
+  filter: drop-shadow(0 0 35px rgba(0, 212, 255, 0.45)) drop-shadow(0 0 75px rgba(139, 92, 246, 0.35));
+  animation: heroPhoenixLevitate 7s infinite ease-in-out;
+  opacity: 0.92;
+}
+
+@keyframes heroPhoenixLevitate {
   0%, 100% {
     transform: translateY(0px) scale(1);
-    filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 35px rgba(139, 92, 246, 0.4));
+    filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.4)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.28));
   }
   50% {
-    transform: translateY(-10px) scale(1.025);
-    filter: drop-shadow(0 0 28px rgba(0, 240, 255, 0.85)) drop-shadow(0 0 55px rgba(139, 92, 246, 0.65));
+    transform: translateY(-16px) scale(1.035);
+    filter: drop-shadow(0 0 50px rgba(0, 212, 255, 0.7)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.55));
   }
 }
 
-.cyber-phoenix-canvas {
-  animation: phoenixLevitate 4.5s infinite ease-in-out;
-}
-
-@keyframes phoenixScanSweep {
-  0% {
-    top: -15%;
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.9;
-  }
-  80% {
-    opacity: 0.9;
-  }
-  100% {
-    top: 115%;
-    opacity: 0;
-  }
-}
-
-.phoenix-scan-beam {
+/* Pulsing Ethereal Nebula behind the Phoenix */
+.hero-phoenix-nebula {
   position: absolute;
-  left: 5%;
-  width: 90%;
-  height: 6px;
-  background: linear-gradient(90deg, transparent, #00f0ff 25%, #ffffff 50%, #8b5cf6 75%, transparent);
-  box-shadow: 0 0 16px #00f0ff;
-  border-radius: 9999px;
-  pointer-events: none;
-  z-index: 5;
-  animation: phoenixScanSweep 4s infinite linear;
-}
-
-/* Wing Pulse / Energy Rings */
-@keyframes ringExpand {
-  0% {
-    transform: translate(-50%, -50%) scale(0.65);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.4);
-    opacity: 0;
-  }
-}
-
-.phoenix-energy-ring {
-  position: absolute;
-  top: 45%;
+  top: 48%;
   left: 50%;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0, 240, 255, 0.45);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  transform: translate(-50%, -50%);
+  width: min(85vw, 750px);
+  height: min(85vw, 600px);
+  background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.32) 0%, rgba(139, 92, 246, 0.22) 42%, transparent 72%);
+  filter: blur(55px);
   pointer-events: none;
-  animation: ringExpand 3.2s infinite ease-out;
+  z-index: 0;
+  animation: nebulaPulse 6s infinite ease-in-out;
+}
+
+@keyframes nebulaPulse {
+  0%, 100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
 }
 
 /* Portal Entry & Smooth Reveal of Rest of Website */
