@@ -116,26 +116,22 @@ export default function CyberPhoenix() {
         maxWidth: '100%',
       }}
     >
-      {/* Ambient Pulsing Back-Glow (Cyan & Violet Aurora) */}
+      {/* Ambient Soft Aurora Back-Glow (Cyan & Violet) */}
       <div
         className="phoenix-aurora-glow"
         style={{
           position: 'absolute',
-          top: '45%',
+          top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '85%',
-          height: '75%',
-          background: 'radial-gradient(ellipse at center, rgba(0, 240, 255, 0.35) 0%, rgba(139, 92, 246, 0.2) 45%, transparent 70%)',
+          width: '90%',
+          height: '80%',
+          background: 'radial-gradient(ellipse at center, rgba(0, 240, 255, 0.28) 0%, rgba(139, 92, 246, 0.18) 45%, transparent 70%)',
           filter: 'blur(35px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
-
-      {/* Expanding Cyber Energy Rings */}
-      <div className="phoenix-energy-ring" />
-      <div className="phoenix-energy-ring" style={{ animationDelay: '1.6s' }} />
 
       {/* Floating Holographic Cyber Phoenix Canvas */}
       <canvas
@@ -147,14 +143,11 @@ export default function CyberPhoenix() {
           display: 'block',
           position: 'relative',
           zIndex: 1,
-          filter: 'drop-shadow(0 0 16px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 32px rgba(139, 92, 246, 0.4))',
+          filter: 'drop-shadow(0 4px 18px rgba(0, 240, 255, 0.55)) drop-shadow(0 8px 36px rgba(139, 92, 246, 0.35))',
           opacity: isLoaded ? 1 : 0,
           transition: 'opacity 0.6s ease',
         }}
       />
-
-      {/* Futuristic Scanline Beam passing across the Phoenix */}
-      <div className="phoenix-scan-beam" />
     </div>
   );
 }
