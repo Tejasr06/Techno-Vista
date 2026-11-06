@@ -87,9 +87,9 @@ export default function Events() {
                 width: '100%',
                 padding: '0.9rem 1.25rem 0.9rem 3.2rem',
                 borderRadius: '12px',
-                backgroundColor: 'rgba(11, 19, 43, 0.75)',
-                border: '1px solid rgba(56, 189, 248, 0.25)',
-                color: '#ffffff',
+                backgroundColor: '#111b38',
+                border: '1px solid rgba(130, 155, 210, 0.25)',
+                color: '#f5f7fb',
                 fontFamily: 'inherit',
                 fontSize: '0.95rem',
                 outline: 'none',
@@ -97,11 +97,11 @@ export default function Events() {
                 transition: 'all 0.2s ease',
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = '#00d4ff';
-                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.25)';
+                e.currentTarget.style.borderColor = '#f2c438';
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(242, 196, 56, 0.25)';
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+                e.currentTarget.style.borderColor = 'rgba(130, 155, 210, 0.25)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             />
@@ -120,12 +120,12 @@ export default function Events() {
               { id: 'ALL', label: `ALL EVENTS (${eventsData.length})`, icon: Layers },
               {
                 id: 'TECHNICAL',
-                label: `⚡ TECHNICAL TRACK (${eventsData.filter((e) => getEventTrack(e) === 'TECHNICAL').length})`,
+                label: `⚡ TECHNICAL (${eventsData.filter((e) => getEventTrack(e) === 'TECHNICAL').length})`,
                 icon: Code2,
               },
               {
                 id: 'NON-TECHNICAL',
-                label: `🎮 NON-TECHNICAL TRACK (${eventsData.filter((e) => getEventTrack(e) === 'NON-TECHNICAL').length})`,
+                label: `🎮 NON-TECHNICAL (${eventsData.filter((e) => getEventTrack(e) === 'NON-TECHNICAL').length})`,
                 icon: Gamepad2,
               },
             ].map((tab) => {
@@ -140,20 +140,20 @@ export default function Events() {
                     alignItems: 'center',
                     gap: '0.5rem',
                     padding: '0.65rem 1.3rem',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     fontSize: '0.88rem',
-                    fontWeight: 700,
+                    fontWeight: 800,
                     letterSpacing: '0.04em',
-                    backgroundColor: isActive
-                      ? '#00d4ff'
+                    background: isActive
+                      ? 'linear-gradient(135deg, #f2c438 0%, #d4a827 100%)'
                       : 'rgba(255, 255, 255, 0.04)',
                     border: isActive
-                      ? '1px solid #00d4ff'
-                      : '1px solid rgba(255, 255, 255, 0.1)',
-                    color: isActive ? '#050914' : '#cbd5e1',
+                      ? '1px solid #f2c438'
+                      : '1px solid rgba(130, 155, 210, 0.2)',
+                    color: isActive ? '#070d1d' : '#a7afc2',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 0 18px rgba(0, 212, 255, 0.35)' : 'none',
+                    boxShadow: isActive ? '0 0 20px rgba(242, 196, 56, 0.35)' : 'none',
                   }}
                 >
                   <Icon size={16} />
@@ -186,9 +186,9 @@ export default function Events() {
                   gap: '0.4rem',
                   padding: '0.3rem 0.8rem',
                   borderRadius: '6px',
-                  backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                  border: '1px solid rgba(56, 189, 248, 0.35)',
-                  color: '#38bdf8',
+                  backgroundColor: 'rgba(37, 201, 255, 0.15)',
+                  border: '1px solid rgba(37, 201, 255, 0.35)',
+                  color: '#25c9ff',
                   fontSize: '0.75rem',
                   fontWeight: 800,
                   letterSpacing: '0.1em',
@@ -197,7 +197,7 @@ export default function Events() {
               >
                 TRACK A
               </span>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#ffffff' }}>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#f5f7fb' }}>
                 Technical Events &amp; Engineering Arenas
               </h2>
             </div>
@@ -227,7 +227,7 @@ export default function Events() {
                 alignItems: 'center',
                 gap: '0.75rem',
                 marginBottom: '1.75rem',
-                borderBottom: '1px solid rgba(168, 85, 247, 0.2)',
+                borderBottom: '1px solid rgba(242, 196, 56, 0.2)',
                 paddingBottom: '0.75rem',
               }}
             >
@@ -238,9 +238,9 @@ export default function Events() {
                   gap: '0.4rem',
                   padding: '0.3rem 0.8rem',
                   borderRadius: '6px',
-                  backgroundColor: 'rgba(168, 85, 247, 0.15)',
-                  border: '1px solid rgba(168, 85, 247, 0.35)',
-                  color: '#c084fc',
+                  backgroundColor: 'rgba(242, 196, 56, 0.15)',
+                  border: '1px solid rgba(242, 196, 56, 0.35)',
+                  color: '#f2c438',
                   fontSize: '0.75rem',
                   fontWeight: 800,
                   letterSpacing: '0.1em',
@@ -249,8 +249,8 @@ export default function Events() {
               >
                 TRACK B
               </span>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#ffffff' }}>
-                Non-Technical &amp; Creative Esports Arenas
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#f5f7fb' }}>
+                Non-Technical &amp; Creative Competitions
               </h2>
             </div>
 

@@ -12,10 +12,8 @@ import {
   AlertCircle,
   Phone,
   Mail,
-  UserCheck,
-  Sparkles,
   Layers,
-  ShieldAlert,
+  Sparkles,
 } from 'lucide-react';
 
 export default function EventDetails() {
@@ -26,34 +24,59 @@ export default function EventDetails() {
 
   useEffect(() => {
     if (event) {
-      document.title = `${event.name} | Events | TECHNO VISTA 2K26`;
+      document.title = `${event.name} | Official Events | TECHNO VISTA 2K26`;
     } else {
       document.title = `Event Not Found | TECHNO VISTA 2K26`;
     }
+    window.scrollTo(0, 0);
   }, [event]);
 
   if (!event) {
     return (
       <div style={{ padding: '6rem 0', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: '600px' }}>
-          <AlertCircle size={48} className="text-red-400" style={{ margin: '0 auto 1.5rem auto' }} />
-          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Event Not Found</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-            The requested event ID "{eventId}" does not exist in our catalog.
+          <AlertCircle size={48} color="#f87171" style={{ margin: '0 auto 1.5rem auto' }} />
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#ffffff' }}>Event Not Found</h2>
+          <p style={{ color: '#a7afc2', marginBottom: '2rem' }}>
+            The requested event arena does not exist or may have been renamed in the catalogue.
           </p>
-          <Link to="/events" className="btn-primary">
-            <span>Browse All 6 Events</span>
+          <button
+            onClick={() => navigate('/events')}
+            className="btn-primary"
+            style={{ padding: '0.85rem 2rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          >
             <ArrowLeft size={16} />
-          </Link>
+            <span>Return to Events Directory</span>
+          </button>
         </div>
       </div>
     );
   }
 
+  // Determine track
+  const track =
+    event.track ||
+    (['frame-fusion', 'clash-of-squadz'].includes(event.id) ||
+    event.category?.toLowerCase().includes('gaming') ||
+    event.category?.toLowerCase().includes('design') ||
+    event.category?.toLowerCase().includes('multimedia')
+      ? 'NON-TECHNICAL'
+      : 'TECHNICAL');
+
+  // Extract coordinators
+  const facList = Array.isArray(event.coordinators?.faculty)
+    ? event.coordinators.faculty
+    : [];
+  const stuList = Array.isArray(event.coordinators?.student)
+    ? event.coordinators.student
+    : Array.isArray(event.coordinators)
+    ? event.coordinators
+    : [];
+
   return (
     <div style={{ padding: '2.5rem 0 6rem 0' }}>
-      <div className="container">
-        {/* Breadcrumb / Back Link */}
+      <div className="container" style={{ maxWidth: '1080px' }}>
+        {/* Navigation Breadcrumb */}
         <div style={{ marginBottom: '2rem' }}>
           <Link
             to="/events"
@@ -61,581 +84,623 @@ export default function EventDetails() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              color: '#38bdf8',
-              fontSize: '0.9rem',
-              fontWeight: 500,
+              color: '#a7afc2',
               textDecoration: 'none',
-              transition: 'transform 0.2s ease',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              padding: '0.4rem 0.8rem',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(130, 155, 210, 0.15)',
+              transition: 'all 0.2s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateX(-3px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateX(0)')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#f2c438';
+              e.currentTarget.style.borderColor = '#f2c438';
+              e.currentTarget.style.transform = 'translateX(-3px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#a7afc2';
+              e.currentTarget.style.borderColor = 'rgba(130, 155, 210, 0.15)';
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
           >
             <ArrowLeft size={16} />
-            <span>Back to All Events</span>
+            <span>Back to Events</span>
           </Link>
         </div>
 
-        {/* Hero Banner Card */}
+        {/* 1. HERO HEADER CARD (Styled matching ssceieee.vercel.app) */}
         <div
-          className="glass-card"
           style={{
-            overflow: 'hidden',
-            marginBottom: '3.5rem',
             position: 'relative',
+            padding: '2.5rem 2rem',
+            borderRadius: '1.25rem',
+            backgroundColor: '#111b38',
+            border: '1px solid rgba(130, 155, 210, 0.2)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(47, 111, 255, 0.1)',
+            marginBottom: '2.5rem',
+            overflow: 'hidden',
           }}
         >
-          {/* Banner Graphic Container */}
+          {/* Subtle Ambient Glow */}
           <div
             style={{
-              position: 'relative',
-              width: '100%',
-              height: 'clamp(240px, 35vw, 420px)',
-              backgroundColor: '#0a0f24',
-              overflow: 'hidden',
+              position: 'absolute',
+              top: '-40px',
+              right: '-40px',
+              width: '240px',
+              height: '240px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(242, 196, 56, 0.15) 0%, transparent 70%)',
+              pointerEvents: 'none',
             }}
-          >
-            <img
-              src={event.image}
-              alt={event.name}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-            {/* Dark Gradient Overlay */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'linear-gradient(to top, rgba(11, 19, 43, 0.95) 10%, rgba(11, 19, 43, 0.4) 60%, transparent 100%)',
-              }}
-            />
+          />
 
-            {/* Floating Top Badge */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '1.5rem',
-                left: '1.5rem',
-              }}
-            >
-              <span className="badge badge-cyan">{event.badge}</span>
-            </div>
-          </div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            {/* Top Badges */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  padding: '0.35rem 0.85rem',
+                  borderRadius: '9999px',
+                  backgroundColor: 'rgba(47, 111, 255, 0.15)',
+                  color: '#25c9ff',
+                  border: '1px solid rgba(130, 155, 210, 0.3)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {track} TRACK
+              </span>
 
-          {/* Banner Details Overlay */}
-          <div
-            style={{
-              padding: 'clamp(1.5rem, 3vw, 2.5rem)',
-              marginTop: '-4rem',
-              position: 'relative',
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                color: '#38bdf8',
-                fontWeight: 700,
-                fontSize: '0.82rem',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginBottom: '0.5rem',
-              }}
-            >
-              <Sparkles size={14} />
-              <span>{event.category}</span>
+              {event.badge && (
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.06em',
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '9999px',
+                    background: 'linear-gradient(135deg, rgba(242, 196, 56, 0.2) 0%, rgba(212, 168, 39, 0.1) 100%)',
+                    color: '#f2c438',
+                    border: '1px solid rgba(242, 196, 56, 0.4)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  ★ {event.badge}
+                </span>
+              )}
             </div>
 
+            {/* Event Name */}
             <h1
               style={{
-                fontSize: 'clamp(2.2rem, 4.5vw, 3.5rem)',
-                fontWeight: 800,
-                color: '#ffffff',
-                marginBottom: '0.4rem',
+                fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                fontWeight: 900,
+                color: '#f5f7fb',
                 lineHeight: 1.15,
+                letterSpacing: '-0.01em',
+                marginBottom: '0.5rem',
+                fontFamily: 'var(--font-heading)',
               }}
             >
               {event.name}
             </h1>
 
+            {/* Subtitle */}
             {event.subtitle && (
-              <p
-                style={{
-                  fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                  color: '#94a3b8',
-                  marginBottom: '1.5rem',
-                  fontWeight: 500,
-                }}
-              >
+              <p style={{ fontSize: '1.15rem', color: '#a7afc2', fontWeight: 600, marginBottom: '0.6rem' }}>
                 {event.subtitle}
               </p>
             )}
 
-            {/* Quick Metadata Bar */}
-            <div
+            {/* Golden Italic Slogan / Tagline */}
+            {event.tagline && (
+              <p
+                style={{
+                  fontSize: '1.1rem',
+                  fontStyle: 'italic',
+                  fontWeight: 700,
+                  color: '#f2c438',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {event.tagline}
+              </p>
+            )}
+
+            {/* Overview Paragraph */}
+            <p
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                gap: '1rem',
-                padding: '1.25rem',
-                borderRadius: '12px',
-                background: 'rgba(6, 9, 19, 0.75)',
-                border: '1px solid rgba(56, 189, 248, 0.2)',
-                marginBottom: '1.5rem',
+                fontSize: '1rem',
+                color: '#cbd5e1',
+                lineHeight: 1.7,
+                maxWidth: '850px',
+                marginBottom: '2rem',
               }}
             >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                  <Users size={14} />
-                  <span>Team Size</span>
-                </div>
-                <div style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 600, marginTop: '0.2rem' }}>
-                  {event.teamSize}
-                </div>
-              </div>
+              {event.overview || event.shortDescription}
+            </p>
 
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                  <Clock size={14} />
-                  <span>Timing</span>
-                </div>
-                <div style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 600, marginTop: '0.2rem' }}>
-                  {event.timing}
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                  <MapPin size={14} />
-                  <span>Venue</span>
-                </div>
-                <div style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 600, marginTop: '0.2rem' }}>
-                  {event.venue}
-                </div>
-              </div>
-            </div>
-
-            {/* Action Call */}
+            {/* CTA Buttons */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
               <a
                 href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary"
-                style={{ padding: '0.85rem 2.2rem', fontSize: '1rem' }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.9rem 2.2rem',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #f2c438 0%, #ffd95a 100%)',
+                  color: '#070d1d',
+                  fontSize: '0.95rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  textDecoration: 'none',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 8px 24px rgba(242, 196, 56, 0.35)',
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(242, 196, 56, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(242, 196, 56, 0.35)';
+                }}
               >
                 <span>Register for {event.name}</span>
                 <ExternalLink size={16} />
               </a>
 
-              <Link to="/events" className="btn-secondary" style={{ padding: '0.85rem 1.8rem' }}>
-                <span>Explore All Events</span>
+              <Link
+                to="/events"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.9rem 1.8rem',
+                  borderRadius: '12px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(130, 155, 210, 0.25)',
+                  color: '#f5f7fb',
+                  fontSize: '0.92rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#f2c438';
+                  e.currentTarget.style.color = '#f2c438';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(130, 155, 210, 0.25)';
+                  e.currentTarget.style.color = '#f5f7fb';
+                }}
+              >
+                <span>Explore Other Events</span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Content Layout: 2 Columns */}
+        {/* 2. QUICK STATS 4-CARD GRID (Timing, Venue, Team Size, Prizes) */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '2.5rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '1.25rem',
+            marginBottom: '2.5rem',
           }}
         >
-          {/* Main Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            {/* Overview Section */}
-            <div className="glass-card" style={{ padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.35rem', color: '#ffffff', marginBottom: '1rem' }}>
-                Event Overview
-              </h3>
-              <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {event.overview}
-              </p>
-
-              {/* Suggested Tracks / Tools if present */}
-              {event.suggestedTracks && (
-                <div style={{ marginTop: '1.5rem' }}>
-                  <h4 style={{ fontSize: '0.95rem', color: '#38bdf8', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-                    Suggested Paper Presentation Tracks:
-                  </h4>
-                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {event.suggestedTracks.map((trk, i) => (
-                      <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.92rem', color: '#cbd5e1' }}>
-                        <span style={{ color: '#38bdf8' }}>▹</span>
-                        <span>{trk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {event.supportedLanguages && (
-                <div style={{ marginTop: '1.5rem' }}>
-                  <h4 style={{ fontSize: '0.95rem', color: '#38bdf8', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-                    Supported Programming Languages:
-                  </h4>
-                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                    {event.supportedLanguages.map((lang, i) => (
-                      <span key={i} className="badge badge-green">{lang}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {/* Timing Card */}
+          <div
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1rem',
+              backgroundColor: '#111b38',
+              border: '1px solid rgba(130, 155, 210, 0.18)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#25c9ff', marginBottom: '0.5rem' }}>
+              <Clock size={18} />
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Schedule & Timing
+              </span>
             </div>
+            <div style={{ color: '#f5f7fb', fontSize: '1rem', fontWeight: 700 }}>
+              {event.timing || 'Fest Day Timing'}
+            </div>
+          </div>
 
-            {/* Rounds Breakdown */}
-            {event.rounds && (
-              <div className="glass-card" style={{ padding: '2rem' }}>
-                <h3 style={{ fontSize: '1.35rem', color: '#ffffff', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <Layers size={20} className="text-cyan-400" />
-                  <span>Competition Rounds</span>
-                </h3>
+          {/* Venue Card */}
+          <div
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1rem',
+              backgroundColor: '#111b38',
+              border: '1px solid rgba(130, 155, 210, 0.18)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#25c9ff', marginBottom: '0.5rem' }}>
+              <MapPin size={18} />
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Venue / Hall
+              </span>
+            </div>
+            <div style={{ color: '#f5f7fb', fontSize: '1rem', fontWeight: 700 }}>
+              {event.venue || 'Dept. of ISE Labs'}
+            </div>
+          </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  {event.rounds.map((rnd, i) => (
-                    <div
-                      key={i}
+          {/* Team Size Card */}
+          <div
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1rem',
+              backgroundColor: '#111b38',
+              border: '1px solid rgba(130, 155, 210, 0.18)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#25c9ff', marginBottom: '0.5rem' }}>
+              <Users size={18} />
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Team Size
+              </span>
+            </div>
+            <div style={{ color: '#f5f7fb', fontSize: '1rem', fontWeight: 700 }}>
+              {event.teamSize || 'Individual or Teams'}
+            </div>
+          </div>
+
+          {/* Prizes Card */}
+          <div
+            style={{
+              padding: '1.5rem',
+              borderRadius: '1rem',
+              backgroundColor: '#111b38',
+              border: '1px solid rgba(242, 196, 56, 0.3)',
+              boxShadow: '0 4px 20px rgba(242, 196, 56, 0.08)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f2c438', marginBottom: '0.5rem' }}>
+              <Award size={18} />
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Awards & Recognition
+              </span>
+            </div>
+            <div style={{ color: '#f5f7fb', fontSize: '0.92rem', fontWeight: 600, lineHeight: 1.4 }}>
+              {event.prizes?.first || 'Cash Prize + Certificate of Excellence'}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. COMPETITION FORMAT / ROUNDS (If Defined) */}
+        {event.rounds && event.rounds.length > 0 && (
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h2
+              style={{
+                fontSize: '1.45rem',
+                fontWeight: 800,
+                color: '#f5f7fb',
+                marginBottom: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                fontFamily: 'var(--font-heading)',
+              }}
+            >
+              <Layers size={22} color="#f2c438" />
+              <span>Competition Format &amp; Rounds</span>
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {event.rounds.map((rnd, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: '1.5rem',
+                    borderRadius: '1rem',
+                    backgroundColor: '#111b38',
+                    border: '1px solid rgba(130, 155, 210, 0.18)',
+                    transition: 'border-color 0.2s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    <span
                       style={{
-                        padding: '1.25rem',
-                        borderRadius: '10px',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '6px',
+                        background: 'linear-gradient(135deg, #f2c438, #d4a827)',
+                        color: '#070d1d',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
-                        <span className="badge badge-purple">{rnd.roundNumber}</span>
-                        <h4 style={{ fontSize: '1.05rem', color: '#ffffff' }}>{rnd.title}</h4>
-                      </div>
-                      <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                        {rnd.description}
-                      </p>
-                    </div>
-                  ))}
+                      {rnd.roundNumber || `Round ${i + 1}`}
+                    </span>
+                    <h3 style={{ fontSize: '1.15rem', color: '#f5f7fb', fontWeight: 700 }}>
+                      {rnd.title}
+                    </h3>
+                  </div>
+                  <p style={{ fontSize: '0.94rem', color: '#a7afc2', lineHeight: 1.6 }}>
+                    {rnd.description}
+                  </p>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
+          </div>
+        )}
 
-            {/* Rules and Regulations Section */}
-            <div className="glass-card" style={{ padding: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
-                <ShieldAlert size={20} className="text-cyan-400" />
-                <h3 style={{ fontSize: '1.35rem', color: '#ffffff' }}>
-                  Rules &amp; Regulations
-                </h3>
-              </div>
+        {/* 4. RULES & REGULATIONS */}
+        {event.rules && event.rules.length > 0 && (
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h2
+              style={{
+                fontSize: '1.45rem',
+                fontWeight: 800,
+                color: '#f5f7fb',
+                marginBottom: '1.25rem',
+                fontFamily: 'var(--font-heading)',
+              }}
+            >
+              Rules &amp; Guidelines
+            </h2>
 
-              <div
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: '8px',
-                  background: 'rgba(56, 189, 248, 0.08)',
-                  border: '1px solid rgba(56, 189, 248, 0.2)',
-                  fontSize: '0.84rem',
-                  color: '#38bdf8',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                ℹ️ Note to Organizers: Rules and guidelines can be edited directly in <code style={{ color: '#ffffff' }}>src/data/eventsData.js</code>.
-              </div>
-
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            <div
+              style={{
+                padding: '1.75rem',
+                borderRadius: '1rem',
+                backgroundColor: '#111b38',
+                border: '1px solid rgba(130, 155, 210, 0.18)',
+              }}
+            >
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {event.rules.map((rule, idx) => (
                   <li
                     key={idx}
                     style={{
                       display: 'flex',
                       alignItems: 'flex-start',
-                      gap: '0.75rem',
-                      fontSize: '0.94rem',
-                      color: 'var(--text-secondary)',
+                      gap: '0.85rem',
+                      fontSize: '0.95rem',
+                      color: '#cbd5e1',
                       lineHeight: 1.6,
                     }}
                   >
-                    <CheckCircle2 size={16} className="text-cyan-400" style={{ flexShrink: 0, marginTop: '4px' }} />
+                    <span
+                      style={{
+                        flexShrink: 0,
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(242, 196, 56, 0.15)',
+                        color: '#f2c438',
+                        border: '1px solid rgba(242, 196, 56, 0.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8rem',
+                        fontWeight: 800,
+                        marginTop: '2px',
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
                     <span>{rule}</span>
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* Judging Criteria */}
-            {event.judgingCriteria && (
-              <div className="glass-card" style={{ padding: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
-                  <Award size={20} className="text-cyan-400" />
-                  <h3 style={{ fontSize: '1.35rem', color: '#ffffff' }}>
-                    Judging Criteria
-                  </h3>
-                </div>
-
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '1rem',
-                  }}
-                >
-                  {event.judgingCriteria.map((crit, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        padding: '1rem',
-                        borderRadius: '10px',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 500 }}>
-                        {crit.parameter}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '1.25rem',
-                          fontWeight: 800,
-                          color: '#00d4ff',
-                          marginTop: '0.5rem',
-                          fontFamily: 'var(--font-heading)',
-                        }}
-                      >
-                        {crit.weight}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
+        )}
 
-          {/* Sidebar Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Quick Registration Card */}
-            <div
-              className="glass-card"
+        {/* 5. EVENT COORDINATORS SECTION (Neat, clean, and clickable) */}
+        {(facList.length > 0 || stuList.length > 0) && (
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h2
               style={{
-                padding: '2rem',
-                border: '1px solid rgba(0, 212, 255, 0.35)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
+                fontSize: '1.45rem',
+                fontWeight: 800,
+                color: '#f5f7fb',
+                marginBottom: '1.25rem',
+                fontFamily: 'var(--font-heading)',
               }}
             >
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff' }}>
-                Ready to Compete?
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
-                Registrations are handled exclusively through our official Google Form. Select <strong>{event.name}</strong> as your chosen event track.
-              </p>
+              Event Coordinators
+            </h2>
 
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-                style={{ width: '100%', padding: '0.85rem' }}
-              >
-                <span>Register Now</span>
-                <ExternalLink size={16} />
-              </a>
-
-              <div style={{ fontSize: '0.8rem', color: '#64748b', textAlign: 'center' }}>
-                Opens in a secure new tab
-              </div>
-            </div>
-
-            {/* Eligibility & Team Info */}
-            <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8' }}>
-                <UserCheck size={18} />
-                <h4 style={{ fontSize: '1.05rem', color: '#ffffff' }}>Eligibility Criteria</h4>
-              </div>
-              <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                {event.eligibility}
-              </p>
-              <div
-                style={{
-                  padding: '0.75rem',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  fontSize: '0.84rem',
-                  color: '#94a3b8',
-                }}
-              >
-                📌 <strong>Team Size:</strong> {event.teamSize}
-              </div>
-            </div>
-
-            {/* Event Coordinators */}
-            <div className="glass-card" style={{ padding: '2rem' }}>
-              <h4 style={{ fontSize: '1.15rem', color: '#ffffff', marginBottom: '1.25rem' }}>
-                Event Coordinators
-              </h4>
-
-              {/* Faculty Coordinators */}
-              {(() => {
-                const facList = Array.isArray(event.coordinators?.faculty)
-                  ? event.coordinators.faculty
-                  : [];
-                const stuList = Array.isArray(event.coordinators?.student)
-                  ? event.coordinators.student
-                  : Array.isArray(event.coordinators)
-                  ? event.coordinators
-                  : [];
-
-                return (
-                  <>
-                    <div style={{ marginBottom: '1.25rem' }}>
-                      <span style={{ fontSize: '0.76rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                        Faculty Coordinators
-                      </span>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
-                        {facList.length === 0 ? (
-                          <div style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic' }}>
-                            Dept. of ISE Faculty
+            <div
+              style={{
+                padding: '2rem',
+                borderRadius: '1rem',
+                backgroundColor: '#111b38',
+                border: '1px solid rgba(130, 155, 210, 0.18)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '2rem',
+              }}
+            >
+              {/* Faculty Coordinators Column */}
+              <div>
+                <h3
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    color: '#25c9ff',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Faculty In-Charge
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {facList.map((fac, idx) => {
+                    const contactInfo = fac.contact || fac.phone;
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '1rem 1.15rem',
+                          borderRadius: '10px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                          border: '1px solid rgba(130, 155, 210, 0.12)',
+                        }}
+                      >
+                        <div style={{ fontSize: '0.98rem', color: '#f5f7fb', fontWeight: 700 }}>
+                          {fac.name}
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: '#a7afc2', marginTop: '0.2rem' }}>
+                          {fac.designation}
+                        </div>
+                        {contactInfo && (
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <a
+                              href={contactInfo.includes('@') ? `mailto:${contactInfo}` : `tel:${contactInfo}`}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                color: '#25c9ff',
+                                fontSize: '0.82rem',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                              }}
+                            >
+                              {contactInfo.includes('@') ? <Mail size={13} /> : <Phone size={13} />}
+                              <span>{contactInfo}</span>
+                            </a>
                           </div>
-                        ) : (
-                          facList.map((fac, idx) => {
-                            const contactInfo = fac.contact || fac.phone;
-                            return (
-                              <div
-                                key={idx}
-                                style={{
-                                  padding: '0.85rem',
-                                  borderRadius: '8px',
-                                  background: 'rgba(255, 255, 255, 0.03)',
-                                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                                }}
-                              >
-                                <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600 }}>
-                                  {fac.name}
-                                </div>
-                                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
-                                  {fac.designation}
-                                </div>
-                                {contactInfo && (
-                                  <div style={{ marginTop: '0.4rem' }}>
-                                    <a
-                                      href={contactInfo.includes('@') ? `mailto:${contactInfo}` : `tel:${contactInfo}`}
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '0.35rem',
-                                        color: '#38bdf8',
-                                        fontSize: '0.82rem',
-                                        fontWeight: 600,
-                                        textDecoration: 'none',
-                                      }}
-                                    >
-                                      {contactInfo.includes('@') ? <Mail size={13} /> : <Phone size={13} />}
-                                      <span>{contactInfo}</span>
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })
                         )}
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-                    {/* Student Coordinators */}
-                    <div>
-                      <span style={{ fontSize: '0.76rem', color: '#c084fc', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                        Student Leads
-                      </span>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
-                        {stuList.length === 0 ? (
-                          <div style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic' }}>
-                            Student Convener Desk
+              {/* Student Leads Column */}
+              <div>
+                <h3
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    color: '#f2c438',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Student Leads &amp; Organizers
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {stuList.map((stu, idx) => {
+                    const phoneInfo = stu.phone || stu.contact;
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '1rem 1.15rem',
+                          borderRadius: '10px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                          border: '1px solid rgba(130, 155, 210, 0.12)',
+                        }}
+                      >
+                        <div style={{ fontSize: '0.98rem', color: '#f5f7fb', fontWeight: 700 }}>
+                          {stu.name}
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: '#a7afc2', marginTop: '0.2rem' }}>
+                          {stu.role || 'Event Lead'}
+                        </div>
+                        {phoneInfo && (
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <a
+                              href={`tel:${phoneInfo}`}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                color: '#f2c438',
+                                fontSize: '0.84rem',
+                                fontWeight: 700,
+                                textDecoration: 'none',
+                                padding: '0.3rem 0.7rem',
+                                borderRadius: '6px',
+                                backgroundColor: 'rgba(242, 196, 56, 0.1)',
+                                border: '1px solid rgba(242, 196, 56, 0.25)',
+                              }}
+                            >
+                              <Phone size={13} />
+                              <span>{phoneInfo}</span>
+                            </a>
                           </div>
-                        ) : (
-                          stuList.map((stu, idx) => {
-                            const phoneInfo = stu.phone || stu.contact;
-                            return (
-                              <div
-                                key={idx}
-                                style={{
-                                  padding: '0.85rem',
-                                  borderRadius: '8px',
-                                  background: 'rgba(255, 255, 255, 0.03)',
-                                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                                }}
-                              >
-                                <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600 }}>
-                                  {stu.name}
-                                </div>
-                                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
-                                  {stu.role || 'Event Lead'}
-                                </div>
-                                {phoneInfo && (
-                                  <div style={{ marginTop: '0.4rem' }}>
-                                    <a
-                                      href={`tel:${phoneInfo}`}
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '0.35rem',
-                                        color: '#c084fc',
-                                        fontSize: '0.82rem',
-                                        fontWeight: 600,
-                                        textDecoration: 'none',
-                                      }}
-                                    >
-                                      <Phone size={13} />
-                                      <span>{phoneInfo}</span>
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })
                         )}
                       </div>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-
-            {/* Other Events Quick Navigation */}
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h4 style={{ fontSize: '0.95rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-                Other Fest Tracks
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {eventsData.filter((e) => e.id !== event.id).map((other) => (
-                  <Link
-                    key={other.id}
-                    to={`/events/${other.id}`}
-                    style={{
-                      fontSize: '0.88rem',
-                      color: 'var(--text-secondary)',
-                      textDecoration: 'none',
-                      padding: '0.4rem 0',
-                      transition: 'color 0.2s ease',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#38bdf8')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                  >
-                    → {other.name} ({other.badge})
-                  </Link>
-                ))}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
+        )}
+
+        {/* 6. BOTTOM REGISTER CTA BANNER */}
+        <div
+          style={{
+            padding: '2.5rem 2rem',
+            borderRadius: '1.25rem',
+            background: 'linear-gradient(135deg, rgba(17, 27, 56, 0.9) 0%, rgba(7, 13, 29, 0.95) 100%)',
+            border: '1px solid rgba(242, 196, 56, 0.3)',
+            boxShadow: '0 20px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(242, 196, 56, 0.15)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1.25rem',
+          }}
+        >
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#f5f7fb', fontFamily: 'var(--font-heading)' }}>
+            Ready to Take Part in {event.name}?
+          </h2>
+          <p style={{ color: '#a7afc2', maxWidth: '600px', fontSize: '0.98rem', lineHeight: 1.6 }}>
+            Grab your team, confirm your spot through the centralized registration portal, and showcase your innovation on the fest day.
+          </p>
+          <a
+            href={googleFormUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.95rem 2.5rem',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #f2c438 0%, #ffd95a 100%)',
+              color: '#070d1d',
+              fontSize: '1rem',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textDecoration: 'none',
+              textTransform: 'uppercase',
+              boxShadow: '0 10px 25px rgba(242, 196, 56, 0.35)',
+            }}
+          >
+            <span>Register Now</span>
+            <ExternalLink size={16} />
+          </a>
         </div>
       </div>
     </div>
   );
 }
-

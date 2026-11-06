@@ -4,34 +4,57 @@
    ========================================================================== */
 
 :root {
+  /* SSCE IEEE Reference Theme Variables */
+  --pp-bg: #0b1126;
+  --pp-bg-deep: #070d1d;
+  --pp-bg-light: #111b38;
+  --pp-surface: #111b38;
+  --pp-surface-hover: #172344;
+  --pp-surface-light: rgba(17, 27, 56, 0.6);
+  --pp-gold: #f2c438;
+  --pp-gold-light: #ffd95a;
+  --pp-gold-dark: #d4a827;
+  --pp-blue: #2f6fff;
+  --pp-cyan: #25c9ff;
+  --pp-text: #f5f7fb;
+  --pp-text-muted: #a7afc2;
+  --pp-text-dim: #707896;
+  --pp-border: rgba(130, 155, 210, 0.18);
+  --pp-border-hover: rgba(130, 155, 210, 0.35);
+  --pp-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --pp-gold-glow: 0 0 25px rgba(242, 196, 56, 0.18);
+  --pp-blue-glow: 0 0 30px rgba(47, 111, 255, 0.16);
+
   /* Color System */
-  --bg-primary: #060913;
-  --bg-secondary: #0b1124;
-  --bg-card: rgba(13, 20, 41, 0.75);
-  --bg-card-hover: rgba(20, 32, 65, 0.85);
-  --bg-glass: rgba(11, 19, 43, 0.65);
+  --bg-primary: #0b1126;
+  --bg-secondary: #070d1d;
+  --bg-card: rgba(17, 27, 56, 0.85);
+  --bg-card-hover: #172344;
+  --bg-glass: rgba(17, 27, 56, 0.65);
   
-  --electric-blue: #00d4ff;
-  --electric-blue-hover: #38bdf8;
+  --electric-blue: #25c9ff;
+  --electric-blue-hover: #2f6fff;
   --cyber-purple: #8b5cf6;
   --deep-violet: #6d28d9;
-  --neon-cyan: #06b6d4;
+  --neon-cyan: #25c9ff;
   --neon-magenta: #ec4899;
   --neon-emerald: #10b981;
+  --gold-accent: #f2c438;
   
-  --text-primary: #f8fafc;
+  --text-primary: #f5f7fb;
   --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-accent: #38bdf8;
+  --text-muted: #a7afc2;
+  --text-dim: #707896;
+  --text-accent: #f2c438;
   
-  --border-subtle: rgba(56, 189, 248, 0.15);
-  --border-glow: rgba(56, 189, 248, 0.45);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(130, 155, 210, 0.18);
+  --border-glow: rgba(242, 196, 56, 0.35);
+  --border-glass: rgba(130, 155, 210, 0.18);
 
   /* Fonts */
-  --font-cyber: 'Rajdhani', 'Chakra Petch', 'Space Grotesk', sans-serif;
-  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-cyber: 'Manrope', 'Space Grotesk', sans-serif;
+  --font-heading: 'Manrope', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Transitions */
@@ -40,10 +63,10 @@
   --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Glow Shadows */
-  --glow-blue: 0 0 25px rgba(0, 212, 255, 0.35);
-  --glow-purple: 0 0 25px rgba(139, 92, 246, 0.35);
-  --glow-button: 0 4px 20px rgba(0, 212, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  --glow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.08);
+  --glow-blue: 0 0 25px rgba(37, 201, 255, 0.35);
+  --glow-gold: 0 0 25px rgba(242, 196, 56, 0.3);
+  --glow-button: 0 4px 20px rgba(242, 196, 56, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  --glow-card: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 /* CSS Reset & Defaults */
