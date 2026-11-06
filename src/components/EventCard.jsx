@@ -1,21 +1,102 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
-import { ArrowRight, ExternalLink, Users, MapPin } from 'lucide-react';
+import {
+  Code2,
+  FileText,
+  ShieldAlert,
+  Bot,
+  Video,
+  Gamepad2,
+  Cpu,
+  Users,
+  Phone,
+  ChevronRight,
+  ExternalLink,
+} from 'lucide-react';
 
-export default function EventCard({ event }) {
+/**
+ * EventCard Component
+ * Recreates the exact brutalist cyber card layout from the uploaded reference:
+ * - Numbered badge (01, 02, 03...) in amber rounded square
+ * - Minimalist tech icon (<>, globe, antenna, bot, etc.)
+ * - Outline category pill: TECHNICAL / NON-TECHNICAL
+ * - Bold uppercase title
+ * - Subtitle & Gold italic catchphrase (Find. Fix. Optimize.)
+ * - Card summary description
+ * - Embedded Event Coordinators with phone & role
+ * - Dark "VIEW DETAILS >" button + "REGISTER NOW" action
+ */
+export default function EventCard({ event, index = 0 }) {
   const { googleFormUrl } = useFest();
+
   const {
     id,
     name,
     subtitle,
     category,
     badge,
-    image,
     shortDescription,
     teamSize,
     venue,
+    coordinators,
+    tagline: customTagline,
+    track: customTrack,
+    number: customNumber,
   } = event;
+
+  // Determine Track: TECHNICAL or NON-TECHNICAL
+  const track =
+    customTrack ||
+    (['frame-fusion', 'clash-of-squadz'].includes(id) ||
+    category?.toLowerCase().includes('gaming') ||
+    category?.toLowerCase().includes('design') ||
+    category?.toLowerCase().includes('multimedia')
+      ? 'NON-TECHNICAL'
+      : 'TECHNICAL');
+
+  // Formatted Number: 01, 02, 03...
+  const number = customNumber || String(index + 1).padStart(2, '0');
+
+  // Default Catchy Taglines if not explicitly defined
+  const defaultTaglines = {
+    'intelli-talks': 'Research. Present. Inspire.',
+    'code-sprint': 'Code. Debug. Optimize.',
+    'capture-the-flag': 'Penetrate. Defend. Conquer.',
+    'build-a-bot': 'Design. Build. Automate.',
+    'frame-fusion': 'Shoot. Edit. Create.',
+    'clash-of-squadz': 'Aim. Survive. Dominate.',
+  };
+  const tagline = customTagline || defaultTaglines[id] || (track === 'TECHNICAL' ? 'Design. Develop. Deploy.' : 'Create. Compete. Conquer.');
+
+  // Select minimalist vector tech icon
+  const renderIcon = () => {
+    if (id === 'intelli-talks' || category?.toLowerCase().includes('paper')) {
+      return <FileText size={28} color="#ffffff" />;
+    }
+    if (id === 'code-sprint' || category?.toLowerCase().includes('program') || category?.toLowerCase().includes('code')) {
+      return <Code2 size={28} color="#ffffff" />;
+    }
+    if (id === 'capture-the-flag' || category?.toLowerCase().includes('cyber') || category?.toLowerCase().includes('flag')) {
+      return <ShieldAlert size={28} color="#ffffff" />;
+    }
+    if (id === 'build-a-bot' || category?.toLowerCase().includes('bot') || category?.toLowerCase().includes('robot')) {
+      return <Bot size={28} color="#ffffff" />;
+    }
+    if (id === 'frame-fusion' || category?.toLowerCase().includes('design') || category?.toLowerCase().includes('video')) {
+      return <Video size={28} color="#ffffff" />;
+    }
+    if (id === 'clash-of-squadz' || category?.toLowerCase().includes('game') || category?.toLowerCase().includes('esports')) {
+      return <Gamepad2 size={28} color="#ffffff" />;
+    }
+    return <Cpu size={28} color="#ffffff" />;
+  };
+
+  // Extract student and faculty coordinators for this event
+  const studentCoordinators = Array.isArray(coordinators)
+    ? coordinators
+    : coordinators?.student || [];
+  const primaryCoordinator = studentCoordinators[0] || (Array.isArray(coordinators?.faculty) ? coordinators?.faculty[0] : null);
 
   return (
     <div
@@ -23,206 +104,278 @@ export default function EventCard({ event }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        height: '100%',
+        padding: '2.2rem 2rem',
+        borderRadius: '22px',
+        backgroundColor: '#0c1322',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 15px 40px rgba(0, 0, 0, 0.65)',
         position: 'relative',
-        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        height: '100%',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.4)';
+        e.currentTarget.style.transform = 'translateY(-6px)';
+        e.currentTarget.style.boxShadow = '0 20px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 212, 255, 0.2)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.65)';
       }}
     >
-      {/* Event Banner Container */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          paddingTop: '56.25%', // 16:9 Aspect Ratio
-          overflow: 'hidden',
-          backgroundColor: '#0a0f24',
-        }}
-      >
-        <img
-          src={image}
-          alt={name}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.5s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
-        />
-
-        {/* Badge Overlay */}
+      {/* 1. NUMBERED BADGE (Top-Left Amber Pill from screenshot) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.4rem' }}>
         <div
           style={{
-            position: 'absolute',
-            top: '0.9rem',
-            left: '0.9rem',
-            zIndex: 2,
+            width: '42px',
+            height: '42px',
+            borderRadius: '11px',
+            backgroundColor: '#f59e0b',
+            color: '#070b19',
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1.15rem',
+            fontWeight: 900,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.35)',
           }}
         >
-          <span className="badge badge-cyan">{badge || 'Official Event'}</span>
+          {number}
         </div>
 
-        {/* Gradient Overlay at Bottom of Image */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '60px',
-            background: 'linear-gradient(to top, var(--bg-card), transparent)',
-            pointerEvents: 'none',
-          }}
-        />
+        {badge && (
+          <span
+            style={{
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              color: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              border: '1px solid rgba(56, 189, 248, 0.25)',
+              padding: '0.2rem 0.6rem',
+              borderRadius: '6px',
+            }}
+          >
+            {badge}
+          </span>
+        )}
       </div>
 
-      {/* Card Body */}
-      <div
+      {/* 2. MINIMALIST TECH ICON (<>, globe, antenna, bot...) */}
+      <div style={{ marginBottom: '1.1rem', color: '#ffffff' }}>
+        {renderIcon()}
+      </div>
+
+      {/* 3. TRACK OUTLINE PILL (TECHNICAL / NON-TECHNICAL) */}
+      <div style={{ marginBottom: '0.85rem' }}>
+        <span
+          style={{
+            display: 'inline-block',
+            padding: '0.22rem 0.7rem',
+            borderRadius: '9999px',
+            border: track === 'TECHNICAL'
+              ? '1px solid rgba(56, 189, 248, 0.4)'
+              : '1px solid rgba(168, 85, 247, 0.4)',
+            color: track === 'TECHNICAL' ? '#38bdf8' : '#c084fc',
+            backgroundColor: track === 'TECHNICAL' ? 'rgba(56, 189, 248, 0.08)' : 'rgba(168, 85, 247, 0.08)',
+            fontSize: '0.68rem',
+            fontWeight: 800,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {track}
+        </span>
+      </div>
+
+      {/* 4. EVENT NAME (Heavy Uppercase Display Font) */}
+      <h3
         style={{
-          padding: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
+          fontFamily: 'var(--font-heading)',
+          fontSize: '1.55rem',
+          fontWeight: 900,
+          color: '#ffffff',
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+          marginBottom: '0.25rem',
+          lineHeight: 1.15,
+        }}
+      >
+        <Link
+          to={`/events/${id}`}
+          style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s ease' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#00d4ff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#ffffff')}
+        >
+          {name}
+        </Link>
+      </h3>
+
+      {/* 5. SUBTITLE */}
+      {subtitle && (
+        <p
+          style={{
+            fontSize: '0.9rem',
+            color: '#94a3b8',
+            marginBottom: '0.5rem',
+            fontWeight: 500,
+          }}
+        >
+          {subtitle}
+        </p>
+      )}
+
+      {/* 6. GOLDEN ITALIC CATCHPHRASE (Find. Fix. Optimize.) */}
+      <p
+        style={{
+          fontSize: '0.92rem',
+          fontStyle: 'italic',
+          fontWeight: 700,
+          color: '#fbbf24',
+          marginBottom: '1rem',
+          letterSpacing: '0.01em',
+        }}
+      >
+        {tagline}
+      </p>
+
+      {/* 7. SHORT DESCRIPTION */}
+      <p
+        style={{
+          fontSize: '0.88rem',
+          color: '#cbd5e1',
+          lineHeight: 1.6,
+          marginBottom: '1.5rem',
           flexGrow: 1,
         }}
       >
-        {/* Category Tag */}
-        <span
-          style={{
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: '#38bdf8',
-            marginBottom: '0.4rem',
-            fontFamily: 'var(--font-heading)',
-          }}
-        >
-          {category}
-        </span>
+        {shortDescription}
+      </p>
 
-        {/* Event Title */}
-        <h3
-          style={{
-            fontSize: '1.35rem',
-            fontWeight: 700,
-            marginBottom: '0.35rem',
-            color: '#ffffff',
-          }}
-        >
-          <Link
-            to={`/events/${id}`}
-            style={{
-              color: 'inherit',
-              textDecoration: 'none',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#38bdf8')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#ffffff')}
-          >
-            {name}
-          </Link>
-        </h3>
-
-        {/* Subtitle */}
-        {subtitle && (
-          <p
-            style={{
-              fontSize: '0.85rem',
-              color: '#94a3b8',
-              marginBottom: '0.9rem',
-              fontWeight: 500,
-            }}
-          >
-            {subtitle}
-          </p>
-        )}
-
-        {/* Short Description */}
-        <p
-          style={{
-            fontSize: '0.92rem',
-            color: 'var(--text-secondary)',
-            lineHeight: 1.55,
-            marginBottom: '1.25rem',
-            flexGrow: 1,
-          }}
-        >
-          {shortDescription}
-        </p>
-
-        {/* Quick Metadata Snippets */}
+      {/* 8. EMBEDDED EVENT COORDINATOR IN THE SAME CARD (Requested Feature) */}
+      <div
+        style={{
+          marginTop: 'auto',
+          marginBottom: '1.5rem',
+          padding: '0.85rem 1rem',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            gap: '0.4rem',
-            paddingTop: '0.85rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            marginBottom: '1.25rem',
-            fontSize: '0.82rem',
-            color: '#94a3b8',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            letterSpacing: '0.08em',
+            color: '#38bdf8',
+            textTransform: 'uppercase',
+            marginBottom: '0.45rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Users size={14} className="text-cyan-400" />
-            <span>Team: {teamSize}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Users size={13} />
+            <span>EVENT COORDINATOR</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <MapPin size={14} className="text-cyan-400" />
-            <span>Venue: {venue}</span>
-          </div>
+          {teamSize && <span style={{ color: '#94a3b8', fontWeight: 600 }}>{teamSize}</span>}
         </div>
 
-        {/* Card Action Buttons */}
-        <div
+        {primaryCoordinator ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+            <div style={{ color: '#f8fafc', fontWeight: 600 }}>
+              {primaryCoordinator.name}
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginLeft: '0.4rem', fontWeight: 400 }}>
+                ({primaryCoordinator.role || primaryCoordinator.designation || 'Lead'})
+              </span>
+            </div>
+            {primaryCoordinator.phone || primaryCoordinator.contact ? (
+              <a
+                href={`tel:${primaryCoordinator.phone || primaryCoordinator.contact}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  color: '#00d4ff',
+                  textDecoration: 'none',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                }}
+                title="Call Coordinator"
+              >
+                <Phone size={11} />
+                <span>{primaryCoordinator.phone || primaryCoordinator.contact}</span>
+              </a>
+            ) : null}
+          </div>
+        ) : (
+          <div style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+            Student Convener Desk // ISE Labs
+          </div>
+        )}
+      </div>
+
+      {/* 9. ACTION BUTTONS (VIEW DETAILS > from screenshot + Register Now) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1.2fr 1fr',
+          gap: '0.75rem',
+        }}
+      >
+        <Link
+          to={`/events/${id}`}
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '0.75rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem',
+            padding: '0.75rem 1rem',
+            borderRadius: '10px',
+            backgroundColor: '#111827',
+            border: '1px solid rgba(255, 255, 255, 0.14)',
+            color: '#fbbf24',
+            fontSize: '0.84rem',
+            fontWeight: 700,
+            letterSpacing: '0.04em',
+            textDecoration: 'none',
+            textTransform: 'uppercase',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#1f2937';
+            e.currentTarget.style.borderColor = '#fbbf24';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#111827';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.14)';
           }}
         >
-          <Link
-            to={`/events/${id}`}
-            className="btn-secondary"
-            style={{
-              padding: '0.65rem 0.8rem',
-              fontSize: '0.85rem',
-              borderRadius: '10px',
-              textAlign: 'center',
-            }}
-          >
-            <span>View Details</span>
-            <ArrowRight size={14} />
-          </Link>
+          <span>VIEW DETAILS</span>
+          <ChevronRight size={15} />
+        </Link>
 
-          <a
-            href={googleFormUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-            style={{
-              padding: '0.65rem 0.8rem',
-              fontSize: '0.85rem',
-              borderRadius: '10px',
-              textAlign: 'center',
-            }}
-            title="Register via Official Google Form"
-          >
-            <span>Register Now</span>
-            <ExternalLink size={14} />
-          </a>
-        </div>
+        <a
+          href={googleFormUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary"
+          style={{
+            padding: '0.75rem 0.8rem',
+            fontSize: '0.84rem',
+            borderRadius: '10px',
+            textAlign: 'center',
+            justifyContent: 'center',
+          }}
+          title="Register via Official Google Form"
+        >
+          <span>Register</span>
+          <ExternalLink size={13} />
+        </a>
       </div>
     </div>
   );
 }
-

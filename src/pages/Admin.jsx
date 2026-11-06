@@ -174,6 +174,9 @@ export default function Admin() {
     name: 'New Technical Arena',
     subtitle: 'Event Subtitle',
     category: 'Competitive Programming',
+    track: 'TECHNICAL',
+    tagline: 'Design. Develop. Deploy.',
+    number: '07',
     badge: 'Flagship',
     accentColor: '#00d4ff',
     image: '/assets/events/code-sprint.svg',
@@ -200,19 +203,45 @@ export default function Admin() {
         description: 'Timed assessment testing core technical understanding and speed.',
       },
     ],
-    coordinators: [
-      {
-        name: 'Student Lead',
-        role: 'Event Head',
-        phone: '+91 98765 43210',
-      },
-    ],
+    coordinators: {
+      faculty: [
+        {
+          name: 'Faculty Coordinator (ISE)',
+          designation: 'Asst. Professor, Dept of ISE',
+          contact: '+91 98765 43210',
+        },
+      ],
+      student: [
+        {
+          name: 'Student Lead',
+          role: 'Event Head',
+          contact: '+91 98765 43210',
+        },
+      ],
+    },
   };
 
   useEffect(() => {
     const current = eventsData.find((e) => e.id === selectedEventId) || eventsData[0];
     if (current) {
-      setEventEditForm(JSON.parse(JSON.stringify(current)));
+      const cloned = JSON.parse(JSON.stringify(current));
+      // Normalize coordinators to { faculty: [...], student: [...] }
+      if (Array.isArray(cloned.coordinators)) {
+        cloned.coordinators = {
+          faculty: [],
+          student: cloned.coordinators.map((c) => ({
+            name: c.name || '',
+            role: c.role || 'Event Lead',
+            contact: c.contact || c.phone || '',
+          })),
+        };
+      } else if (!cloned.coordinators) {
+        cloned.coordinators = { faculty: [], student: [] };
+      } else {
+        if (!Array.isArray(cloned.coordinators.faculty)) cloned.coordinators.faculty = [];
+        if (!Array.isArray(cloned.coordinators.student)) cloned.coordinators.student = [];
+      }
+      setEventEditForm(cloned);
       setSelectedEventId(current.id);
     } else {
       setEventEditForm(null);
@@ -290,6 +319,89 @@ export default function Admin() {
     setEventEditForm({
       ...eventEditForm,
       rounds: eventEditForm.rounds.filter((_, idx) => idx !== index),
+    });
+  };
+
+  // Per-Event Coordinator Helpers
+  const handleAddEventFacultyCoordinator = () => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        faculty: [
+          ...(currentCoordinators.faculty || []),
+          { name: 'Dr./Prof. Faculty Name', designation: 'Dept. of ISE', contact: '+91 98765 43210' },
+        ],
+      },
+    });
+  };
+
+  const handleDeleteEventFacultyCoordinator = (idx) => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        faculty: (currentCoordinators.faculty || []).filter((_, i) => i !== idx),
+      },
+    });
+  };
+
+  const handleUpdateEventFacultyCoordinator = (idx, field, val) => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    const updated = [...(currentCoordinators.faculty || [])];
+    updated[idx] = { ...updated[idx], [field]: val };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        faculty: updated,
+      },
+    });
+  };
+
+  const handleAddEventStudentCoordinator = () => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        student: [
+          ...(currentCoordinators.student || []),
+          { name: 'Student Coordinator Name', role: 'Event Lead', contact: '+91 98765 43210' },
+        ],
+      },
+    });
+  };
+
+  const handleDeleteEventStudentCoordinator = (idx) => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        student: (currentCoordinators.student || []).filter((_, i) => i !== idx),
+      },
+    });
+  };
+
+  const handleUpdateEventStudentCoordinator = (idx, field, val) => {
+    if (!eventEditForm) return;
+    const currentCoordinators = eventEditForm.coordinators || { faculty: [], student: [] };
+    const updated = [...(currentCoordinators.student || [])];
+    updated[idx] = { ...updated[idx], [field]: val };
+    setEventEditForm({
+      ...eventEditForm,
+      coordinators: {
+        ...currentCoordinators,
+        student: updated,
+      },
     });
   };
 
@@ -798,6 +910,46 @@ export default function Admin() {
                         style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: '#ffffff' }}
                       />
                     </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.84rem', color: '#00d4ff', marginBottom: '0.4rem', fontWeight: 700 }}>
+                        Track Classification
+                      </label>
+                      <select
+                        value={eventEditForm.track || 'TECHNICAL'}
+                        onChange={(e) => setEventEditForm({ ...eventEditForm, track: e.target.value })}
+                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', backgroundColor: '#070f26', border: '1px solid #00d4ff', color: '#ffffff', fontWeight: 700 }}
+                      >
+                        <option value="TECHNICAL">⚡ TECHNICAL TRACK</option>
+                        <option value="NON-TECHNICAL">🎮 NON-TECHNICAL TRACK</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.84rem', color: '#fbbf24', marginBottom: '0.4rem', fontWeight: 700 }}>
+                        Catchphrase Tagline (Italicized on Card)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Find. Fix. Optimize."
+                        value={eventEditForm.tagline || ''}
+                        onChange={(e) => setEventEditForm({ ...eventEditForm, tagline: e.target.value })}
+                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(251, 191, 36, 0.4)', color: '#fbbf24', fontWeight: 600 }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.84rem', color: '#fbbf24', marginBottom: '0.4rem', fontWeight: 700 }}>
+                        Card Order Number (01, 02, 03...)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="01"
+                        value={eventEditForm.number || ''}
+                        onChange={(e) => setEventEditForm({ ...eventEditForm, number: e.target.value })}
+                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: '#ffffff' }}
+                      />
+                    </div>
                   </div>
 
                   <div style={{ marginTop: '1.25rem' }}>
@@ -1069,6 +1221,207 @@ export default function Admin() {
                         />
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Section 6: Event Coordinators (Embedded in Card & Event Details) */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Users size={18} color="#00d4ff" />
+                      <h3 style={{ fontSize: '1.1rem', color: '#ffffff' }}>
+                        6. Event Coordinators (In-Card &amp; Details)
+                      </h3>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '0.84rem', color: '#94a3b8', marginBottom: '1.25rem' }}>
+                    Manage coordinators specifically assigned to this event. The primary student coordinator will display directly inside the event card on the public catalogue.
+                  </p>
+
+                  {/* 6A. Student Coordinators */}
+                  <div style={{ marginBottom: '1.75rem', padding: '1.25rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Student Leads / Coordinators
+                        </span>
+                        <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: '0.2rem 0 0 0' }}>
+                          First coordinator listed appears on the public event card with one-click direct phone dial.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddEventStudentCoordinator}
+                        className="btn-secondary"
+                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem', borderColor: '#38bdf8', color: '#38bdf8' }}
+                      >
+                        <Plus size={14} />
+                        <span>Add Student Lead</span>
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {(!eventEditForm.coordinators?.student || eventEditForm.coordinators.student.length === 0) && (
+                        <div style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', padding: '0.5rem 0' }}>
+                          No student coordinators assigned yet. Click "Add Student Lead" above.
+                        </div>
+                      )}
+                      {(eventEditForm.coordinators?.student || []).map((stu, sIdx) => (
+                        <div
+                          key={sIdx}
+                          style={{
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            display: 'grid',
+                            gridTemplateColumns: '1.2fr 1fr 1fr auto',
+                            gap: '0.75rem',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Name</label>
+                            <input
+                              type="text"
+                              placeholder="Student Name"
+                              value={stu.name || ''}
+                              onChange={(e) => handleUpdateEventStudentCoordinator(sIdx, 'name', e.target.value)}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Role / Designation</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Event Lead / Tech Lead"
+                              value={stu.role || ''}
+                              onChange={(e) => handleUpdateEventStudentCoordinator(sIdx, 'role', e.target.value)}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Phone / Contact</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. +91 98765 43210"
+                              value={stu.contact || stu.phone || ''}
+                              onChange={(e) => {
+                                handleUpdateEventStudentCoordinator(sIdx, 'contact', e.target.value);
+                                handleUpdateEventStudentCoordinator(sIdx, 'phone', e.target.value);
+                              }}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#00d4ff', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div style={{ paddingTop: '1.2rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteEventStudentCoordinator(sIdx)}
+                              style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '0.4rem' }}
+                              title="Remove Coordinator"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 6B. Faculty Coordinators */}
+                  <div style={{ padding: '1.25rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                      <div>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#c084fc', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Faculty Coordinators
+                        </span>
+                        <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: '0.2rem 0 0 0' }}>
+                          Department faculty overseeing this arena. Appears on the dedicated event details page.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddEventFacultyCoordinator}
+                        className="btn-secondary"
+                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem', borderColor: '#c084fc', color: '#c084fc' }}
+                      >
+                        <Plus size={14} />
+                        <span>Add Faculty Lead</span>
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {(!eventEditForm.coordinators?.faculty || eventEditForm.coordinators.faculty.length === 0) && (
+                        <div style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', padding: '0.5rem 0' }}>
+                          No faculty coordinators assigned yet. Click "Add Faculty Lead" above.
+                        </div>
+                      )}
+                      {(eventEditForm.coordinators?.faculty || []).map((fac, fIdx) => (
+                        <div
+                          key={fIdx}
+                          style={{
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            display: 'grid',
+                            gridTemplateColumns: '1.2fr 1fr 1fr auto',
+                            gap: '0.75rem',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Faculty Name</label>
+                            <input
+                              type="text"
+                              placeholder="Prof. / Dr. Name"
+                              value={fac.name || ''}
+                              onChange={(e) => handleUpdateEventFacultyCoordinator(fIdx, 'name', e.target.value)}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Designation / Department</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Asst. Professor, Dept of ISE"
+                              value={fac.designation || ''}
+                              onChange={(e) => handleUpdateEventFacultyCoordinator(fIdx, 'designation', e.target.value)}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Contact / Phone</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. +91 98765 43210"
+                              value={fac.contact || fac.phone || ''}
+                              onChange={(e) => {
+                                handleUpdateEventFacultyCoordinator(fIdx, 'contact', e.target.value);
+                                handleUpdateEventFacultyCoordinator(fIdx, 'phone', e.target.value);
+                              }}
+                              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#c084fc', fontSize: '0.88rem' }}
+                            />
+                          </div>
+
+                          <div style={{ paddingTop: '1.2rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteEventFacultyCoordinator(fIdx)}
+                              style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '0.4rem' }}
+                              title="Remove Coordinator"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

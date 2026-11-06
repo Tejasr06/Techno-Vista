@@ -482,56 +482,83 @@ export default function EventDetails() {
               </h4>
 
               {/* Faculty Coordinators */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <span style={{ fontSize: '0.76rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  Faculty Coordinators (Editable)
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
-                  {event.coordinators.faculty.map((fac, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        padding: '0.75rem',
-                        borderRadius: '8px',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
-                        {fac.name}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                        {fac.designation} • {fac.contact}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {(() => {
+                const facList = Array.isArray(event.coordinators?.faculty)
+                  ? event.coordinators.faculty
+                  : [];
+                const stuList = Array.isArray(event.coordinators?.student)
+                  ? event.coordinators.student
+                  : Array.isArray(event.coordinators)
+                  ? event.coordinators
+                  : [];
 
-              {/* Student Coordinators */}
-              <div>
-                <span style={{ fontSize: '0.76rem', color: '#c084fc', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  Student Leads (Editable)
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
-                  {event.coordinators.student.map((stu, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        padding: '0.75rem',
-                        borderRadius: '8px',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
-                        {stu.name}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                        {stu.role} • {stu.contact}
+                return (
+                  <>
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <span style={{ fontSize: '0.76rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                        Faculty Coordinators
+                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
+                        {facList.length === 0 ? (
+                          <div style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic' }}>
+                            Dept. of ISE Faculty
+                          </div>
+                        ) : (
+                          facList.map((fac, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                padding: '0.75rem',
+                                borderRadius: '8px',
+                                background: 'rgba(255, 255, 255, 0.03)',
+                              }}
+                            >
+                              <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
+                                {fac.name}
+                              </div>
+                              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                                {fac.designation} {fac.contact ? `• ${fac.contact}` : ''}
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+
+                    {/* Student Coordinators */}
+                    <div>
+                      <span style={{ fontSize: '0.76rem', color: '#c084fc', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                        Student Leads
+                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.5rem' }}>
+                        {stuList.length === 0 ? (
+                          <div style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic' }}>
+                            Student Convener Desk
+                          </div>
+                        ) : (
+                          stuList.map((stu, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                padding: '0.75rem',
+                                borderRadius: '8px',
+                                background: 'rgba(255, 255, 255, 0.03)',
+                              }}
+                            >
+                              <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 600 }}>
+                                {stu.name}
+                              </div>
+                              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                                {stu.role || 'Event Lead'} {stu.contact || stu.phone ? `• ${stu.contact || stu.phone}` : ''}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Other Events Quick Navigation */}
