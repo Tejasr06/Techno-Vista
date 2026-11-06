@@ -206,9 +206,7 @@ export default function Footer() {
               {[
                 { name: 'Home', path: '/' },
                 { name: 'About Fest & College', path: '/about' },
-                { name: 'Official Schedule', path: '/schedule' },
                 { name: 'Registration Process', path: '/registration' },
-                { name: 'Photo Gallery', path: '/gallery' },
                 { name: 'Live Announcements', path: '/announcements' },
                 { name: 'Contact & Location', path: '/contact' },
               ].map((item) => (

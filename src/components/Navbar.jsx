@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFest } from '../context/FestContext';
-import { Menu, X, ExternalLink, Zap, QrCode, ShieldCheck, Lock, Eye, EyeOff } from 'lucide-react';
-import QrCodeModal from './QrCodeModal';
+import { Menu, X, ExternalLink, Zap, ShieldCheck, Lock, Eye, EyeOff } from 'lucide-react';
 
 const ADMIN_PASSWORD = '$TechnoVista@2k26';
 
@@ -10,7 +9,6 @@ export default function Navbar() {
   const { googleFormUrl } = useFest();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [qrModalOpen, setQrModalOpen] = useState(false);
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [adminError, setAdminError] = useState('');
@@ -56,9 +54,7 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Events', path: '/events' },
-    { name: 'Schedule', path: '/schedule' },
     { name: 'Registration', path: '/registration' },
-    { name: 'Gallery', path: '/gallery' },
     { name: 'Announcements', path: '/announcements' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -245,29 +241,6 @@ export default function Navbar() {
               <span className="hidden sm:inline">Admin</span>
             </button>
 
-            {/* QR Code Trigger Button */}
-            <button
-              onClick={() => setQrModalOpen(true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.55rem 0.9rem',
-                fontSize: '0.84rem',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
-                color: '#38bdf8',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              title="View Fest & Registration QR Code"
-              aria-label="View QR Code"
-            >
-              <QrCode size={16} />
-              <span className="hidden sm:inline">QR Code</span>
-            </button>
-
             {/* Register Now Primary Button */}
             <a
               href={googleFormUrl}
@@ -428,9 +401,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-
-      {/* QR Code Modal for Participants / Posters */}
-      <QrCodeModal isOpen={qrModalOpen} onClose={() => setQrModalOpen(false)} />
 
       {/* Admin Password Modal */}
       {adminModalOpen && (
