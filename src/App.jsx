@@ -25,6 +25,8 @@ import NotFound from './pages/NotFound';
 export default function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isAdminPage = location.pathname.startsWith('/admin');
+
   return (
     <FestProvider>
       <div className="app-container" style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -32,8 +34,8 @@ export default function App() {
         <TechBackground />
         <div className="cyber-grid-overlay" />
 
-        {/* Cute Interactive Robot Cursor Companion */}
-        <RobotFollower />
+        {/* Cute Interactive Robot Cursor Companion (Hidden when in Admin Panel) */}
+        {!isAdminPage && <RobotFollower />}
 
         {/* Navigation Bar (Public Only - Admin is never visible to participants) */}
         <Navbar />
