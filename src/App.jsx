@@ -7,6 +7,7 @@ import TechBackground from './components/TechBackground';
 import ScrollToTop from './components/ScrollToTop';
 import PageBackgroundAnimation from './components/PageBackgroundAnimation';
 import PageTransition from './components/PageTransition';
+import RobotFollower from './components/RobotFollower';
 
 // Pages
 import Home from './pages/Home';
@@ -30,6 +31,9 @@ export default function App() {
         {/* Background Interactive Tech Canvas & Grid Overlay */}
         <TechBackground />
         <div className="cyber-grid-overlay" />
+
+        {/* Cute Interactive Robot Cursor Companion */}
+        <RobotFollower />
 
         {/* Navigation Bar (Public Only - Admin is never visible to participants) */}
         <Navbar />

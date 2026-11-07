@@ -1197,6 +1197,41 @@ button {
   filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.45));
 }
 
+/* ==========================================================================
+   CUTE ROBOT CURSOR COMPANION ANIMATIONS
+   ========================================================================== */
+@keyframes botThrusterPulse {
+  0%, 100% {
+    transform: scaleY(0.9) scaleX(0.95);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scaleY(1.3) scaleX(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes botAntennaPing {
+  0%, 100% {
+    r: 3.2px;
+    opacity: 0.8;
+  }
+  50% {
+    r: 4.2px;
+    opacity: 1;
+  }
+}
+
+.robot-thruster-flame {
+  transform-origin: 22px 40px;
+  animation: botThrusterPulse 0.35s ease-in-out infinite;
+}
+
+.robot-antenna-tip {
+  animation: botAntennaPing 1.2s ease-in-out infinite;
+}
+
+
 
 
 
