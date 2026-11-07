@@ -37,6 +37,12 @@ export default function RobotFollower() {
   const particles = useRef([]);
   const hasMoved = useRef(false);
 
+  // Smooth limb angle interpolation refs
+  const currentRightArmAngle = useRef(0);
+  const currentLeftArmAngle = useRef(0);
+  const currentLeftLegAngle = useRef(0);
+  const currentRightLegAngle = useRef(0);
+
   // Idle tracking for speech bubble
   const idleFrames = useRef(0);
   const isSpeaking = useRef(false);
@@ -164,7 +170,7 @@ export default function RobotFollower() {
       rotation.current += (targetTilt - rotation.current) * 0.08;
 
       // ==========================================
-      // SLOW PACED ANIMATED WALKING STRIDE
+      // ANIMATED LIMBS: WALKING STRIDE & FRIENDLY HAND WAVE
       // ==========================================
       const isWalking = speed > 0.9;
       let walkBob = 0;
@@ -172,36 +178,40 @@ export default function RobotFollower() {
       if (isWalking) {
         // Slow, gentle stride frequency
         walkStep.current += Math.min(speed * 0.055, 0.085);
-        const legAngle = Math.sin(walkStep.current) * 26; // -26deg to +26deg slow stride
-        const armAngle = -legAngle * 0.7;
+        const targetLeftLeg = Math.sin(walkStep.current) * 26;
+        const targetRightLeg = -targetLeftLeg;
+        const targetLeftArm = -targetLeftLeg * 0.7;
+        const targetRightArm = -targetRightLeg * 0.7;
         walkBob = Math.abs(Math.sin(walkStep.current)) * 2.2;
 
-        if (leftLegRef.current) {
-          leftLegRef.current.style.transform = `rotate(${legAngle}deg)`;
-        }
-        if (rightLegRef.current) {
-          rightLegRef.current.style.transform = `rotate(${-legAngle}deg)`;
-        }
-        if (leftArmRef.current) {
-          leftArmRef.current.style.transform = `rotate(${armAngle}deg)`;
-        }
-        if (rightArmRef.current) {
-          rightArmRef.current.style.transform = `rotate(${-armAngle}deg)`;
-        }
+        // Smooth limb interpolation
+        currentLeftLegAngle.current += (targetLeftLeg - currentLeftLegAngle.current) * 0.2;
+        currentRightLegAngle.current += (targetRightLeg - currentRightLegAngle.current) * 0.2;
+        currentLeftArmAngle.current += (targetLeftArm - currentLeftArmAngle.current) * 0.2;
+        currentRightArmAngle.current += (targetRightArm - currentRightArmAngle.current) * 0.2;
       } else {
-        // Return smoothly to natural standing stance
-        if (leftLegRef.current) {
-          leftLegRef.current.style.transform = 'rotate(0deg)';
-        }
-        if (rightLegRef.current) {
-          rightLegRef.current.style.transform = 'rotate(0deg)';
-        }
-        if (leftArmRef.current) {
-          leftArmRef.current.style.transform = 'rotate(0deg)';
-        }
-        if (rightArmRef.current) {
-          rightArmRef.current.style.transform = 'rotate(0deg)';
-        }
+        // Legs stand naturally
+        currentLeftLegAngle.current += (0 - currentLeftLegAngle.current) * 0.15;
+        currentRightLegAngle.current += (0 - currentRightLegAngle.current) * 0.15;
+        currentLeftArmAngle.current += (6 - currentLeftArmAngle.current) * 0.15;
+
+        // RIGHT HAND WAVES "HI! 👋" CHEERFULLY WHEN STOPPED
+        const targetWave = -128 + Math.sin(hoverTime.current * 6.5) * 22;
+        currentRightArmAngle.current += (targetWave - currentRightArmAngle.current) * 0.14;
+      }
+
+      // Apply transformations to SVG limb refs
+      if (leftLegRef.current) {
+        leftLegRef.current.style.transform = `rotate(${currentLeftLegAngle.current}deg)`;
+      }
+      if (rightLegRef.current) {
+        rightLegRef.current.style.transform = `rotate(${currentRightLegAngle.current}deg)`;
+      }
+      if (leftArmRef.current) {
+        leftArmRef.current.style.transform = `rotate(${currentLeftArmAngle.current}deg)`;
+      }
+      if (rightArmRef.current) {
+        rightArmRef.current.style.transform = `rotate(${currentRightArmAngle.current}deg)`;
       }
 
       // Resting idle bobbing
@@ -390,7 +400,7 @@ export default function RobotFollower() {
                 filter: 'drop-shadow(0 0 10px rgba(0, 240, 255, 0.7)) drop-shadow(0 0 14px rgba(242, 196, 56, 0.5))',
               }}
             >
-              Just Register it Guys!
+              Just Register for it Guys!
             </span>
 
             <span style={{ fontSize: '13px', filter: 'drop-shadow(0 0 6px #ffd95a)' }}>
