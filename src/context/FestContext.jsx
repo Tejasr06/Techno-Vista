@@ -10,7 +10,7 @@ const FestContext = createContext();
 const STORAGE_KEY = 'techno_vista_2k26_custom_data';
 
 export function FestProvider({ children }) {
-  // Load saved admin customizations from localStorage, with fallback to file defaults
+  // Load saved admin customizations from localStorage, with robust fallback to file defaults
   const [googleFormUrl, setGoogleFormUrl] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -29,7 +29,29 @@ export function FestProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.festData) return parsed.festData;
+        if (parsed.festData) {
+          return {
+            ...initialFestData,
+            ...parsed.festData,
+            aboutFest: {
+              ...initialFestData.aboutFest,
+              ...(parsed.festData.aboutFest || {}),
+            },
+            aboutCollege: {
+              ...initialFestData.aboutCollege,
+              ...(parsed.festData.aboutCollege || {}),
+            },
+            aboutDepartment: {
+              ...initialFestData.aboutDepartment,
+              ...(parsed.festData.aboutDepartment || {}),
+            },
+            highlights: parsed.festData.highlights || initialFestData.highlights,
+            takeaways: parsed.festData.takeaways || initialFestData.takeaways,
+            registrationSteps: parsed.festData.registrationSteps || initialFestData.registrationSteps,
+            faqs: parsed.festData.faqs || initialFestData.faqs,
+            importantNotes: parsed.festData.importantNotes || initialFestData.importantNotes,
+          };
+        }
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -42,7 +64,7 @@ export function FestProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.eventsData) return parsed.eventsData;
+        if (parsed.eventsData && Array.isArray(parsed.eventsData)) return parsed.eventsData;
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -55,7 +77,13 @@ export function FestProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.scheduleData) return parsed.scheduleData;
+        if (parsed.scheduleData) {
+          return {
+            ...initialScheduleData,
+            ...parsed.scheduleData,
+            timeline: parsed.scheduleData.timeline || initialScheduleData.timeline,
+          };
+        }
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -68,7 +96,7 @@ export function FestProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.announcementsData) return parsed.announcementsData;
+        if (parsed.announcementsData && Array.isArray(parsed.announcementsData)) return parsed.announcementsData;
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -81,7 +109,31 @@ export function FestProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.contactData) return parsed.contactData;
+        if (parsed.contactData) {
+          return {
+            ...initialContactData,
+            ...parsed.contactData,
+            address: {
+              ...initialContactData.address,
+              ...(parsed.contactData.address || {}),
+            },
+            maps: {
+              ...initialContactData.maps,
+              ...(parsed.contactData.maps || {}),
+            },
+            generalContact: {
+              ...initialContactData.generalContact,
+              ...(parsed.contactData.generalContact || {}),
+            },
+            socialLinks: {
+              ...initialContactData.socialLinks,
+              ...(parsed.contactData.socialLinks || {}),
+            },
+            facultyCoordinators: parsed.contactData.facultyCoordinators || initialContactData.facultyCoordinators,
+            studentCoordinators: parsed.contactData.studentCoordinators || initialContactData.studentCoordinators,
+            travelInfo: parsed.contactData.travelInfo || initialContactData.travelInfo,
+          };
+        }
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -89,7 +141,7 @@ export function FestProvider({ children }) {
     return initialContactData;
   });
 
-  // Automatically sync updates to localStorage
+  // Automatically sync all admin updates to localStorage
   useEffect(() => {
     try {
       const payload = {
@@ -131,8 +183,34 @@ export function FestProvider({ children }) {
     setEventsData((prev) => prev.filter((ev) => ev.id !== eventId));
   };
 
+  // Schedule CRUD
   const updateSchedule = (newTimeline) => {
     setScheduleData((prev) => ({ ...prev, timeline: newTimeline }));
+  };
+
+  const updateScheduleInfo = (info) => {
+    setScheduleData((prev) => ({ ...prev, ...info }));
+  };
+
+  const addScheduleSlot = (newSlot) => {
+    setScheduleData((prev) => ({
+      ...prev,
+      timeline: [...prev.timeline, newSlot],
+    }));
+  };
+
+  const updateScheduleSlot = (slotId, updatedSlot) => {
+    setScheduleData((prev) => ({
+      ...prev,
+      timeline: prev.timeline.map((slot) => (slot.id === slotId ? { ...slot, ...updatedSlot } : slot)),
+    }));
+  };
+
+  const deleteScheduleSlot = (slotId) => {
+    setScheduleData((prev) => ({
+      ...prev,
+      timeline: prev.timeline.filter((slot) => slot.id !== slotId),
+    }));
   };
 
   // Announcements CRUD
@@ -228,6 +306,10 @@ export function FestProvider({ children }) {
         addEvent,
         deleteEvent,
         updateSchedule,
+        updateScheduleInfo,
+        addScheduleSlot,
+        updateScheduleSlot,
+        deleteScheduleSlot,
         addAnnouncement,
         updateAnnouncement,
         deleteAnnouncement,
@@ -254,4 +336,3 @@ export function useFest() {
   }
   return context;
 }
-

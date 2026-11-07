@@ -60,7 +60,7 @@ export default function Schedule() {
         >
           <Info size={22} className="text-cyan-400" style={{ flexShrink: 0 }} />
           <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <strong>Organizer Note:</strong> All timeline slots and venues can be easily adjusted by editing <code style={{ color: '#38bdf8' }}>src/data/scheduleData.js</code>. {scheduleData.note}
+            <strong>Event Schedule Notice:</strong> {scheduleData.note || 'All timings are in Indian Standard Time (IST). The schedule is tentative and subject to minor adjustments on the event day. Check announcements for live updates.'}
           </div>
         </div>
 

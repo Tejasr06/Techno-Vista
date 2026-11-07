@@ -25,7 +25,7 @@ export default function Registration() {
     document.title = `Registration | TECHNO VISTA 2K26 | Sri Sairam College of Engineering`;
   }, []);
 
-  const steps = [
+  const steps = festData.registrationSteps || [
     {
       number: '01',
       title: 'Review Event Rules & Eligibility',
@@ -48,7 +48,7 @@ export default function Registration() {
     },
   ];
 
-  const faqs = [
+  const faqs = festData.faqs || [
     {
       q: 'Can members from different colleges form a single team?',
       a: 'Yes, cross-college teams are permitted for all team-based events (Intelli Talks, Build a Bot, CTF, Clash of Squadz). Every individual member must present a valid college ID from their respective institution.',
@@ -304,13 +304,13 @@ export default function Registration() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {[
+            {(festData.importantNotes || [
               'Physical College ID Card is STRICTLY MANDATORY for campus entry and kit collection.',
               'Cross-college teams are permitted; all team members must possess their respective institution ID cards.',
               'Reporting Time: Participants must report between 8:45 AM and 9:15 AM at Sri Sairam College of Engineering.',
               'Teams arriving after the event commencement may forfeit preliminary round scores at the jury’s discretion.',
               'Discipline, code of conduct, and campus decorum must be maintained throughout the fest.',
-            ].map((rule, idx) => (
+            ]).map((rule, idx) => (
               <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
                 <CheckCircle2 size={16} className="text-cyan-400" style={{ flexShrink: 0, marginTop: '3px' }} />
                 <span style={{ fontSize: '0.94rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>

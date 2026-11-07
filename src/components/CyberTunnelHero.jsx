@@ -73,7 +73,7 @@ export default function CyberTunnelHero() {
 
         {/* Department Name */}
         <div className="cyber-dept-text">
-          DEPARTMENT OF INFORMATION SCIENCE AND ENGINEERING
+          {festData.organizedBy?.toUpperCase() || 'DEPARTMENT OF INFORMATION SCIENCE AND ENGINEERING'}
         </div>
 
         {/* PRESENTS Divider with Tech Lines */}
@@ -96,8 +96,8 @@ export default function CyberTunnelHero() {
               gap: '0.35em',
             }}
           >
-            <span className="cyber-title-perfect">TECHNO</span>
-            <span className="cyber-title-accent">VISTA</span>
+            <span className="cyber-title-perfect">{festData.shortName ? festData.shortName.slice(0, 6) : 'TECHNO'}</span>
+            <span className="cyber-title-accent">{festData.shortName ? festData.shortName.slice(6) || 'VISTA' : 'VISTA'}</span>
           </h1>
 
           <div style={{ marginTop: '0.2rem' }}>
@@ -108,7 +108,7 @@ export default function CyberTunnelHero() {
                 lineHeight: 1,
               }}
             >
-              2K26
+              {festData.edition || '2K26'}
             </span>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function CyberTunnelHero() {
               filter: 'drop-shadow(0 0 12px rgba(0, 240, 255, 0.45))',
             }}
           >
-            JOIN THE EVENT
+            {festData.heroSubtitle || 'JOIN THE EVENT'}
           </div>
 
           <div
@@ -146,7 +146,7 @@ export default function CyberTunnelHero() {
               textTransform: 'uppercase',
             }}
           >
-            {festData.tagline} • NATIONAL-LEVEL TECHNICAL FEST
+            {festData.tagline} • {festData.eventType?.toUpperCase() || 'NATIONAL-LEVEL TECHNICAL FEST'}
           </div>
         </div>
 

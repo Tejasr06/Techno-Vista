@@ -35,7 +35,7 @@ export default function Contact() {
           subtitle="Reach out to our organizing conveners or navigate to the Sri Sairam College of Engineering campus."
         />
 
-        {/* Organizer Editable Notice */}
+        {/* Connect Notice Banner */}
         <div
           className="glass-panel"
           style={{
@@ -51,7 +51,7 @@ export default function Contact() {
         >
           <Info size={20} className="text-cyan-400" style={{ flexShrink: 0 }} />
           <span>
-            <strong>Editable Placeholders:</strong> Phone numbers, coordinator names, emails, and social channels can be updated without altering UI code by opening <code style={{ color: '#38bdf8' }}>src/data/contactData.js</code>.
+            Have questions about registrations, transport, or competition rules? Reach out to our faculty and student coordinators below or visit the ISE department desk.
           </span>
         </div>
 
@@ -75,7 +75,7 @@ export default function Contact() {
               }}
             >
               <GraduationCap size={18} />
-              <span>FACULTY CONVENERS (EDITABLE)</span>
+              <span>FACULTY CONVENERS</span>
             </div>
 
             <div

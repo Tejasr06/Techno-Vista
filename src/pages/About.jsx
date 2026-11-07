@@ -144,7 +144,7 @@ export default function About() {
             </div>
 
             <p style={{ fontSize: '0.96rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-              The purpose of organizing TECHNO VISTA 2K26 is to create an authentic bridge between classroom theoretical computer science and high-pressure industry-grade engineering environments.
+              {festData.aboutFest?.purposeParagraph || 'The purpose of organizing TECHNO VISTA 2K26 is to create an authentic bridge between classroom theoretical computer science and high-pressure industry-grade engineering environments.'}
             </p>
 
             <div
@@ -156,12 +156,12 @@ export default function About() {
                 borderTop: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
-              {[
+              {(festData.aboutFest?.purposePoints || [
                 'Benchmarking technical acumen against students nationwide',
                 'Promoting research orientation and paper defense standards',
                 'Sharpening competitive programming speed and complexity analysis',
                 'Cultivating hands-on cybersecurity and robotics skills',
-              ].map((text, idx) => (
+              ]).map((text, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                   <CheckCircle2 size={16} className="text-cyan-400" style={{ flexShrink: 0 }} />
                   <span style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>{text}</span>
@@ -359,29 +359,26 @@ export default function About() {
               gap: '1.5rem',
             }}
           >
-            {[
+            {(festData.takeaways || [
               {
-                icon: Trophy,
                 title: 'Podium Honors & Cash Rewards',
                 desc: 'Winners receive cash awards, prestigious trophies, and commemorative medals in front of the assembled audience.',
               },
               {
-                icon: BookOpen,
                 title: 'Industry & Academic Jury Feedback',
                 desc: 'Constructive evaluations from experienced professors and technology professionals to hone your project defense skills.',
               },
               {
-                icon: Users2,
                 title: 'Peer Cross-Pollination',
                 desc: 'Collaborate and network with engineering peers passionate about full-stack dev, AI, ethical hacking, and robotics.',
               },
               {
-                icon: CheckCircle2,
                 title: 'Official VTU-Affiliated Certificates',
                 desc: 'Valid, authorized participation certificates recognizing your engagement in a national-level symposium.',
               },
-            ].map((item, i) => {
-              const Icon = item.icon;
+            ]).map((item, i) => {
+              const icons = [Trophy, BookOpen, Users2, CheckCircle2];
+              const Icon = icons[i % icons.length];
               return (
                 <div
                   key={i}
