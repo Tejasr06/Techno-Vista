@@ -134,7 +134,7 @@ export default function CyberTunnelHero() {
               filter: 'drop-shadow(0 0 12px rgba(0, 240, 255, 0.45))',
             }}
           >
-            JOIN THE CYBER BATTLE
+            JOIN THE EVENT
           </div>
 
           <div
