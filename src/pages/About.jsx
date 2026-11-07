@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useFest } from '../context/FestContext';
 import SectionTitle from '../components/SectionTitle';
-import KineticPerspectiveTransition from '../components/KineticPerspectiveTransition';
 import {
   Sparkles,
   Target,
@@ -249,13 +248,6 @@ export default function About() {
             </p>
           </div>
         </div>
-
-        {/* =========================================================================
-            SAI INTELLIVERSE-INSPIRED KINETIC PERSPECTIVE TYPOGRAPHY
-            Dynamic 3D perspective rays & tracking beacon morphing:
-            TECHNO VISTA 2.0 ➔ DEPARTMENT OF INFORMATION SCIENCE AND ENGINEERING
-            ========================================================================= */}
-        <KineticPerspectiveTransition />
 
         {/* =========================================================================
             ABOUT COLLEGE & ABOUT DEPARTMENT SECTION
