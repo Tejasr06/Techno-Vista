@@ -5,7 +5,8 @@ import React, { useEffect, useState, useRef } from 'react';
  * A delightful, futuristic mini robot companion that smoothly follows the cursor.
  * Features:
  * - Smooth lerp (linear interpolation) physics follow with realistic tilt/banking
- * - Interactive expressions: blinks naturally, smiles (^ ^) when hovering clickable elements
+ * - Interactive expressions: blinks naturally, smiles (^ ^) when hovering clickable elements or speaking
+ * - When stopped in one place, cute neon speech bubble pops up: "Just Register it Guys! 🚀"
  * - Emits tiny luminous stardust/thruster particles while flying
  * - Floating hover oscillation when stationary
  * - Completely non-intrusive (pointer-events: none, auto-disabled on mobile touchscreens)
@@ -14,10 +15,11 @@ export default function RobotFollower() {
   const [visible, setVisible] = useState(false);
   const [isHoveringClickable, setIsHoveringClickable] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
-  
+  const [showSpeech, setShowSpeech] = useState(false);
+
   const botRef = useRef(null);
   const canvasRef = useRef(null);
-  
+
   // Physics states stored in refs to avoid React re-renders on every animation frame (60fps)
   const pos = useRef({ x: -100, y: -100 });
   const target = useRef({ x: -100, y: -100 });
@@ -26,6 +28,10 @@ export default function RobotFollower() {
   const hoverTime = useRef(0);
   const particles = useRef([]);
   const hasMoved = useRef(false);
+
+  // Idle tracking for speech bubble
+  const idleFrames = useRef(0);
+  const isSpeaking = useRef(false);
 
   useEffect(() => {
     // Only enable if pointer is fine (mouse/trackpad, not purely mobile touch)
@@ -36,6 +42,13 @@ export default function RobotFollower() {
     const handleMouseMove = (e) => {
       target.current.x = e.clientX + 22; // Slight offset so it floats near cursor without covering click target
       target.current.y = e.clientY + 18;
+
+      // Reset speech bubble when moving
+      idleFrames.current = 0;
+      if (isSpeaking.current) {
+        isSpeaking.current = false;
+        setShowSpeech(false);
+      }
 
       if (!hasMoved.current) {
         hasMoved.current = true;
@@ -68,6 +81,8 @@ export default function RobotFollower() {
 
     const handleMouseLeave = () => {
       setVisible(false);
+      setShowSpeech(false);
+      isSpeaking.current = false;
     };
 
     const handleMouseEnter = () => {
@@ -126,8 +141,28 @@ export default function RobotFollower() {
       const targetTilt = Math.max(-22, Math.min(22, dx * 0.45));
       rotation.current += (targetTilt - rotation.current) * 0.12;
 
-      // Gentle vertical hover bobbing when resting
+      // Speed of robot
       const speed = Math.hypot(dx, dy);
+
+      // Idle stop detection: when robot stops in one place, show "Just Register it Guys!"
+      if (hasMoved.current) {
+        if (speed < 1.3) {
+          idleFrames.current++;
+          // After ~0.4s of being stationary (24 frames at 60fps)
+          if (idleFrames.current >= 24 && !isSpeaking.current) {
+            isSpeaking.current = true;
+            setShowSpeech(true);
+          }
+        } else {
+          idleFrames.current = 0;
+          if (isSpeaking.current) {
+            isSpeaking.current = false;
+            setShowSpeech(false);
+          }
+        }
+      }
+
+      // Gentle vertical hover bobbing when resting
       const bobbing = speed < 2 ? Math.sin(hoverTime.current * 1.8) * 3.5 : 0;
 
       // Update bot DOM style directly for maximum performance
@@ -225,12 +260,76 @@ export default function RobotFollower() {
           opacity: visible ? 1 : 0,
           transformOrigin: '50% 50%',
           transition: 'opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          filter: isHoveringClickable
+          filter: isHoveringClickable || showSpeech
             ? 'drop-shadow(0 0 12px rgba(242, 196, 56, 0.75))'
             : 'drop-shadow(0 0 10px rgba(0, 240, 255, 0.65))',
         }}
         aria-hidden="true"
       >
+        {/* Cute Speech Bubble Pop-up when stopped in one place */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: showSpeech
+              ? 'translate(-50%, -12px) scale(1)'
+              : 'translate(-50%, 0px) scale(0)',
+            transformOrigin: 'bottom center',
+            transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            opacity: showSpeech ? 1 : 0,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            zIndex: 100,
+          }}
+        >
+          <div
+            style={{
+              background: 'linear-gradient(135deg, rgba(8, 15, 35, 0.96), rgba(15, 23, 42, 0.96))',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1.5px solid #00f0ff',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 240, 255, 0.4), 0 0 8px rgba(242, 196, 56, 0.3)',
+              color: '#ffffff',
+              padding: '6px 12px',
+              borderRadius: '12px',
+              fontSize: '11px',
+              fontWeight: 800,
+              fontFamily: 'var(--font-heading, inherit)',
+              letterSpacing: '0.02em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <span
+              style={{
+                color: '#f2c438',
+                textShadow: '0 0 8px rgba(242, 196, 56, 0.6)',
+              }}
+            >
+              Just Register it Guys!
+            </span>
+            <span style={{ fontSize: '12px' }}>🚀</span>
+          </div>
+
+          {/* Speech bubble pointer tail */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 0,
+              height: 0,
+              borderLeft: '5px solid transparent',
+              borderRight: '5px solid transparent',
+              borderTop: '6px solid #00f0ff',
+            }}
+          />
+        </div>
+
+        {/* Robot SVG Graphics */}
         <svg
           width="44"
           height="52"
@@ -328,7 +427,7 @@ export default function RobotFollower() {
             height="30"
             rx="14"
             fill="url(#robotBodyGrad)"
-            stroke={isHoveringClickable ? '#f2c438' : '#38bdf8'}
+            stroke={isHoveringClickable || showSpeech ? '#f2c438' : '#38bdf8'}
             strokeWidth="1.6"
           />
 
@@ -352,14 +451,14 @@ export default function RobotFollower() {
             strokeWidth="0.8"
           />
 
-          {/* 7. Eyes: Happy Arcs (^ ^) when hovering clickable, normal blinks otherwise */}
-          {isBlinking ? (
+          {/* 7. Eyes: Happy Arcs (^ ^) when hovering or speaking, normal blinks otherwise */}
+          {isBlinking && !showSpeech ? (
             // Blinking Flat Lines
             <>
               <line x1="14" y1="24" x2="18" y2="24" stroke="#00f0ff" strokeWidth="1.8" strokeLinecap="round" />
               <line x1="26" y1="24" x2="30" y2="24" stroke="#00f0ff" strokeWidth="1.8" strokeLinecap="round" />
             </>
-          ) : isHoveringClickable ? (
+          ) : isHoveringClickable || showSpeech ? (
             // Excited Happy Arcs (^ ^) with golden shine
             <>
               <path
