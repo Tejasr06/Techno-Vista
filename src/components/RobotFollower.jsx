@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useFest } from '../context/FestContext';
+import FestChatBot from './FestChatBot';
 
 /**
  * RobotFollower Component
@@ -9,11 +10,13 @@ import { useFest } from '../context/FestContext';
  * - Follows the cursor at a calm, slow walking pace with running leg & arm strides.
  * - Waves hand cheerfully "Hi! 👋" when stopped, and displays speech bubble: "Just Register for it Guys! ⚡".
  * - Subtle stardust particles underneath its feet while walking.
+ * - Clicking the mascot opens the interactive Fest Chatbot!
  * 
  * MOBILE (Touchscreen / Responsive):
  * - Floats gracefully in the bottom-right corner as an interactive companion.
  * - Continuously bobs up and down and waves its hand cheerfully.
- * - Displays speech bubble linking directly to the registration Google Form.
+ * - Displays speech bubble prompting users to chat or register.
+ * - Tapping the robot or speech bubble opens the interactive TECHNO VISTA Chatbot with selectable questions and conversation flow!
  * - Includes a discreet minimize (×) button and a cute restore button.
  */
 export default function RobotFollower() {
@@ -24,10 +27,11 @@ export default function RobotFollower() {
   const [isBlinking, setIsBlinking] = useState(false);
   const [showSpeech, setShowSpeech] = useState(false);
 
-  // Mobile Floating Companion States
+  // Mobile Floating Companion & Chatbot States
   const [isMobile, setIsMobile] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [mobileSpeechOpen, setMobileSpeechOpen] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const botRef = useRef(null);
   const visualWrapperRef = useRef(null);
@@ -448,15 +452,13 @@ export default function RobotFollower() {
               }
         }
         onClick={() => {
-          if (isMobile) {
-            setMobileSpeechOpen((prev) => !prev);
-          }
+          setIsChatOpen(true);
         }}
       >
         {/* =========================================================================
-            SPEECH BUBBLE: "Just Register for it Guys!"
-            - Desktop: Floats above head when stopped
-            - Mobile: Tappable call-to-action linking directly to Google Form with minimize button
+            SPEECH BUBBLE: "Chat with Fest Bot 💬" / "Just Register for it Guys! ⚡"
+            - Desktop: Floats above head when stopped, click to open chatbot
+            - Mobile: Tappable call-to-action opening the Fest Interactive Chatbot
             ========================================================================= */}
         <div
           style={
@@ -472,6 +474,7 @@ export default function RobotFollower() {
                   opacity: mobileSpeechOpen ? 1 : 0,
                   whiteSpace: 'nowrap',
                   zIndex: 100,
+                  cursor: 'pointer',
                 }
               : {
                   position: 'absolute',
@@ -483,19 +486,18 @@ export default function RobotFollower() {
                   transformOrigin: 'bottom center',
                   transition: 'all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   opacity: showSpeech ? 1 : 0,
-                  pointerEvents: 'none',
                   whiteSpace: 'nowrap',
                   zIndex: 100,
+                  cursor: 'pointer',
                 }
           }
           onClick={(e) => {
-            if (isMobile) {
-              e.stopPropagation();
-            }
+            e.stopPropagation();
+            setIsChatOpen(true);
           }}
         >
           {isMobile ? (
-            /* Mobile Interactive Speech Bubble with Direct Link & Close (×) button */
+            /* Mobile Interactive Speech Bubble with Direct Chatbot Launcher & Close button */
             <div style={{ position: 'relative' }}>
               {/* Dismiss / Minimize button on mobile */}
               <button
@@ -529,12 +531,8 @@ export default function RobotFollower() {
                 ×
               </button>
 
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <div
                 style={{
-                  textDecoration: 'none',
                   background: 'linear-gradient(135deg, rgba(6, 12, 28, 0.98), rgba(15, 23, 42, 0.96))',
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
@@ -553,8 +551,8 @@ export default function RobotFollower() {
                     width: '7px',
                     height: '7px',
                     borderRadius: '50%',
-                    backgroundColor: '#f2c438',
-                    boxShadow: '0 0 10px #f2c438',
+                    backgroundColor: '#00f0ff',
+                    boxShadow: '0 0 10px #00f0ff',
                     flexShrink: 0,
                   }}
                 />
@@ -572,13 +570,13 @@ export default function RobotFollower() {
                     filter: 'drop-shadow(0 0 10px rgba(0, 240, 255, 0.7))',
                   }}
                 >
-                  Just Register for it Guys!
+                  Chat with Fest Bot
                 </span>
 
-                <span style={{ fontSize: '13px', filter: 'drop-shadow(0 0 6px #ffd95a)' }}>
-                  ⚡
+                <span style={{ fontSize: '13px' }}>
+                  💬
                 </span>
-              </a>
+              </div>
 
               {/* Mobile speech bubble downward arrow */}
               <div
@@ -858,6 +856,9 @@ export default function RobotFollower() {
           </svg>
         </div>
       </div>
+
+      {/* Interactive Fest Chatbot Modal / Drawer */}
+      <FestChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </>
   );
 }
