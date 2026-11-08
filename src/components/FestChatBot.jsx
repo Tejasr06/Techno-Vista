@@ -5,6 +5,7 @@ import {
   Send,
   ExternalLink,
   RotateCcw,
+  RefreshCw,
   Sparkles,
   Phone,
   Calendar,
@@ -18,53 +19,91 @@ import {
   Award,
 } from 'lucide-react';
 
+const STORAGE_KEY = 'techno_vista_2k26_custom_data';
+
 export default function FestChatBot({ isOpen, onClose }) {
-  const { festData, eventsData, contactData, scheduleData, announcementsData, googleFormUrl } = useFest();
+  const {
+    festData,
+    eventsData,
+    contactData,
+    scheduleData,
+    announcementsData,
+    googleFormUrl,
+    reloadFromStorage,
+  } = useFest();
+
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [syncToast, setSyncToast] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Dynamic quick-action chips generated directly from live FestContext data
-  const quickQuestions = [
-    { id: 'register', label: '📝 Registration Form', query: 'How to register for the fest?' },
-    { id: 'events', label: `🏆 All Events (${eventsData?.length || 0})`, query: 'Show all flagship events' },
-    { id: 'datetime', label: '📍 Date & Venue', query: 'When and where is the fest?' },
-    { id: 'schedule', label: `📅 Schedule (${(scheduleData?.timeline || []).length} slots)`, query: 'Show the event schedule and timeline' },
-    { id: 'rules', label: '👥 Rules & Eligibility', query: 'What are the team rules and eligibility criteria?' },
-    { id: 'prizes', label: '🎁 Prizes & Perks', query: 'What are the prizes and takeaways?' },
-    { id: 'coordinators', label: '📞 Contact Leads', query: 'Who are the faculty and student coordinators?' },
-    { id: 'travel', label: '🚌 How to Reach', query: 'How to reach Sri Sairam College of Engineering?' },
-    ...(announcementsData && announcementsData.length > 0
-      ? [{ id: 'announcements', label: `📢 Live Alerts (${announcementsData.length})`, query: 'Show live announcements' }]
-      : []),
-    // Individual live event chips
-    ...(eventsData || []).map((ev) => ({
-      id: `ev-${ev.id}`,
-      label: `⚡ ${ev.name}`,
-      query: `Tell me about ${ev.name}`,
-    })),
-  ];
-
-  // Initialize conversation with live greeting derived from current festData
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([
-        {
-          id: 'welcome-1',
-          sender: 'bot',
-          text: `Hi there! 👋 I am your live ${festData?.name || 'Techno Vista'} assistant. Every answer I provide comes directly from this website's real-time information.\n\nTap any topic or event below to explore!`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          suggestions: [
-            'Show all flagship events',
-            'How to register for the fest?',
-            'When and where is the fest?',
-            ...(eventsData || []).slice(0, 3).map((e) => `Tell me about ${e.name}`),
-          ],
-        },
-      ]);
+  // Directly reads the freshest data from localStorage to eliminate any stale closures or delay
+  const getLiveFestState = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          currentFest: parsed.festData || festData,
+          currentEvents: Array.isArray(parsed.eventsData) ? parsed.eventsData : eventsData,
+          currentSchedule: parsed.scheduleData || scheduleData,
+          currentAnnouncements: Array.isArray(parsed.announcementsData) ? parsed.announcementsData : announcementsData,
+          currentContact: parsed.contactData || contactData,
+          currentFormUrl: parsed.googleFormUrl || googleFormUrl,
+        };
+      }
+    } catch (e) {
+      console.error('Error fetching live fest state in bot:', e);
     }
-  }, [isOpen, festData?.name, eventsData]);
+    return {
+      currentFest: festData,
+      currentEvents: eventsData,
+      currentSchedule: scheduleData,
+      currentAnnouncements: announcementsData,
+      currentContact: contactData,
+      currentFormUrl: googleFormUrl,
+    };
+  };
+
+  // Helper to sanitize placeholder brackets if an admin hasn't edited a field yet
+  const cleanText = (str) => {
+    if (!str) return '';
+    return str
+      .replace(/\s*\((?:Tentative\s*\/)?\s*Editable(?:\s+Placeholder|\s+in\s+eventsData\.js)?\)/gi, '')
+      .replace(/\[Phone\/Email\s+Placeholder\]/gi, 'Contact available at ISE Desk')
+      .replace(/\[Phone\s+Placeholder\]/gi, 'Available at Registration Desk')
+      .replace(/\[\+91\s+XXXXX\s+XXXXX\s*-\s*Editable\]/gi, '+91 (Dept. of ISE Helpline)')
+      .replace(/\[Editable(?:\s+Placeholder)?:\s*[^\]]+\]/gi, '')
+      .trim();
+  };
+
+  // Whenever the chatbot is opened, immediately refresh data from localStorage
+  useEffect(() => {
+    if (isOpen) {
+      if (reloadFromStorage) {
+        reloadFromStorage();
+      }
+      const { currentFest, currentEvents } = getLiveFestState();
+      // If no messages yet, load initial greeting
+      if (messages.length === 0) {
+        setMessages([
+          {
+            id: 'welcome-1',
+            sender: 'bot',
+            text: `Hi there! 👋 I am your live ${currentFest?.name || 'Techno Vista'} assistant. Every detail I give comes directly from this website's real-time data.\n\nTap any topic or event below to explore!`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            suggestions: [
+              'Show all flagship events',
+              'How to register for the fest?',
+              'When and where is the fest?',
+              ...(currentEvents || []).slice(0, 3).map((e) => `Tell me about ${e.name}`),
+            ],
+          },
+        ]);
+      }
+    }
+  }, [isOpen]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -73,54 +112,116 @@ export default function FestChatBot({ isOpen, onClose }) {
     }
   }, [messages, isTyping, isOpen]);
 
-  // Answer matching engine based 100% on actual live data from FestContext
+  // Dynamic quick-action chips generated directly from live state
+  const { currentEvents, currentSchedule, currentAnnouncements } = getLiveFestState();
+  const quickQuestions = [
+    { id: 'register', label: '📝 Registration Form', query: 'How to register for the fest?' },
+    { id: 'events', label: `🏆 All Events (${currentEvents?.length || 0})`, query: 'Show all flagship events' },
+    { id: 'datetime', label: '📍 Date & Venue', query: 'When and where is the fest?' },
+    { id: 'schedule', label: `📅 Schedule (${(currentSchedule?.timeline || []).length} slots)`, query: 'Show the event schedule and timeline' },
+    { id: 'rules', label: '👥 Rules & Eligibility', query: 'What are the team rules and eligibility criteria?' },
+    { id: 'prizes', label: '🎁 Prizes & Perks', query: 'What are the prizes and takeaways?' },
+    { id: 'coordinators', label: '📞 Contact Leads', query: 'Who are the faculty and student coordinators?' },
+    { id: 'travel', label: '🚌 How to Reach', query: 'How to reach Sri Sairam College of Engineering?' },
+    ...(currentAnnouncements && currentAnnouncements.length > 0
+      ? [{ id: 'announcements', label: `📢 Live Alerts (${currentAnnouncements.length})`, query: 'Show live announcements' }]
+      : []),
+    // Individual live event chips
+    ...(currentEvents || []).map((ev) => ({
+      id: `ev-${ev.id}`,
+      label: `⚡ ${ev.name}`,
+      query: `Tell me about ${ev.name}`,
+    })),
+  ];
+
+  // Answer matching engine based 100% on live state
   const generateBotReply = (query) => {
-    const q = query.toLowerCase().trim();
+    // Re-fetch live state at the exact moment this query is executed
+    const {
+      currentFest,
+      currentEvents,
+      currentSchedule,
+      currentAnnouncements,
+      currentContact,
+      currentFormUrl,
+    } = getLiveFestState();
+
+    const rawQ = query.toLowerCase().trim();
+    // Strip common filler prefixes
+    const q = rawQ.replace(/^(tell me about|what is|info on|details about|show me|explain|can you tell me about)\s+/i, '').trim();
 
     // 1. SPECIFIC EVENT MATCHING (Completely dynamic: checks every event currently in eventsData)
-    const matchedEvent = (eventsData || []).find((ev) => {
+    const matchedEvent = (currentEvents || []).find((ev) => {
       const name = (ev.name || '').toLowerCase();
       const id = (ev.id || '').toLowerCase();
       const cat = (ev.category || '').toLowerCase();
       const sub = (ev.subtitle || '').toLowerCase();
-      if (q === name || q.includes(name) || name.includes(q)) return true;
-      if (q === id || q.includes(id)) return true;
-      if (cat && (q.includes(cat) || cat.includes(q))) return true;
-      if (sub && (q.includes(sub) || sub.includes(q))) return true;
+
+      // Direct exact match
+      if (q === name || rawQ.includes(name) || (name.length >= 4 && q.includes(name))) return true;
+      if (q === id || rawQ.includes(id)) return true;
+
+      // Smart semantic aliases
+      if (id.includes('intelli') || name.includes('intelli')) {
+        if (q.includes('intelli') || q.includes('paper') || q.includes('presentation')) return true;
+      }
+      if (id.includes('code') || id.includes('sprint') || name.includes('code')) {
+        if (q.includes('code sprint') || q.includes('coding') || q.includes('debug') || q.includes('sprint')) return true;
+      }
+      if (id.includes('flag') || id.includes('ctf') || name.includes('flag')) {
+        if (q.includes('ctf') || q.includes('capture the flag') || q.includes('cyber') || q.includes('hack')) return true;
+      }
+      if (id.includes('bot') || name.includes('bot')) {
+        if (q.includes('build a bot') || q.includes('robotics') || q.includes('robot') || q.includes('line follower')) return true;
+      }
+      if (id.includes('frame') || id.includes('fusion') || name.includes('fusion')) {
+        if (q.includes('frame fusion') || q.includes('ui/ux') || q.includes('ui ux') || q.includes('figma') || q.includes('design')) return true;
+      }
+      if (id.includes('squad') || id.includes('clash') || name.includes('squad')) {
+        if (q.includes('clash of squadz') || q.includes('esports') || q.includes('bgmi') || q.includes('gaming') || q.includes('lan')) return true;
+      }
+
+      // Check category or subtitle match
+      if (cat && cat.length >= 5 && (q.includes(cat) || (q.length >= 5 && cat.includes(q)))) return true;
+      if (sub && sub.length >= 5 && (q.includes(sub) || (q.length >= 5 && sub.includes(q)))) return true;
+
       return false;
     });
 
     if (matchedEvent) {
       let details = `⚡ ${matchedEvent.name.toUpperCase()}`;
-      if (matchedEvent.subtitle) details += ` — ${matchedEvent.subtitle}`;
-      if (matchedEvent.tagline) details += `\n"${matchedEvent.tagline}"`;
-      if (matchedEvent.category) details += `\n\n📌 Category: ${matchedEvent.category}`;
+      if (matchedEvent.subtitle) details += ` — ${cleanText(matchedEvent.subtitle)}`;
+      if (matchedEvent.tagline) details += `\n"${cleanText(matchedEvent.tagline)}"`;
+      if (matchedEvent.category) details += `\n\n📌 Category: ${cleanText(matchedEvent.category)}`;
       if (matchedEvent.shortDescription || matchedEvent.overview) {
-        details += `\n📖 Overview: ${matchedEvent.shortDescription || matchedEvent.overview}`;
+        details += `\n📖 Overview: ${cleanText(matchedEvent.shortDescription || matchedEvent.overview)}`;
       }
-      if (matchedEvent.teamSize) details += `\n👥 Team Size: ${matchedEvent.teamSize}`;
-      if (matchedEvent.venue) details += `\n📍 Venue: ${matchedEvent.venue}`;
-      if (matchedEvent.timing) details += `\n⏰ Timing: ${matchedEvent.timing}`;
-      if (matchedEvent.eligibility) details += `\n🎓 Eligibility: ${matchedEvent.eligibility}`;
+      if (matchedEvent.teamSize) details += `\n👥 Team Size: ${cleanText(matchedEvent.teamSize)}`;
+      if (matchedEvent.venue) details += `\n📍 Venue: ${cleanText(matchedEvent.venue)}`;
+      if (matchedEvent.timing) details += `\n⏰ Timing: ${cleanText(matchedEvent.timing)}`;
+      if (matchedEvent.eligibility) details += `\n🎓 Eligibility: ${cleanText(matchedEvent.eligibility)}`;
 
       if (matchedEvent.rounds && matchedEvent.rounds.length > 0) {
         const roundsList = matchedEvent.rounds
-          .map((r) => `  • ${r.roundNumber ? `${r.roundNumber}: ` : ''}${r.title}${r.description ? ` (${r.description})` : ''}`)
+          .map((r) => `  • ${r.roundNumber ? `${r.roundNumber}: ` : ''}${cleanText(r.title)}${r.description ? ` (${cleanText(r.description)})` : ''}`)
           .join('\n');
         details += `\n\n🏆 Competition Rounds:\n${roundsList}`;
       }
 
       if (matchedEvent.rules && matchedEvent.rules.length > 0) {
-        const rulesList = matchedEvent.rules.map((r, i) => `  ${i + 1}. ${r}`).join('\n');
+        const rulesList = matchedEvent.rules.map((r, i) => `  ${i + 1}. ${cleanText(r)}`).filter((r) => r.trim()).join('\n');
         details += `\n\n📋 Event Rules:\n${rulesList}`;
       }
 
       if (matchedEvent.judgingCriteria && matchedEvent.judgingCriteria.length > 0) {
-        const criteriaList = matchedEvent.judgingCriteria.map((j) => `  • ${j.parameter}: ${j.weight}`).join('\n');
+        const criteriaList = matchedEvent.judgingCriteria.map((j) => `  • ${cleanText(j.parameter)}: ${j.weight}`).join('\n');
         details += `\n\n⚖️ Judging Criteria:\n${criteriaList}`;
       }
 
-      const otherEvents = (eventsData || []).filter((e) => e.id !== matchedEvent.id).slice(0, 3).map((e) => `Tell me about ${e.name}`);
+      const otherEvents = (currentEvents || [])
+        .filter((e) => e.id !== matchedEvent.id)
+        .slice(0, 3)
+        .map((e) => `Tell me about ${e.name}`);
 
       return {
         text: details,
@@ -133,44 +234,44 @@ export default function FestChatBot({ isOpen, onClose }) {
     }
 
     // 2. ALL EVENTS OVERVIEW (Dynamically maps current eventsData)
-    if (q.includes('event') || q.includes('compet') || q.includes('track') || q.includes('flagship') || q.includes('contest') || q.includes('game') || q.includes('all')) {
-      const eventList = (eventsData || [])
+    if (q.includes('event') || q.includes('compet') || q.includes('track') || q.includes('flagship') || q.includes('contest') || q.includes('all')) {
+      const eventList = (currentEvents || [])
         .map((ev, i) => {
           let line = `${i + 1}. ⚡ ${ev.name}`;
-          if (ev.subtitle) line += ` — ${ev.subtitle}`;
-          if (ev.category) line += `\n   • Track: ${ev.category}`;
-          if (ev.teamSize) line += `\n   • Team: ${ev.teamSize}`;
-          if (ev.venue) line += `\n   • Venue: ${ev.venue}`;
-          if (ev.timing) line += `\n   • Timing: ${ev.timing}`;
+          if (ev.subtitle) line += ` — ${cleanText(ev.subtitle)}`;
+          if (ev.category) line += `\n   • Track: ${cleanText(ev.category)}`;
+          if (ev.teamSize) line += `\n   • Team: ${cleanText(ev.teamSize)}`;
+          if (ev.venue) line += `\n   • Venue: ${cleanText(ev.venue)}`;
+          if (ev.timing) line += `\n   • Timing: ${cleanText(ev.timing)}`;
           return line;
         })
         .join('\n\n');
 
       return {
-        text: `${festData?.name || 'Techno Vista'} currently features ${eventsData?.length || 0} premier national-level competitions organized by the ${festData?.organizedBy || 'Dept. of ISE'}:\n\n${eventList}\n\n💡 Participants can join multiple events provided their slot timings do not conflict!`,
+        text: `${currentFest?.name || 'Techno Vista'} currently features ${currentEvents?.length || 0} premier national-level competitions organized by the ${currentFest?.organizedBy || 'Dept. of ISE'}:\n\n${eventList}\n\n💡 Participants can join multiple events provided their slot timings do not conflict!`,
         action: {
           label: 'View All Events on Website',
           link: '/events',
         },
-        suggestions: (eventsData || []).map((e) => `Tell me about ${e.name}`),
+        suggestions: (currentEvents || []).map((e) => `Tell me about ${e.name}`),
       };
     }
 
     // 3. SCHEDULE & TIMELINE (Dynamically maps current scheduleData.timeline)
     if (q.includes('schedule') || q.includes('agenda') || q.includes('timeline') || q.includes('inaugur') || q.includes('lunch') || q.includes('slot') || q.includes('session')) {
-      const dateHeader = scheduleData?.festDate || festData?.dateText || 'Fest Day';
-      const slots = (scheduleData?.timeline || []).map((s) => {
-        let str = `• ${s.time}: ${s.title}`;
-        if (s.venue) str += ` [📍 ${s.venue}]`;
-        if (s.description) str += `\n  ${s.description}`;
+      const dateHeader = currentSchedule?.festDate || currentFest?.dateText || 'Fest Day';
+      const slots = (currentSchedule?.timeline || []).map((s) => {
+        let str = `• ${cleanText(s.time)}: ${cleanText(s.title)}`;
+        if (s.venue) str += ` [📍 ${cleanText(s.venue)}]`;
+        if (s.description) str += `\n  ${cleanText(s.description)}`;
         if (s.subEvents && s.subEvents.length > 0) {
-          str += '\n' + s.subEvents.map((se) => `    - ${se.name} (${se.time}) @ ${se.venue}`).join('\n');
+          str += '\n' + s.subEvents.map((se) => `    - ${cleanText(se.name)} (${cleanText(se.time)}) @ ${cleanText(se.venue)}`).join('\n');
         }
         return str;
       }).join('\n\n');
 
       return {
-        text: `Official Event Schedule (${dateHeader}):\n\n${slots}\n\n${scheduleData?.note || ''}`,
+        text: `Official Event Schedule (${dateHeader}):\n\n${slots}\n\n${cleanText(currentSchedule?.note) || ''}`,
         action: {
           label: 'View Full Schedule Page',
           link: '/schedule',
@@ -181,13 +282,13 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // 4. REGISTRATION & GOOGLE FORM (Dynamically pulls registrationSteps and googleFormUrl)
     if (q.includes('register') || q.includes('registration') || q.includes('form') || q.includes('apply') || q.includes('enroll') || q.includes('fee') || q.includes('cost') || q.includes('price')) {
-      const steps = (festData?.registrationSteps || []).map((s) => `${s.number}. ${s.title}:\n   ${s.desc}`).join('\n\n');
+      const steps = (currentFest?.registrationSteps || []).map((s) => `${s.number}. ${cleanText(s.title)}:\n   ${cleanText(s.desc)}`).join('\n\n');
 
       return {
-        text: `How to Register for ${festData?.name || 'Techno Vista'}:\n\n${steps || 'Please click the button below to register through the official Google Form.'}\n\n📌 Centralized Form Link: All event tracks are registered through our unified portal.`,
+        text: `How to Register for ${currentFest?.name || 'Techno Vista'}:\n\n${steps || 'Please click the button below to register through the official Google Form.'}\n\n📌 Centralized Form Link: All event tracks are registered through our unified portal.`,
         action: {
           label: 'Open Official Registration Form',
-          url: googleFormUrl,
+          url: currentFormUrl,
         },
         suggestions: ['What are the team rules and eligibility criteria?', 'Show all flagship events', 'When and where is the fest?'],
       };
@@ -196,10 +297,10 @@ export default function FestChatBot({ isOpen, onClose }) {
     // 5. DATE, TIME & VENUE (Dynamically pulls from festData and contactData)
     if (q.includes('when') || q.includes('date') || q.includes('time') || q.includes('venue') || q.includes('where') || q.includes('location') || q.includes('place') || q.includes('college') || q.includes('address')) {
       return {
-        text: `${festData?.name || 'Techno Vista'} Official Venue & Date Details:\n\n📅 Date: ${festData?.dateText || 'TBA'}\n⏰ Main Timing: ${festData?.timeText || '9:30 AM onwards'}\n🚪 Reporting Window: ${festData?.reportingTime || '8:45 AM - 9:15 AM'}\n🏛️ Institution: ${festData?.college || 'Sri Sairam College of Engineering'}\n🏢 Organized By: ${festData?.organizedBy || 'Department of ISE'}\n📍 Full Address: ${contactData?.address?.fullAddress || festData?.address || ''}\n🎯 Campus Venue: ${festData?.venue || 'Seminar Hall & ISE Labs'}`,
+        text: `${currentFest?.name || 'Techno Vista'} Official Venue & Date Details:\n\n📅 Date: ${cleanText(currentFest?.dateText) || 'TBA'}\n⏰ Main Timing: ${cleanText(currentFest?.timeText) || '9:30 AM onwards'}\n🚪 Reporting Window: ${cleanText(currentFest?.reportingTime) || '8:45 AM - 9:15 AM'}\n🏛️ Institution: ${cleanText(currentFest?.college) || 'Sri Sairam College of Engineering'}\n🏢 Organized By: ${cleanText(currentFest?.organizedBy) || 'Department of ISE'}\n📍 Full Address: ${cleanText(currentContact?.address?.fullAddress || currentFest?.address) || ''}\n🎯 Campus Venue: ${cleanText(currentFest?.venue) || 'Seminar Hall & ISE Labs'}`,
         action: {
           label: 'View Campus on Google Maps',
-          url: contactData?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
+          url: currentContact?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
         },
         suggestions: ['How to reach Sri Sairam College of Engineering?', 'Show all flagship events', 'How to register for the fest?'],
       };
@@ -207,19 +308,19 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // 6. RULES, ELIGIBILITY & ID CARD (Dynamically pulls importantNotes and faqs)
     if (q.includes('rule') || q.includes('eligib') || q.includes('allow') || q.includes('id card') || q.includes('cross') || q.includes('team') || q.includes('usn') || q.includes('guideline')) {
-      const notes = (festData?.importantNotes || []).map((note, i) => `${i + 1}. ${note}`).join('\n');
-      const teamFaq = (festData?.faqs || []).find((f) => f.q.toLowerCase().includes('team') || f.q.toLowerCase().includes('college'));
+      const notes = (currentFest?.importantNotes || []).map((note, i) => `${i + 1}. ${cleanText(note)}`).join('\n');
+      const teamFaq = (currentFest?.faqs || []).find((f) => f.q.toLowerCase().includes('team') || f.q.toLowerCase().includes('college'));
 
       let responseText = `Official Participation Guidelines:\n\n${notes}`;
       if (teamFaq) {
-        responseText += `\n\n❓ ${teamFaq.q}\n👉 ${teamFaq.a}`;
+        responseText += `\n\n❓ ${cleanText(teamFaq.q)}\n👉 ${cleanText(teamFaq.a)}`;
       }
 
       return {
         text: responseText,
         action: {
           label: 'Register in Google Form',
-          url: googleFormUrl,
+          url: currentFormUrl,
         },
         suggestions: ['How to register for the fest?', 'Show all flagship events', 'What are the prizes and takeaways?'],
       };
@@ -227,20 +328,20 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // 7. PRIZES, AWARDS & CERTIFICATES (Dynamically pulls takeaways and highlights)
     if (q.includes('prize') || q.includes('award') || q.includes('certificate') || q.includes('cash') || q.includes('trophy') || q.includes('win') || q.includes('perk') || q.includes('takeaway')) {
-      const takeawaysList = (festData?.takeaways || []).map((t) => `🏆 ${t.title}:\n   ${t.desc}`).join('\n\n');
-      const highlightsList = (festData?.highlights || []).map((h) => `• ${h.label}: ${h.sub}`).join('\n');
+      const takeawaysList = (currentFest?.takeaways || []).map((t) => `🏆 ${cleanText(t.title)}:\n   ${cleanText(t.desc)}`).join('\n\n');
+      const highlightsList = (currentFest?.highlights || []).map((h) => `• ${cleanText(h.label)}: ${cleanText(h.sub)}`).join('\n');
 
       return {
-        text: `Awards & Takeaways at ${festData?.name || 'Techno Vista'}:\n\n${takeawaysList || '• Winner & Runner-up Cash Awards, Trophies & Medals\n• Authorized Certificates of Participation for ALL registered attendees'}\n\n🌟 Fest Highlights:\n${highlightsList}`,
+        text: `Awards & Takeaways at ${currentFest?.name || 'Techno Vista'}:\n\n${takeawaysList || '• Winner & Runner-up Cash Awards, Trophies & Medals\n• Authorized Certificates of Participation for ALL registered attendees'}\n\n🌟 Fest Highlights:\n${highlightsList}`,
         suggestions: ['Show all flagship events', 'How to register for the fest?', 'Who are the faculty and student coordinators?'],
       };
     }
 
     // 8. LIVE ANNOUNCEMENTS (Dynamically pulls announcementsData)
     if (q.includes('announcement') || q.includes('announcements') || q.includes('update') || q.includes('updates') || q.includes('news') || q.includes('alert') || q.includes('notice')) {
-      if (announcementsData && announcementsData.length > 0) {
-        const annList = announcementsData
-          .map((a, i) => `${i + 1}. [${a.badge || a.category || 'Live Update'}] ${a.title} (${a.date || a.timestamp || 'Latest'})\n   ${a.content || a.message || a.desc || ''}`)
+      if (currentAnnouncements && currentAnnouncements.length > 0) {
+        const annList = currentAnnouncements
+          .map((a, i) => `${i + 1}. [${cleanText(a.badge || a.category || 'Live Update')}] ${cleanText(a.title)} (${cleanText(a.date || a.timestamp || 'Latest')})\n   ${cleanText(a.content || a.message || a.desc || '')}`)
           .join('\n\n');
 
         return {
@@ -257,29 +358,29 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // 9. CONTACT & COORDINATORS (Dynamically pulls contactData)
     if (q.includes('contact') || q.includes('coordinator') || q.includes('phone') || q.includes('call') || q.includes('lead') || q.includes('help') || q.includes('email') || q.includes('faculty') || q.includes('student')) {
-      const faculty = (contactData?.facultyCoordinators || [])
-        .map((f) => `• ${f.name} (${f.designation || f.role || 'Faculty Convener'})${f.phone ? ` | 📞 ${f.phone}` : ''}${f.email ? ` | ✉️ ${f.email}` : ''}`)
+      const faculty = (currentContact?.facultyCoordinators || [])
+        .map((f) => `• ${cleanText(f.name)} (${cleanText(f.designation || f.role || 'Faculty Convener')})${f.phone ? ` | 📞 ${cleanText(f.phone)}` : ''}${f.email ? ` | ✉️ ${cleanText(f.email)}` : ''}`)
         .join('\n');
 
-      const students = (contactData?.studentCoordinators || [])
-        .map((s) => `• ${s.name} (${s.role || 'Student Lead'})${s.phone ? ` | 📞 ${s.phone}` : ''}${s.email ? ` | ✉️ ${s.email}` : ''}`)
+      const students = (currentContact?.studentCoordinators || [])
+        .map((s) => `• ${cleanText(s.name)} (${cleanText(s.role || 'Student Lead')})${s.phone ? ` | 📞 ${cleanText(s.phone)}` : ''}${s.email ? ` | ✉️ ${cleanText(s.email)}` : ''}`)
         .join('\n');
 
       return {
-        text: `Official Event Coordinators:\n\n🏢 Department: ${contactData?.department || festData?.organizedBy || 'Dept. of ISE'}\n🏛️ Institution: ${contactData?.collegeName || festData?.college || 'Sri Sairam College of Engineering'}\n\nFaculty Coordinators:\n${faculty || 'Dept. of ISE Faculty'}\n\nStudent Coordinators:\n${students || 'ISE Student Leads'}\n\n📧 Official Email: ${contactData?.generalContact?.officialEmail || 'dept.ise@sairamce.edu.in'}\n🌐 College Website: ${contactData?.generalContact?.collegeWebsite || 'https://sairamce.edu.in'}`,
+        text: `Official Event Coordinators:\n\n🏢 Department: ${cleanText(currentContact?.department || currentFest?.organizedBy || 'Dept. of ISE')}\n🏛️ Institution: ${cleanText(currentContact?.collegeName || currentFest?.college || 'Sri Sairam College of Engineering')}\n\nFaculty Coordinators:\n${faculty || 'Dept. of ISE Faculty'}\n\nStudent Coordinators:\n${students || 'ISE Student Leads'}\n\n📧 Official Email: ${cleanText(currentContact?.generalContact?.officialEmail || 'dept.ise@sairamce.edu.in')}\n🌐 College Website: ${cleanText(currentContact?.generalContact?.collegeWebsite || 'https://sairamce.edu.in')}`,
         suggestions: ['How to register for the fest?', 'When and where is the fest?', 'Show all flagship events'],
       };
     }
 
     // 10. TRAVEL & TRANSPORTATION (Dynamically pulls travelInfo)
     if (q.includes('travel') || q.includes('bus') || q.includes('reach') || q.includes('metro') || q.includes('route') || q.includes('transport') || q.includes('direction')) {
-      const travelPoints = (contactData?.travelInfo || []).map((t) => `🚌 ${t.mode}:\n   ${t.details}`).join('\n\n');
+      const travelPoints = (currentContact?.travelInfo || []).map((t) => `🚌 ${cleanText(t.mode)}:\n   ${cleanText(t.details)}`).join('\n\n');
 
       return {
-        text: `How to Reach ${contactData?.collegeName || festData?.college || 'Sri Sairam College of Engineering'}:\n\n${travelPoints || 'Direct BMTC buses connect Majestic, Banashankari, and Electronic City to Anekal town. The campus is 3 km from Anekal bus stand.'}`,
+        text: `How to Reach ${cleanText(currentContact?.collegeName || currentFest?.college || 'Sri Sairam College of Engineering')}:\n\n${travelPoints || 'Direct BMTC buses connect Majestic, Banashankari, and Electronic City to Anekal town. The campus is 3 km from Anekal bus stand.'}`,
         action: {
           label: 'Open Campus in Google Maps',
-          url: contactData?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
+          url: currentContact?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
         },
         suggestions: ['When and where is the fest?', 'How to register for the fest?', 'Who are the faculty and student coordinators?'],
       };
@@ -287,18 +388,18 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // 11. ABOUT FEST, COLLEGE & DEPARTMENT (Dynamically pulls aboutFest, aboutCollege, aboutDepartment)
     if (q.includes('about') || q.includes('mission') || q.includes('vision') || q.includes('department') || q.includes('ise') || q.includes('sairam')) {
-      const aboutFestDesc = Array.isArray(festData?.aboutFest?.description)
-        ? festData.aboutFest.description.join('\n\n')
-        : festData?.aboutFest?.description || '';
+      const aboutFestDesc = Array.isArray(currentFest?.aboutFest?.description)
+        ? currentFest.aboutFest.description.map(cleanText).join('\n\n')
+        : cleanText(currentFest?.aboutFest?.description) || '';
 
       return {
-        text: `About ${festData?.name || 'Techno Vista'}:\n\n${aboutFestDesc}\n\n🎯 Mission: ${festData?.aboutFest?.mission || ''}\n👁️ Vision: ${festData?.aboutFest?.vision || ''}\n\n🏛️ ${festData?.aboutCollege?.name || 'College'}:\n${festData?.aboutCollege?.overview || ''}\n\n🏢 ${festData?.aboutDepartment?.name || 'Department'}:\n${festData?.aboutDepartment?.overview || ''}`,
+        text: `About ${currentFest?.name || 'Techno Vista'}:\n\n${aboutFestDesc}\n\n🎯 Mission: ${cleanText(currentFest?.aboutFest?.mission) || ''}\n👁️ Vision: ${cleanText(currentFest?.aboutFest?.vision) || ''}\n\n🏛️ ${cleanText(currentFest?.aboutCollege?.name) || 'College'}:\n${cleanText(currentFest?.aboutCollege?.overview) || ''}\n\n🏢 ${cleanText(currentFest?.aboutDepartment?.name) || 'Department'}:\n${cleanText(currentFest?.aboutDepartment?.overview) || ''}`,
         suggestions: ['Show all flagship events', 'When and where is the fest?', 'How to register for the fest?'],
       };
     }
 
     // 12. DYNAMIC FAQ LOOKUP (Matches any question in festData.faqs)
-    const matchedFaq = (festData?.faqs || []).find((f) => {
+    const matchedFaq = (currentFest?.faqs || []).find((f) => {
       const qWords = q.split(/\s+/).filter((w) => w.length >= 3);
       const fWords = f.q.toLowerCase().split(/\s+/);
       const overlap = qWords.filter((w) => fWords.some((fw) => fw.includes(w) || w.includes(fw)));
@@ -307,21 +408,21 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     if (matchedFaq) {
       return {
-        text: `❓ ${matchedFaq.q}\n\n👉 ${matchedFaq.a}`,
+        text: `❓ ${cleanText(matchedFaq.q)}\n\n👉 ${cleanText(matchedFaq.a)}`,
         suggestions: ['How to register for the fest?', 'Show all flagship events', 'What are the team rules and eligibility criteria?'],
       };
     }
 
     // DEFAULT FALLBACK (Uses real live entities)
     return {
-      text: `Welcome to the live assistant for ${festData?.name || 'Techno Vista'}! Here are the active topics available right now:`,
+      text: `Welcome to the live assistant for ${currentFest?.name || 'Techno Vista'}! Here are the active topics available right now:`,
       suggestions: [
         'Show all flagship events',
         'How to register for the fest?',
         'When and where is the fest?',
         'Show the event schedule and timeline',
         'What are the team rules and eligibility criteria?',
-        ...(eventsData || []).slice(0, 2).map((e) => `Tell me about ${e.name}`),
+        ...(currentEvents || []).slice(0, 2).map((e) => `Tell me about ${e.name}`),
       ],
     };
   };
@@ -329,12 +430,12 @@ export default function FestChatBot({ isOpen, onClose }) {
   // Handle user selecting an option or submitting text
   const handleUserMessage = (text) => {
     if (!text || !text.trim()) return;
-    const cleanText = text.trim();
+    const cleanUserText = text.trim();
 
     const userMsg = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: cleanText,
+      text: cleanUserText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -344,7 +445,7 @@ export default function FestChatBot({ isOpen, onClose }) {
 
     // Realistic typing delay for conversational charm
     setTimeout(() => {
-      const reply = generateBotReply(cleanText);
+      const reply = generateBotReply(cleanUserText);
       const botMsg = {
         id: `bot-${Date.now()}`,
         sender: 'bot',
@@ -355,21 +456,46 @@ export default function FestChatBot({ isOpen, onClose }) {
       };
       setMessages((prev) => [...prev, botMsg]);
       setIsTyping(false);
-    }, 550);
+    }, 450);
+  };
+
+  // Manual Sync Live Website Data button handler
+  const handleManualSync = () => {
+    if (reloadFromStorage) {
+      reloadFromStorage();
+    }
+    const { currentFest, currentEvents } = getLiveFestState();
+    setMessages([
+      {
+        id: `sync-${Date.now()}`,
+        sender: 'bot',
+        text: `🔄 Data Synchronized! I've refreshed all details directly from the website.\n\nWhat would you like to explore about ${currentFest?.name || 'Techno Vista'}?`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        suggestions: [
+          'Show all flagship events',
+          'How to register for the fest?',
+          'When and where is the fest?',
+          ...(currentEvents || []).slice(0, 3).map((e) => `Tell me about ${e.name}`),
+        ],
+      },
+    ]);
+    setSyncToast('✓ Website data synchronized!');
+    setTimeout(() => setSyncToast(''), 2500);
   };
 
   const handleResetChat = () => {
+    const { currentFest, currentEvents } = getLiveFestState();
     setMessages([
       {
         id: `welcome-${Date.now()}`,
         sender: 'bot',
-        text: `Conversation restarted! 👋 What would you like to know about TECHNO VISTA 2K26?`,
+        text: `Conversation restarted! 👋 What would you like to know about ${currentFest?.name || 'Techno Vista'}?`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
-          'How to Register?',
-          'What are the 6 events?',
-          'When & where is the fest?',
-          'Contact Leads',
+          'Show all flagship events',
+          'How to register for the fest?',
+          'When and where is the fest?',
+          ...(currentEvents || []).slice(0, 3).map((e) => `Tell me about ${e.name}`),
         ],
       },
     ]);
@@ -409,8 +535,32 @@ export default function FestChatBot({ isOpen, onClose }) {
           flexDirection: 'column',
           overflow: 'hidden',
           animation: 'chatModalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          position: 'relative',
         }}
       >
+        {/* Sync Toast Notification */}
+        {syncToast && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '68px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#00f0ff',
+              color: '#050a1b',
+              padding: '0.4rem 0.9rem',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: 800,
+              zIndex: 100,
+              boxShadow: '0 4px 15px rgba(0, 240, 255, 0.5)',
+              animation: 'fadeIn 0.2s ease',
+            }}
+          >
+            {syncToast}
+          </div>
+        )}
+
         {/* =========================================================================
             HEADER: ROBOT BRANDING, ONLINE STATUS & CONTROLS
             ========================================================================= */}
@@ -467,7 +617,7 @@ export default function FestChatBot({ isOpen, onClose }) {
                     border: '1px solid rgba(0, 240, 255, 0.35)',
                   }}
                 >
-                  2K26
+                  LIVE
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '2px' }}>
@@ -481,13 +631,32 @@ export default function FestChatBot({ isOpen, onClose }) {
                   }}
                 />
                 <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                  Fest Guide Assistant // Online
+                  Live Website Synced // Online
                 </span>
               </div>
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              onClick={handleManualSync}
+              title="Sync Live Website Data"
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(0, 240, 255, 0.1)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                color: '#00f0ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <RefreshCw size={13} />
+            </button>
+
             <button
               onClick={handleResetChat}
               title="Restart Conversation"
@@ -745,8 +914,8 @@ export default function FestChatBot({ isOpen, onClose }) {
             type="submit"
             disabled={!inputValue.trim()}
             style={{
-              width: '40px',
-              height: '40px',
+              width: '42px',
+              height: '42px',
               borderRadius: '10px',
               backgroundColor: inputValue.trim() ? '#00d4ff' : 'rgba(255, 255, 255, 0.08)',
               color: inputValue.trim() ? '#050a1b' : '#64748b',
@@ -756,36 +925,13 @@ export default function FestChatBot({ isOpen, onClose }) {
               justifyContent: 'center',
               cursor: inputValue.trim() ? 'pointer' : 'default',
               transition: 'all 0.2s ease',
+              boxShadow: inputValue.trim() ? '0 0 14px rgba(0, 212, 255, 0.4)' : 'none',
             }}
           >
-            <Send size={16} />
+            <Send size={18} />
           </button>
         </form>
       </div>
-
-      <style>{`
-        @keyframes chatModalSlideUp {
-          from {
-            transform: translateY(40px) scale(0.96);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-          }
-        }
-        @keyframes typingPulse {
-          0%, 100% {
-            opacity: 0.3;
-            transform: scale(0.8);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
     </div>
   );
 }
-

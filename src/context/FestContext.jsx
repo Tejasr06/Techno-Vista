@@ -159,6 +159,49 @@ export function FestProvider({ children }) {
     }
   }, [googleFormUrl, festData, eventsData, scheduleData, announcementsData, contactData]);
 
+  // Helper to re-read and reload latest data from localStorage
+  const reloadFromStorage = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.googleFormUrl) setGoogleFormUrl(parsed.googleFormUrl);
+        if (parsed.festData) setFestData(parsed.festData);
+        if (parsed.eventsData && Array.isArray(parsed.eventsData)) setEventsData(parsed.eventsData);
+        if (parsed.scheduleData) setScheduleData(parsed.scheduleData);
+        if (parsed.announcementsData && Array.isArray(parsed.announcementsData)) setAnnouncementsData(parsed.announcementsData);
+        if (parsed.contactData) setContactData(parsed.contactData);
+        return parsed;
+      }
+    } catch (e) {
+      console.error('Error reloading from localStorage:', e);
+    }
+    return null;
+  };
+
+  // Cross-tab and window storage synchronization: whenever an admin edits in another tab or window,
+  // this listener immediately synchronizes all active components without needing a reload.
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.googleFormUrl) setGoogleFormUrl(parsed.googleFormUrl);
+          if (parsed.festData) setFestData(parsed.festData);
+          if (parsed.eventsData && Array.isArray(parsed.eventsData)) setEventsData(parsed.eventsData);
+          if (parsed.scheduleData) setScheduleData(parsed.scheduleData);
+          if (parsed.announcementsData && Array.isArray(parsed.announcementsData)) setAnnouncementsData(parsed.announcementsData);
+          if (parsed.contactData) setContactData(parsed.contactData);
+        } catch (err) {
+          console.error('Cross-tab storage sync error:', err);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Methods to update state from the Admin Panel
   const updateGoogleFormUrl = (newUrl) => {
     setGoogleFormUrl(newUrl);
@@ -321,6 +364,7 @@ export function FestProvider({ children }) {
         updateStudentCoordinator,
         deleteStudentCoordinator,
         resetToDefaults,
+        reloadFromStorage,
         getEventById,
       }}
     >
