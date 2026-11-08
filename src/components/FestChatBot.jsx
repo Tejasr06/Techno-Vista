@@ -30,6 +30,7 @@ export default function FestChatBot({ isOpen, onClose }) {
     announcementsData,
     googleFormUrl,
     reloadFromStorage,
+    isCloudConnected,
   } = useFest();
 
   const [messages, setMessages] = useState([]);
@@ -626,12 +627,12 @@ export default function FestChatBot({ isOpen, onClose }) {
                     width: '6.5px',
                     height: '6.5px',
                     borderRadius: '50%',
-                    backgroundColor: '#10b981',
-                    boxShadow: '0 0 8px #10b981',
+                    backgroundColor: isCloudConnected ? '#10b981' : '#facc15',
+                    boxShadow: isCloudConnected ? '0 0 8px #10b981' : '0 0 8px #facc15',
                   }}
                 />
                 <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                  Live Website Synced // Online
+                  {isCloudConnected ? 'Live Cloud Synced (Firestore) // Online' : 'Website Synced // Online'}
                 </span>
               </div>
             </div>

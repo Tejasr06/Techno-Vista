@@ -66,6 +66,7 @@ export default function Admin() {
     updateStudentCoordinator,
     deleteStudentCoordinator,
     resetToDefaults,
+    isCloudConnected,
   } = useFest();
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -964,12 +965,39 @@ export default function Admin() {
                 <ShieldCheck size={12} />
                 ORGANIZER PORTAL // ACTIVE
               </span>
+
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.2rem 0.65rem',
+                  borderRadius: '9999px',
+                  backgroundColor: isCloudConnected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(234, 179, 8, 0.15)',
+                  border: isCloudConnected ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(234, 179, 8, 0.4)',
+                  fontSize: '0.75rem',
+                  color: isCloudConnected ? '#34d399' : '#facc15',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: isCloudConnected ? '#10b981' : '#facc15',
+                    boxShadow: isCloudConnected ? '0 0 8px #10b981' : 'none',
+                  }}
+                />
+                {isCloudConnected ? 'Cloud Sync: Active (Firestore)' : 'Local Offline Mode'}
+              </span>
             </div>
             <h1 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, color: '#ffffff' }}>
               Master Admin Control Center
             </h1>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-              Edit, add, or delete any content on the website in real-time. Changes instantly sync to localStorage.
+              Edit, add, or delete any content on the website in real-time. Changes instantly sync to Firebase Cloud Database across all phones, laptops, and visitors.
             </p>
           </div>
 

@@ -4,12 +4,15 @@ import { EVENTS_DATA as initialEventsData } from '../data/eventsData';
 import { SCHEDULE_DATA as initialScheduleData } from '../data/scheduleData';
 import { ANNOUNCEMENTS_DATA as initialAnnouncementsData } from '../data/announcementsData';
 import { CONTACT_DATA as initialContactData } from '../data/contactData';
+import { saveFestConfigToCloud, subscribeFestConfig } from '../services/firebase';
 
 const FestContext = createContext();
 
 const STORAGE_KEY = 'techno_vista_2k26_custom_data';
 
 export function FestProvider({ children }) {
+  const [isCloudConnected, setIsCloudConnected] = useState(false);
+
   // Load saved admin customizations from localStorage, with robust fallback to file defaults
   const [googleFormUrl, setGoogleFormUrl] = useState(() => {
     try {
@@ -141,7 +144,54 @@ export function FestProvider({ children }) {
     return initialContactData;
   });
 
-  // Automatically sync all admin updates to localStorage
+  // 1. REAL-TIME CLOUD DATABASE SUBSCRIPTION (Firebase Firestore)
+  // Connects every device (phone, laptop, visitor) to live cloud updates
+  useEffect(() => {
+    const unsubscribe = subscribeFestConfig(
+      (cloudData) => {
+        if (cloudData) {
+          setIsCloudConnected(true);
+          if (cloudData.googleFormUrl) setGoogleFormUrl(cloudData.googleFormUrl);
+          if (cloudData.festData) setFestData((prev) => ({ ...prev, ...cloudData.festData }));
+          if (cloudData.eventsData && Array.isArray(cloudData.eventsData)) setEventsData(cloudData.eventsData);
+          if (cloudData.scheduleData) setScheduleData((prev) => ({ ...prev, ...cloudData.scheduleData }));
+          if (cloudData.announcementsData && Array.isArray(cloudData.announcementsData)) setAnnouncementsData(cloudData.announcementsData);
+          if (cloudData.contactData) setContactData((prev) => ({ ...prev, ...cloudData.contactData }));
+
+          // Cache to localStorage for offline resilience
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+          } catch (e) {}
+        }
+      },
+      (err) => {
+        if (err === 'NOT_FOUND') {
+          // Initialize Cloud Document on first run with default/existing data
+          const initialPayload = {
+            googleFormUrl,
+            festData,
+            eventsData,
+            scheduleData,
+            announcementsData,
+            contactData,
+            lastUpdated: new Date().toISOString(),
+          };
+          saveFestConfigToCloud(initialPayload);
+          setIsCloudConnected(true);
+        } else {
+          setIsCloudConnected(false);
+        }
+      }
+    );
+
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
+  }, []);
+
+  // 2. AUTOMATIC CLOUD SYNC & LOCAL CACHE
+  // Whenever any section is edited in /admin, this automatically pushes updates to Firebase
+  // so ALL phones, laptops, and attendees immediately see the fresh data
   useEffect(() => {
     try {
       const payload = {
@@ -153,9 +203,18 @@ export function FestProvider({ children }) {
         contactData,
         lastUpdated: new Date().toISOString(),
       };
+
+      // Instant local cache
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+
+      // Debounced cloud push to prevent spamming while typing
+      const timeoutId = setTimeout(() => {
+        saveFestConfigToCloud(payload);
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
     } catch (e) {
-      console.error('Error persisting to localStorage:', e);
+      console.error('Error syncing fest updates:', e);
     }
   }, [googleFormUrl, festData, eventsData, scheduleData, announcementsData, contactData]);
 
@@ -179,8 +238,7 @@ export function FestProvider({ children }) {
     return null;
   };
 
-  // Cross-tab and window storage synchronization: whenever an admin edits in another tab or window,
-  // this listener immediately synchronizes all active components without needing a reload.
+  // Cross-tab and window storage synchronization
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === STORAGE_KEY && e.newValue) {
@@ -365,6 +423,8 @@ export function FestProvider({ children }) {
         deleteStudentCoordinator,
         resetToDefaults,
         reloadFromStorage,
+        isCloudConnected,
+        saveFestConfigToCloud,
         getEventById,
       }}
     >
