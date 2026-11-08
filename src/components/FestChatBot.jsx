@@ -19,42 +19,52 @@ import {
 } from 'lucide-react';
 
 export default function FestChatBot({ isOpen, onClose }) {
-  const { festData, eventsData, contactData, scheduleData, googleFormUrl } = useFest();
+  const { festData, eventsData, contactData, scheduleData, announcementsData, googleFormUrl } = useFest();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Pre-curated Quick Question Chips
+  // Dynamic quick-action chips generated directly from live FestContext data
   const quickQuestions = [
-    { id: 'register', label: '📝 How to Register?', icon: '📝' },
-    { id: 'events', label: '🏆 Flagship Events', icon: '🏆' },
-    { id: 'datetime', label: '📍 Date & Venue', icon: '📍' },
-    { id: 'rules', label: '👥 Team Rules & Eligibility', icon: '👥' },
-    { id: 'prizes', label: '🎁 Prizes & Perks', icon: '🎁' },
-    { id: 'coordinators', label: '📞 Contact Leads', icon: '📞' },
-    { id: 'travel', label: '🚌 How to Reach Campus?', icon: '🚌' },
+    { id: 'register', label: '📝 Registration Form', query: 'How to register for the fest?' },
+    { id: 'events', label: `🏆 All Events (${eventsData?.length || 0})`, query: 'Show all flagship events' },
+    { id: 'datetime', label: '📍 Date & Venue', query: 'When and where is the fest?' },
+    { id: 'schedule', label: `📅 Schedule (${(scheduleData?.timeline || []).length} slots)`, query: 'Show the event schedule and timeline' },
+    { id: 'rules', label: '👥 Rules & Eligibility', query: 'What are the team rules and eligibility criteria?' },
+    { id: 'prizes', label: '🎁 Prizes & Perks', query: 'What are the prizes and takeaways?' },
+    { id: 'coordinators', label: '📞 Contact Leads', query: 'Who are the faculty and student coordinators?' },
+    { id: 'travel', label: '🚌 How to Reach', query: 'How to reach Sri Sairam College of Engineering?' },
+    ...(announcementsData && announcementsData.length > 0
+      ? [{ id: 'announcements', label: `📢 Live Alerts (${announcementsData.length})`, query: 'Show live announcements' }]
+      : []),
+    // Individual live event chips
+    ...(eventsData || []).map((ev) => ({
+      id: `ev-${ev.id}`,
+      label: `⚡ ${ev.name}`,
+      query: `Tell me about ${ev.name}`,
+    })),
   ];
 
-  // Initialize conversation with welcoming message
+  // Initialize conversation with live greeting derived from current festData
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
         {
           id: 'welcome-1',
           sender: 'bot',
-          text: `Hi there! 👋 I'm your TECHNO VISTA 2K26 companion bot. How can I help you today? Tap any topic below or ask me a question!`,
+          text: `Hi there! 👋 I am your live ${festData?.name || 'Techno Vista'} assistant. Every answer I provide comes directly from this website's real-time information.\n\nTap any topic or event below to explore!`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           suggestions: [
-            'How to Register?',
-            'What are the 6 events?',
-            'When & where is the fest?',
-            'Are cross-college teams allowed?',
+            'Show all flagship events',
+            'How to register for the fest?',
+            'When and where is the fest?',
+            ...(eventsData || []).slice(0, 3).map((e) => `Tell me about ${e.name}`),
           ],
         },
       ]);
     }
-  }, [isOpen]);
+  }, [isOpen, festData?.name, eventsData]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -63,173 +73,255 @@ export default function FestChatBot({ isOpen, onClose }) {
     }
   }, [messages, isTyping, isOpen]);
 
-  // Answer matching engine based strictly on actual website data from FestContext
+  // Answer matching engine based 100% on actual live data from FestContext
   const generateBotReply = (query) => {
     const q = query.toLowerCase().trim();
 
-    // 1. SPECIFIC EVENT MATCHING (Intelli Talks, Code Sprint, CTF, Build a Bot, Frame Fusion, Clash of Squadz)
-    // Check if query targets a specific event from eventsData
-    const matchedEvent = eventsData.find((ev) => {
-      const name = ev.name.toLowerCase();
-      const id = ev.id.toLowerCase();
-      if (q === name || q.includes(name) || q.includes(id)) return true;
-      if (id === 'intelli-talks' && (q.includes('intelli') || q.includes('paper presentation') || q.includes('paper'))) return true;
-      if (id === 'code-sprint' && (q.includes('sprint') || q.includes('coding contest') || q.includes('competitive programming') || q.includes('bug'))) return true;
-      if (id === 'capture-the-flag' && (q.includes('capture the flag') || q.includes('ctf') || q.includes('cyber') || q.includes('ethical hack') || q.includes('hacking'))) return true;
-      if (id === 'build-a-bot' && (q.includes('build a bot') || q.includes('robotics') || q.includes('line follower') || q.includes('autonomous bot'))) return true;
-      if (id === 'frame-fusion' && (q.includes('frame fusion') || q.includes('ui/ux') || q.includes('ui ux') || q.includes('figma') || q.includes('multimedia design'))) return true;
-      if (id === 'clash-of-squadz' && (q.includes('clash of squadz') || q.includes('esports') || q.includes('bgmi') || q.includes('gaming') || q.includes('lan'))) return true;
+    // 1. SPECIFIC EVENT MATCHING (Completely dynamic: checks every event currently in eventsData)
+    const matchedEvent = (eventsData || []).find((ev) => {
+      const name = (ev.name || '').toLowerCase();
+      const id = (ev.id || '').toLowerCase();
+      const cat = (ev.category || '').toLowerCase();
+      const sub = (ev.subtitle || '').toLowerCase();
+      if (q === name || q.includes(name) || name.includes(q)) return true;
+      if (q === id || q.includes(id)) return true;
+      if (cat && (q.includes(cat) || cat.includes(q))) return true;
+      if (sub && (q.includes(sub) || sub.includes(q))) return true;
       return false;
     });
 
     if (matchedEvent) {
-      const roundsText = matchedEvent.rounds && matchedEvent.rounds.length > 0
-        ? matchedEvent.rounds.map((r) => `  • ${r.roundNumber || ''}: ${r.title}`).join('\n')
-        : 'See event page for round breakdown';
+      let details = `⚡ ${matchedEvent.name.toUpperCase()}`;
+      if (matchedEvent.subtitle) details += ` — ${matchedEvent.subtitle}`;
+      if (matchedEvent.tagline) details += `\n"${matchedEvent.tagline}"`;
+      if (matchedEvent.category) details += `\n\n📌 Category: ${matchedEvent.category}`;
+      if (matchedEvent.shortDescription || matchedEvent.overview) {
+        details += `\n📖 Overview: ${matchedEvent.shortDescription || matchedEvent.overview}`;
+      }
+      if (matchedEvent.teamSize) details += `\n👥 Team Size: ${matchedEvent.teamSize}`;
+      if (matchedEvent.venue) details += `\n📍 Venue: ${matchedEvent.venue}`;
+      if (matchedEvent.timing) details += `\n⏰ Timing: ${matchedEvent.timing}`;
+      if (matchedEvent.eligibility) details += `\n🎓 Eligibility: ${matchedEvent.eligibility}`;
 
-      const keyRulesText = matchedEvent.rules && matchedEvent.rules.length > 0
-        ? matchedEvent.rules.slice(0, 3).map((rule, idx) => `  ${idx + 1}. ${rule}`).join('\n')
-        : 'Standard fest guidelines apply';
+      if (matchedEvent.rounds && matchedEvent.rounds.length > 0) {
+        const roundsList = matchedEvent.rounds
+          .map((r) => `  • ${r.roundNumber ? `${r.roundNumber}: ` : ''}${r.title}${r.description ? ` (${r.description})` : ''}`)
+          .join('\n');
+        details += `\n\n🏆 Competition Rounds:\n${roundsList}`;
+      }
+
+      if (matchedEvent.rules && matchedEvent.rules.length > 0) {
+        const rulesList = matchedEvent.rules.map((r, i) => `  ${i + 1}. ${r}`).join('\n');
+        details += `\n\n📋 Event Rules:\n${rulesList}`;
+      }
+
+      if (matchedEvent.judgingCriteria && matchedEvent.judgingCriteria.length > 0) {
+        const criteriaList = matchedEvent.judgingCriteria.map((j) => `  • ${j.parameter}: ${j.weight}`).join('\n');
+        details += `\n\n⚖️ Judging Criteria:\n${criteriaList}`;
+      }
+
+      const otherEvents = (eventsData || []).filter((e) => e.id !== matchedEvent.id).slice(0, 3).map((e) => `Tell me about ${e.name}`);
 
       return {
-        text: `⚡ ${matchedEvent.name.toUpperCase()} (${matchedEvent.badge || matchedEvent.category})\n"${matchedEvent.tagline}"\n\n📌 Subtitle: ${matchedEvent.subtitle}\n👥 Team Size: ${matchedEvent.teamSize}\n📍 Venue: ${matchedEvent.venue}\n⏰ Timing: ${matchedEvent.timing}\n🎓 Eligibility: ${matchedEvent.eligibility}\n\n🏆 Event Format:\n${roundsText}\n\n📋 Key Rules:\n${keyRulesText}`,
+        text: details,
         action: {
-          label: `View ${matchedEvent.name} Details`,
+          label: `Explore ${matchedEvent.name} Page`,
           link: `/events`,
         },
-        suggestions: ['What are the other events?', 'How to Register?', 'Team Rules & Eligibility'],
+        suggestions: [...otherEvents, 'How to register for the fest?', 'When and where is the fest?'],
       };
     }
 
-    // 2. ALL EVENTS OVERVIEW
-    if (q.includes('event') || q.includes('compet') || q.includes('track') || q.includes('flagship') || q.includes('contest')) {
-      const eventList = eventsData
-        .map((ev, i) => `${i + 1}. ${ev.name} — ${ev.subtitle}\n   • Category: ${ev.category}\n   • Team: ${ev.teamSize}\n   • Venue: ${ev.venue}`)
+    // 2. ALL EVENTS OVERVIEW (Dynamically maps current eventsData)
+    if (q.includes('event') || q.includes('compet') || q.includes('track') || q.includes('flagship') || q.includes('contest') || q.includes('game') || q.includes('all')) {
+      const eventList = (eventsData || [])
+        .map((ev, i) => {
+          let line = `${i + 1}. ⚡ ${ev.name}`;
+          if (ev.subtitle) line += ` — ${ev.subtitle}`;
+          if (ev.category) line += `\n   • Track: ${ev.category}`;
+          if (ev.teamSize) line += `\n   • Team: ${ev.teamSize}`;
+          if (ev.venue) line += `\n   • Venue: ${ev.venue}`;
+          if (ev.timing) line += `\n   • Timing: ${ev.timing}`;
+          return line;
+        })
         .join('\n\n');
 
       return {
-        text: `TECHNO VISTA 2K26 features 6 official national-level competitions organized by the Dept. of ISE:\n\n${eventList}\n\n💡 Participants can join multiple events as long as the timings do not overlap!`,
+        text: `${festData?.name || 'Techno Vista'} currently features ${eventsData?.length || 0} premier national-level competitions organized by the ${festData?.organizedBy || 'Dept. of ISE'}:\n\n${eventList}\n\n💡 Participants can join multiple events provided their slot timings do not conflict!`,
         action: {
-          label: 'Explore All Events',
+          label: 'View All Events on Website',
           link: '/events',
         },
-        suggestions: [
-          'Intelli Talks',
-          'Code Sprint',
-          'Capture the Flag',
-          'Build a Bot',
-          'Frame Fusion',
-          'Clash of Squadz',
-        ],
+        suggestions: (eventsData || []).map((e) => `Tell me about ${e.name}`),
       };
     }
 
-    // 3. SCHEDULE & TIMELINE
-    if (q.includes('schedule') || q.includes('agenda') || q.includes('timeline') || q.includes('inaugur') || q.includes('lunch') || q.includes('slot')) {
-      const slots = (scheduleData?.timeline || []).slice(0, 5).map((s) => `• ${s.time}: ${s.title} (${s.venue})`).join('\n');
+    // 3. SCHEDULE & TIMELINE (Dynamically maps current scheduleData.timeline)
+    if (q.includes('schedule') || q.includes('agenda') || q.includes('timeline') || q.includes('inaugur') || q.includes('lunch') || q.includes('slot') || q.includes('session')) {
+      const dateHeader = scheduleData?.festDate || festData?.dateText || 'Fest Day';
+      const slots = (scheduleData?.timeline || []).map((s) => {
+        let str = `• ${s.time}: ${s.title}`;
+        if (s.venue) str += ` [📍 ${s.venue}]`;
+        if (s.description) str += `\n  ${s.description}`;
+        if (s.subEvents && s.subEvents.length > 0) {
+          str += '\n' + s.subEvents.map((se) => `    - ${se.name} (${se.time}) @ ${se.venue}`).join('\n');
+        }
+        return str;
+      }).join('\n\n');
+
       return {
-        text: `Official Fest Day Schedule (${scheduleData?.festDate || festData.dateText}):\n\n${slots}\n\nCheck the complete live schedule for details on individual rounds and afternoon finals!`,
+        text: `Official Event Schedule (${dateHeader}):\n\n${slots}\n\n${scheduleData?.note || ''}`,
         action: {
-          label: 'View Full Timeline',
+          label: 'View Full Schedule Page',
           link: '/schedule',
         },
-        suggestions: ['Date & Venue', 'Flagship Events', 'How to Register?'],
+        suggestions: ['When and where is the fest?', 'How to register for the fest?', 'Show all flagship events'],
       };
     }
 
-    // 4. REGISTRATION
-    if (q.includes('register') || q.includes('registration') || q.includes('form') || q.includes('apply') || q.includes('fee') || q.includes('cost') || q.includes('price')) {
-      const steps = festData.registrationSteps && festData.registrationSteps.length > 0
-        ? festData.registrationSteps.map((s) => `${s.number}. ${s.title}: ${s.desc}`).join('\n\n')
-        : 'Fill out the centralized Google Form to secure your team slot.';
+    // 4. REGISTRATION & GOOGLE FORM (Dynamically pulls registrationSteps and googleFormUrl)
+    if (q.includes('register') || q.includes('registration') || q.includes('form') || q.includes('apply') || q.includes('enroll') || q.includes('fee') || q.includes('cost') || q.includes('price')) {
+      const steps = (festData?.registrationSteps || []).map((s) => `${s.number}. ${s.title}:\n   ${s.desc}`).join('\n\n');
 
       return {
-        text: `How to Register for TECHNO VISTA 2K26:\n\n${steps}\n\n📌 Registration Fee Policy: Details (if applicable) are outlined directly within the official Google Form.`,
+        text: `How to Register for ${festData?.name || 'Techno Vista'}:\n\n${steps || 'Please click the button below to register through the official Google Form.'}\n\n📌 Centralized Form Link: All event tracks are registered through our unified portal.`,
         action: {
-          label: 'Open Official Google Form',
+          label: 'Open Official Registration Form',
           url: googleFormUrl,
         },
-        suggestions: ['Flagship Events', 'Team Rules & Eligibility', 'Date & Venue'],
+        suggestions: ['What are the team rules and eligibility criteria?', 'Show all flagship events', 'When and where is the fest?'],
       };
     }
 
-    // 5. DATE, TIME & VENUE
-    if (q.includes('when') || q.includes('date') || q.includes('time') || q.includes('venue') || q.includes('where') || q.includes('location') || q.includes('place') || q.includes('college')) {
+    // 5. DATE, TIME & VENUE (Dynamically pulls from festData and contactData)
+    if (q.includes('when') || q.includes('date') || q.includes('time') || q.includes('venue') || q.includes('where') || q.includes('location') || q.includes('place') || q.includes('college') || q.includes('address')) {
       return {
-        text: `TECHNO VISTA 2K26 Event Details:\n\n📅 Date: ${festData.dateText}\n⏰ Event Time: ${festData.timeText}\n🚪 Reporting Window: ${festData.reportingTime}\n🏛️ Campus: ${festData.college}\n🏢 Department: ${festData.organizedBy}\n📍 Address: ${festData.address}\n🎯 Venue on Campus: ${festData.venue}`,
+        text: `${festData?.name || 'Techno Vista'} Official Venue & Date Details:\n\n📅 Date: ${festData?.dateText || 'TBA'}\n⏰ Main Timing: ${festData?.timeText || '9:30 AM onwards'}\n🚪 Reporting Window: ${festData?.reportingTime || '8:45 AM - 9:15 AM'}\n🏛️ Institution: ${festData?.college || 'Sri Sairam College of Engineering'}\n🏢 Organized By: ${festData?.organizedBy || 'Department of ISE'}\n📍 Full Address: ${contactData?.address?.fullAddress || festData?.address || ''}\n🎯 Campus Venue: ${festData?.venue || 'Seminar Hall & ISE Labs'}`,
         action: {
           label: 'View Campus on Google Maps',
-          url: contactData.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
+          url: contactData?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
         },
-        suggestions: ['How to Reach Campus?', 'Flagship Events', 'How to Register?'],
+        suggestions: ['How to reach Sri Sairam College of Engineering?', 'Show all flagship events', 'How to register for the fest?'],
       };
     }
 
-    // 6. RULES, ELIGIBILITY & ID CARD
-    if (q.includes('rule') || q.includes('eligib') || q.includes('allow') || q.includes('id card') || q.includes('cross') || q.includes('team') || q.includes('usn')) {
-      const notes = (festData.importantNotes || []).map((note, i) => `${i + 1}. ${note}`).join('\n');
+    // 6. RULES, ELIGIBILITY & ID CARD (Dynamically pulls importantNotes and faqs)
+    if (q.includes('rule') || q.includes('eligib') || q.includes('allow') || q.includes('id card') || q.includes('cross') || q.includes('team') || q.includes('usn') || q.includes('guideline')) {
+      const notes = (festData?.importantNotes || []).map((note, i) => `${i + 1}. ${note}`).join('\n');
+      const teamFaq = (festData?.faqs || []).find((f) => f.q.toLowerCase().includes('team') || f.q.toLowerCase().includes('college'));
+
+      let responseText = `Official Participation Guidelines:\n\n${notes}`;
+      if (teamFaq) {
+        responseText += `\n\n❓ ${teamFaq.q}\n👉 ${teamFaq.a}`;
+      }
+
       return {
-        text: `Official Participation Guidelines:\n\n${notes}\n\n• Cross-college teams are permitted for all team events with valid IDs.\n• Ensure every member brings their physical college ID card on the fest day.`,
+        text: responseText,
         action: {
           label: 'Register in Google Form',
           url: googleFormUrl,
         },
-        suggestions: ['How to Register?', 'Flagship Events', 'Prizes & Perks'],
+        suggestions: ['How to register for the fest?', 'Show all flagship events', 'What are the prizes and takeaways?'],
       };
     }
 
-    // 7. PRIZES, AWARDS & CERTIFICATES
+    // 7. PRIZES, AWARDS & CERTIFICATES (Dynamically pulls takeaways and highlights)
     if (q.includes('prize') || q.includes('award') || q.includes('certificate') || q.includes('cash') || q.includes('trophy') || q.includes('win') || q.includes('perk') || q.includes('takeaway')) {
-      const takeawaysList = (festData.takeaways || []).map((t) => `• ${t.title}: ${t.desc}`).join('\n\n');
+      const takeawaysList = (festData?.takeaways || []).map((t) => `🏆 ${t.title}:\n   ${t.desc}`).join('\n\n');
+      const highlightsList = (festData?.highlights || []).map((h) => `• ${h.label}: ${h.sub}`).join('\n');
+
       return {
-        text: `Prizes & Recognition at TECHNO VISTA 2K26:\n\n${takeawaysList || '• Winner & Runner-up Cash Awards, Trophies & Medals\n• Authorized Certificates of Participation for ALL registered attendees'}`,
-        suggestions: ['Flagship Events', 'How to Register?', 'Contact Leads'],
+        text: `Awards & Takeaways at ${festData?.name || 'Techno Vista'}:\n\n${takeawaysList || '• Winner & Runner-up Cash Awards, Trophies & Medals\n• Authorized Certificates of Participation for ALL registered attendees'}\n\n🌟 Fest Highlights:\n${highlightsList}`,
+        suggestions: ['Show all flagship events', 'How to register for the fest?', 'Who are the faculty and student coordinators?'],
       };
     }
 
-    // 8. CONTACT & COORDINATORS
+    // 8. LIVE ANNOUNCEMENTS (Dynamically pulls announcementsData)
+    if (q.includes('announcement') || q.includes('announcements') || q.includes('update') || q.includes('updates') || q.includes('news') || q.includes('alert') || q.includes('notice')) {
+      if (announcementsData && announcementsData.length > 0) {
+        const annList = announcementsData
+          .map((a, i) => `${i + 1}. [${a.badge || a.category || 'Live Update'}] ${a.title} (${a.date || a.timestamp || 'Latest'})\n   ${a.content || a.message || a.desc || ''}`)
+          .join('\n\n');
+
+        return {
+          text: `📢 Official Live Announcements:\n\n${annList}`,
+          suggestions: ['Show the event schedule and timeline', 'Show all flagship events', 'How to register for the fest?'],
+        };
+      } else {
+        return {
+          text: `There are currently no active live announcements posted. Any updates published by the fest organizers will automatically appear here!`,
+          suggestions: ['Show all flagship events', 'When and where is the fest?', 'How to register for the fest?'],
+        };
+      }
+    }
+
+    // 9. CONTACT & COORDINATORS (Dynamically pulls contactData)
     if (q.includes('contact') || q.includes('coordinator') || q.includes('phone') || q.includes('call') || q.includes('lead') || q.includes('help') || q.includes('email') || q.includes('faculty') || q.includes('student')) {
-      const faculty = (contactData.facultyCoordinators || []).map((f) => `• ${f.name} (${f.designation || f.role}): ${f.phone || f.email || 'Dept. of ISE'}`).join('\n');
-      const students = (contactData.studentCoordinators || []).map((s) => `• ${s.name} (${s.role}): ${s.phone || 'Available at desk'}`).join('\n');
+      const faculty = (contactData?.facultyCoordinators || [])
+        .map((f) => `• ${f.name} (${f.designation || f.role || 'Faculty Convener'})${f.phone ? ` | 📞 ${f.phone}` : ''}${f.email ? ` | ✉️ ${f.email}` : ''}`)
+        .join('\n');
+
+      const students = (contactData?.studentCoordinators || [])
+        .map((s) => `• ${s.name} (${s.role || 'Student Lead'})${s.phone ? ` | 📞 ${s.phone}` : ''}${s.email ? ` | ✉️ ${s.email}` : ''}`)
+        .join('\n');
 
       return {
-        text: `Event Organization Leads:\n\nDepartment: ${contactData.department}\nCollege: ${contactData.collegeName}\n\nFaculty Coordinators:\n${faculty || 'Dept. of ISE Faculty'}\n\nStudent Coordinators:\n${students || 'ISE Student Leads'}\n\n📧 Official Email: ${contactData.generalContact?.officialEmail || 'dept.ise@sairamce.edu.in'}\n🌐 Website: ${contactData.generalContact?.collegeWebsite || 'https://sairamce.edu.in'}`,
-        suggestions: ['How to Register?', 'Date & Venue', 'Flagship Events'],
+        text: `Official Event Coordinators:\n\n🏢 Department: ${contactData?.department || festData?.organizedBy || 'Dept. of ISE'}\n🏛️ Institution: ${contactData?.collegeName || festData?.college || 'Sri Sairam College of Engineering'}\n\nFaculty Coordinators:\n${faculty || 'Dept. of ISE Faculty'}\n\nStudent Coordinators:\n${students || 'ISE Student Leads'}\n\n📧 Official Email: ${contactData?.generalContact?.officialEmail || 'dept.ise@sairamce.edu.in'}\n🌐 College Website: ${contactData?.generalContact?.collegeWebsite || 'https://sairamce.edu.in'}`,
+        suggestions: ['How to register for the fest?', 'When and where is the fest?', 'Show all flagship events'],
       };
     }
 
-    // 9. TRAVEL & TRANSPORTATION
+    // 10. TRAVEL & TRANSPORTATION (Dynamically pulls travelInfo)
     if (q.includes('travel') || q.includes('bus') || q.includes('reach') || q.includes('metro') || q.includes('route') || q.includes('transport') || q.includes('direction')) {
-      const travelPoints = (contactData.travelInfo || []).map((t) => `• ${t.mode}: ${t.details}`).join('\n\n');
+      const travelPoints = (contactData?.travelInfo || []).map((t) => `🚌 ${t.mode}:\n   ${t.details}`).join('\n\n');
+
       return {
-        text: `How to Reach Sri Sairam College of Engineering (Anekal, Bengaluru):\n\n${travelPoints || 'Direct BMTC buses connect Majestic, Banashankari, and Electronic City to Anekal town. The campus is 3 km from Anekal bus stand.'}`,
+        text: `How to Reach ${contactData?.collegeName || festData?.college || 'Sri Sairam College of Engineering'}:\n\n${travelPoints || 'Direct BMTC buses connect Majestic, Banashankari, and Electronic City to Anekal town. The campus is 3 km from Anekal bus stand.'}`,
         action: {
           label: 'Open Campus in Google Maps',
-          url: contactData.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
+          url: contactData?.maps?.viewLink || 'https://maps.google.com/?q=Sri+Sairam+College+of+Engineering+Anekal+Bengaluru',
         },
-        suggestions: ['Date & Venue', 'How to Register?', 'Contact Leads'],
+        suggestions: ['When and where is the fest?', 'How to register for the fest?', 'Who are the faculty and student coordinators?'],
       };
     }
 
-    // 10. FAQ CHECK
-    const matchedFaq = (festData.faqs || []).find((f) => q.includes(f.q.toLowerCase().slice(0, 20)));
+    // 11. ABOUT FEST, COLLEGE & DEPARTMENT (Dynamically pulls aboutFest, aboutCollege, aboutDepartment)
+    if (q.includes('about') || q.includes('mission') || q.includes('vision') || q.includes('department') || q.includes('ise') || q.includes('sairam')) {
+      const aboutFestDesc = Array.isArray(festData?.aboutFest?.description)
+        ? festData.aboutFest.description.join('\n\n')
+        : festData?.aboutFest?.description || '';
+
+      return {
+        text: `About ${festData?.name || 'Techno Vista'}:\n\n${aboutFestDesc}\n\n🎯 Mission: ${festData?.aboutFest?.mission || ''}\n👁️ Vision: ${festData?.aboutFest?.vision || ''}\n\n🏛️ ${festData?.aboutCollege?.name || 'College'}:\n${festData?.aboutCollege?.overview || ''}\n\n🏢 ${festData?.aboutDepartment?.name || 'Department'}:\n${festData?.aboutDepartment?.overview || ''}`,
+        suggestions: ['Show all flagship events', 'When and where is the fest?', 'How to register for the fest?'],
+      };
+    }
+
+    // 12. DYNAMIC FAQ LOOKUP (Matches any question in festData.faqs)
+    const matchedFaq = (festData?.faqs || []).find((f) => {
+      const qWords = q.split(/\s+/).filter((w) => w.length >= 3);
+      const fWords = f.q.toLowerCase().split(/\s+/);
+      const overlap = qWords.filter((w) => fWords.some((fw) => fw.includes(w) || w.includes(fw)));
+      return overlap.length >= 2;
+    });
+
     if (matchedFaq) {
       return {
-        text: `❓ ${matchedFaq.q}\n\n${matchedFaq.a}`,
-        suggestions: ['How to Register?', 'Flagship Events', 'Team Rules & Eligibility'],
+        text: `❓ ${matchedFaq.q}\n\n👉 ${matchedFaq.a}`,
+        suggestions: ['How to register for the fest?', 'Show all flagship events', 'What are the team rules and eligibility criteria?'],
       };
     }
 
-    // DEFAULT FALLBACK
+    // DEFAULT FALLBACK (Uses real live entities)
     return {
-      text: `Welcome to TECHNO VISTA 2K26 Assistant! Here are the official topics you can explore from our website:`,
+      text: `Welcome to the live assistant for ${festData?.name || 'Techno Vista'}! Here are the active topics available right now:`,
       suggestions: [
-        'Flagship Events',
-        'How to Register?',
-        'Date & Venue',
-        'Team Rules & Eligibility',
-        'Prizes & Perks',
-        'Contact Leads',
+        'Show all flagship events',
+        'How to register for the fest?',
+        'When and where is the fest?',
+        'Show the event schedule and timeline',
+        'What are the team rules and eligibility criteria?',
+        ...(eventsData || []).slice(0, 2).map((e) => `Tell me about ${e.name}`),
       ],
     };
   };
@@ -594,7 +686,7 @@ export default function FestChatBot({ isOpen, onClose }) {
           {quickQuestions.map((q) => (
             <button
               key={q.id}
-              onClick={() => handleUserMessage(q.label.replace(/^[^\s]+\s/, ''))}
+              onClick={() => handleUserMessage(q.query || q.label.replace(/^[^\s]+\s/, ''))}
               style={{
                 padding: '0.4rem 0.85rem',
                 borderRadius: '20px',
