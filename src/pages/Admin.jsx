@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFest } from '../context/FestContext';
 import {
   Lock,
@@ -130,27 +130,31 @@ export default function Admin() {
     highlights: festData.highlights || [],
   });
 
+  const coreLoadedRef = useRef(false);
   useEffect(() => {
-    setCoreForm({
-      name: festData.name || '',
-      shortName: festData.shortName || '',
-      edition: festData.edition || '',
-      tagline: festData.tagline || '',
-      heroSubtitle: festData.heroSubtitle || 'JOIN THE EVENT',
-      eventType: festData.eventType || 'National-Level Technical Fest',
-      college: festData.college || '',
-      organizedBy: festData.organizedBy || '',
-      dateText: festData.dateText || '',
-      timeText: festData.timeText || '',
-      reportingTime: festData.reportingTime || '',
-      venue: festData.venue || '',
-      location: festData.location || '',
-      address: festData.address || '',
-      targetDate: festData.targetDate || '2026-11-26T09:30:00+05:30',
-      googleFormUrl: googleFormUrl || '',
-      highlights: festData.highlights || [],
-    });
-  }, [festData, googleFormUrl]);
+    if (!coreLoadedRef.current || activeTab === 'core') {
+      setCoreForm({
+        name: festData.name || '',
+        shortName: festData.shortName || '',
+        edition: festData.edition || '',
+        tagline: festData.tagline || '',
+        heroSubtitle: festData.heroSubtitle || 'JOIN THE EVENT',
+        eventType: festData.eventType || 'National-Level Technical Fest',
+        college: festData.college || '',
+        organizedBy: festData.organizedBy || '',
+        dateText: festData.dateText || '',
+        timeText: festData.timeText || '',
+        reportingTime: festData.reportingTime || '',
+        venue: festData.venue || '',
+        location: festData.location || '',
+        address: festData.address || '',
+        targetDate: festData.targetDate || '2026-11-26T09:30:00+05:30',
+        googleFormUrl: googleFormUrl || '',
+        highlights: festData.highlights || [],
+      });
+      coreLoadedRef.current = true;
+    }
+  }, [activeTab]);
 
   const handleSaveCore = (e) => {
     e.preventDefault();
@@ -209,24 +213,28 @@ export default function Admin() {
     takeaways: festData.takeaways || [],
   });
 
+  const aboutLoadedRef = useRef(false);
   useEffect(() => {
-    setAboutForm({
-      title: festData.aboutFest?.title || '',
-      subtitle: festData.aboutFest?.subtitle || '',
-      description: festData.aboutFest?.description?.join('\n\n') || '',
-      mission: festData.aboutFest?.mission || '',
-      vision: festData.aboutFest?.vision || '',
-      purposeParagraph: festData.aboutFest?.purposeParagraph || '',
-      purposePoints: festData.aboutFest?.purposePoints || [],
-      collegeName: festData.aboutCollege?.name || '',
-      collegeAffiliation: festData.aboutCollege?.affiliation || '',
-      collegeLocation: festData.aboutCollege?.location || '',
-      collegeOverview: festData.aboutCollege?.overview || '',
-      deptName: festData.aboutDepartment?.name || '',
-      deptOverview: festData.aboutDepartment?.overview || '',
-      takeaways: festData.takeaways || [],
-    });
-  }, [festData]);
+    if (!aboutLoadedRef.current || activeTab === 'about') {
+      setAboutForm({
+        title: festData.aboutFest?.title || '',
+        subtitle: festData.aboutFest?.subtitle || '',
+        description: festData.aboutFest?.description?.join('\n\n') || '',
+        mission: festData.aboutFest?.mission || '',
+        vision: festData.aboutFest?.vision || '',
+        purposeParagraph: festData.aboutFest?.purposeParagraph || '',
+        purposePoints: festData.aboutFest?.purposePoints || [],
+        collegeName: festData.aboutCollege?.name || '',
+        collegeAffiliation: festData.aboutCollege?.affiliation || '',
+        collegeLocation: festData.aboutCollege?.location || '',
+        collegeOverview: festData.aboutCollege?.overview || '',
+        deptName: festData.aboutDepartment?.name || '',
+        deptOverview: festData.aboutDepartment?.overview || '',
+        takeaways: festData.takeaways || [],
+      });
+      aboutLoadedRef.current = true;
+    }
+  }, [activeTab]);
 
   const handleSaveAbout = (e) => {
     e.preventDefault();
@@ -344,51 +352,58 @@ export default function Admin() {
     },
   };
 
+  const loadedEventIdRef = useRef(null);
+
   useEffect(() => {
-    const current = eventsData.find((e) => e.id === selectedEventId) || eventsData[0];
-    if (current) {
-      const cloned = JSON.parse(JSON.stringify(current));
-      if (Array.isArray(cloned.coordinators)) {
-        cloned.coordinators = {
-          faculty: [],
-          student: cloned.coordinators.map((c) => {
-            const num = c.phone || c.contact || '';
+    if (isAddingEvent) return;
+
+    if (loadedEventIdRef.current !== selectedEventId || !eventEditForm) {
+      const current = eventsData.find((e) => e.id === selectedEventId) || eventsData[0];
+      if (current) {
+        const cloned = JSON.parse(JSON.stringify(current));
+        if (Array.isArray(cloned.coordinators)) {
+          cloned.coordinators = {
+            faculty: [],
+            student: cloned.coordinators.map((c) => {
+              const num = c.phone || c.contact || '';
+              return {
+                name: c.name || '',
+                role: c.role || 'Event Lead',
+                phone: num,
+                contact: num,
+              };
+            }),
+          };
+        } else if (!cloned.coordinators) {
+          cloned.coordinators = { faculty: [], student: [] };
+        } else {
+          cloned.coordinators.faculty = (cloned.coordinators.faculty || []).map((f) => {
+            const num = f.phone || f.contact || '';
             return {
-              name: c.name || '',
-              role: c.role || 'Event Lead',
+              name: f.name || '',
+              designation: f.designation || '',
               phone: num,
               contact: num,
             };
-          }),
-        };
-      } else if (!cloned.coordinators) {
-        cloned.coordinators = { faculty: [], student: [] };
-      } else {
-        cloned.coordinators.faculty = (cloned.coordinators.faculty || []).map((f) => {
-          const num = f.phone || f.contact || '';
-          return {
-            name: f.name || '',
-            designation: f.designation || '',
-            phone: num,
-            contact: num,
-          };
-        });
-        cloned.coordinators.student = (cloned.coordinators.student || []).map((s) => {
-          const num = s.phone || s.contact || '';
-          return {
-            name: s.name || '',
-            role: s.role || 'Event Lead',
-            phone: num,
-            contact: num,
-          };
-        });
-      }
-      setEventEditForm(cloned);
-      if (!selectedEventId && current.id) {
-        setSelectedEventId(current.id);
+          });
+          cloned.coordinators.student = (cloned.coordinators.student || []).map((s) => {
+            const num = s.phone || s.contact || '';
+            return {
+              name: s.name || '',
+              role: s.role || 'Event Lead',
+              phone: num,
+              contact: num,
+            };
+          });
+        }
+        setEventEditForm(cloned);
+        loadedEventIdRef.current = current.id;
+        if (!selectedEventId && current.id) {
+          setSelectedEventId(current.id);
+        }
       }
     }
-  }, [selectedEventId, eventsData]);
+  }, [selectedEventId, isAddingEvent]);
 
   const handleSaveEvent = (e) => {
     e.preventDefault();
@@ -397,10 +412,12 @@ export default function Admin() {
     if (isAddingEvent) {
       addEvent(eventEditForm);
       setIsAddingEvent(false);
+      loadedEventIdRef.current = eventEditForm.id;
       setSelectedEventId(eventEditForm.id);
       showToast(`✓ Event "${eventEditForm.name}" created successfully!`);
     } else {
       updateEvent(eventEditForm.id, eventEditForm);
+      loadedEventIdRef.current = eventEditForm.id;
       showToast(`✓ Event "${eventEditForm.name}" updated!`);
     }
   };
@@ -580,13 +597,17 @@ export default function Admin() {
     isHighlight: false,
   });
 
+  const scheduleLoadedRef = useRef(false);
   useEffect(() => {
-    setScheduleGeneralForm({
-      festDate: scheduleData.festDate || '26 November 2026',
-      dayTitle: scheduleData.dayTitle || 'Official Fest Day Timeline',
-      note: scheduleData.note || '',
-    });
-  }, [scheduleData]);
+    if (!scheduleLoadedRef.current || activeTab === 'schedule') {
+      setScheduleGeneralForm({
+        festDate: scheduleData.festDate || '26 November 2026',
+        dayTitle: scheduleData.dayTitle || 'Official Fest Day Timeline',
+        note: scheduleData.note || '',
+      });
+      scheduleLoadedRef.current = true;
+    }
+  }, [activeTab]);
 
   const handleSaveScheduleGeneral = (e) => {
     e.preventDefault();
@@ -629,11 +650,15 @@ export default function Admin() {
   const [newRule, setNewRule] = useState('');
   const [newFaq, setNewFaq] = useState({ q: '', a: '' });
 
+  const regLoadedRef = useRef(false);
   useEffect(() => {
-    setRegSteps(festData.registrationSteps || []);
-    setImportantNotes(festData.importantNotes || []);
-    setFaqsList(festData.faqs || []);
-  }, [festData]);
+    if (!regLoadedRef.current || activeTab === 'registration') {
+      setRegSteps(festData.registrationSteps || []);
+      setImportantNotes(festData.importantNotes || []);
+      setFaqsList(festData.faqs || []);
+      regLoadedRef.current = true;
+    }
+  }, [activeTab]);
 
   const handleSaveRegistrationSection = (e) => {
     e.preventDefault();
@@ -696,21 +721,25 @@ export default function Admin() {
     fullAddress: contactData.address?.fullAddress || '',
   });
 
+  const contactLoadedRef = useRef(false);
   useEffect(() => {
-    setContactGeneralForm({
-      officialEmail: contactData.generalContact?.officialEmail || '',
-      festSupportEmail: contactData.generalContact?.festSupportEmail || '',
-      helplinePhone: contactData.generalContact?.helplinePhone || '',
-      alternatePhone: contactData.generalContact?.alternatePhone || '',
-      collegeWebsite: contactData.generalContact?.collegeWebsite || '',
-      instagram: contactData.socialLinks?.instagram || '',
-      linkedin: contactData.socialLinks?.linkedin || '',
-      departmentPage: contactData.socialLinks?.departmentPage || '',
-      mapsViewLink: contactData.maps?.viewLink || '',
-      mapsEmbedUrl: contactData.maps?.embedUrl || '',
-      fullAddress: contactData.address?.fullAddress || '',
-    });
-  }, [contactData]);
+    if (!contactLoadedRef.current || activeTab === 'coordinators') {
+      setContactGeneralForm({
+        officialEmail: contactData.generalContact?.officialEmail || '',
+        festSupportEmail: contactData.generalContact?.festSupportEmail || '',
+        helplinePhone: contactData.generalContact?.helplinePhone || '',
+        alternatePhone: contactData.generalContact?.alternatePhone || '',
+        collegeWebsite: contactData.generalContact?.collegeWebsite || '',
+        instagram: contactData.socialLinks?.instagram || '',
+        linkedin: contactData.socialLinks?.linkedin || '',
+        departmentPage: contactData.socialLinks?.departmentPage || '',
+        mapsViewLink: contactData.maps?.viewLink || '',
+        mapsEmbedUrl: contactData.maps?.embedUrl || '',
+        fullAddress: contactData.address?.fullAddress || '',
+      });
+      contactLoadedRef.current = true;
+    }
+  }, [activeTab]);
 
   const handleSaveContactGeneral = (e) => {
     e.preventDefault();
@@ -1125,6 +1154,7 @@ export default function Admin() {
               <button
                 onClick={() => {
                   setIsAddingEvent(true);
+                  loadedEventIdRef.current = 'NEW';
                   setEventEditForm(blankEvent);
                 }}
                 className="btn-primary"

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { FEST_DATA as initialFestData, GOOGLE_FORM_URL as initialGoogleFormUrl } from '../data/festData';
 import { EVENTS_DATA as initialEventsData } from '../data/eventsData';
 import { SCHEDULE_DATA as initialScheduleData } from '../data/scheduleData';
@@ -144,19 +144,48 @@ export function FestProvider({ children }) {
     return initialContactData;
   });
 
+  const isSelfUpdatingRef = useRef(false);
+  const latestStateRef = useRef({
+    googleFormUrl,
+    festData,
+    eventsData,
+    scheduleData,
+    announcementsData,
+    contactData,
+  });
+
+  // Keep latestStateRef in sync with state changes
+  useEffect(() => {
+    latestStateRef.current = {
+      googleFormUrl,
+      festData,
+      eventsData,
+      scheduleData,
+      announcementsData,
+      contactData,
+    };
+  }, [googleFormUrl, festData, eventsData, scheduleData, announcementsData, contactData]);
+
   // 1. REAL-TIME CLOUD DATABASE SUBSCRIPTION (Firebase Firestore)
   // Connects every device (phone, laptop, visitor) to live cloud updates
   useEffect(() => {
     const unsubscribe = subscribeFestConfig(
       (cloudData) => {
+        // Skip snapshot if we just initiated a local save, preventing editor wipes
+        if (isSelfUpdatingRef.current) return;
+
         if (cloudData) {
           setIsCloudConnected(true);
+          latestStateRef.current = {
+            ...latestStateRef.current,
+            ...cloudData,
+          };
           if (cloudData.googleFormUrl) setGoogleFormUrl(cloudData.googleFormUrl);
-          if (cloudData.festData) setFestData((prev) => ({ ...prev, ...cloudData.festData }));
+          if (cloudData.festData) setFestData(cloudData.festData);
           if (cloudData.eventsData && Array.isArray(cloudData.eventsData)) setEventsData(cloudData.eventsData);
-          if (cloudData.scheduleData) setScheduleData((prev) => ({ ...prev, ...cloudData.scheduleData }));
+          if (cloudData.scheduleData) setScheduleData(cloudData.scheduleData);
           if (cloudData.announcementsData && Array.isArray(cloudData.announcementsData)) setAnnouncementsData(cloudData.announcementsData);
-          if (cloudData.contactData) setContactData((prev) => ({ ...prev, ...cloudData.contactData }));
+          if (cloudData.contactData) setContactData(cloudData.contactData);
 
           // Cache to localStorage for offline resilience
           try {
@@ -189,34 +218,30 @@ export function FestProvider({ children }) {
     };
   }, []);
 
-  // 2. AUTOMATIC CLOUD SYNC & LOCAL CACHE
-  // Whenever any section is edited in /admin, this automatically pushes updates to Firebase
-  // so ALL phones, laptops, and attendees immediately see the fresh data
-  useEffect(() => {
+  // Helper to commit state changes to localStorage and Firestore without feedback loops
+  const commitUpdates = (partialPayload = {}) => {
+    isSelfUpdatingRef.current = true;
+    setTimeout(() => {
+      isSelfUpdatingRef.current = false;
+    }, 2000);
+
+    latestStateRef.current = {
+      ...latestStateRef.current,
+      ...partialPayload,
+    };
+
+    const fullPayload = {
+      ...latestStateRef.current,
+      lastUpdated: new Date().toISOString(),
+    };
+
     try {
-      const payload = {
-        googleFormUrl,
-        festData,
-        eventsData,
-        scheduleData,
-        announcementsData,
-        contactData,
-        lastUpdated: new Date().toISOString(),
-      };
-
-      // Instant local cache
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-
-      // Debounced cloud push to prevent spamming while typing
-      const timeoutId = setTimeout(() => {
-        saveFestConfigToCloud(payload);
-      }, 500);
-
-      return () => clearTimeout(timeoutId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(fullPayload));
+      saveFestConfigToCloud(fullPayload);
     } catch (e) {
-      console.error('Error syncing fest updates:', e);
+      console.error('Error committing updates to cloud:', e);
     }
-  }, [googleFormUrl, festData, eventsData, scheduleData, announcementsData, contactData]);
+  };
 
   // Helper to re-read and reload latest data from localStorage
   const reloadFromStorage = () => {
@@ -241,6 +266,7 @@ export function FestProvider({ children }) {
   // Cross-tab and window storage synchronization
   useEffect(() => {
     const handleStorageChange = (e) => {
+      if (isSelfUpdatingRef.current) return;
       if (e.key === STORAGE_KEY && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
@@ -263,119 +289,152 @@ export function FestProvider({ children }) {
   // Methods to update state from the Admin Panel
   const updateGoogleFormUrl = (newUrl) => {
     setGoogleFormUrl(newUrl);
+    commitUpdates({ googleFormUrl: newUrl });
   };
 
   const updateFestData = (newData) => {
-    setFestData((prev) => ({ ...prev, ...newData }));
+    const updated = { ...festData, ...newData };
+    setFestData(updated);
+    commitUpdates({ festData: updated });
   };
 
   // Event CRUD
   const updateEvent = (eventId, updatedFields) => {
-    setEventsData((prev) =>
-      prev.map((ev) => (ev.id === eventId ? { ...ev, ...updatedFields } : ev))
+    const updatedList = eventsData.map((ev) =>
+      ev.id === eventId ? { ...ev, ...updatedFields } : ev
     );
+    setEventsData(updatedList);
+    commitUpdates({ eventsData: updatedList });
   };
 
   const addEvent = (newEvent) => {
-    setEventsData((prev) => [...prev, newEvent]);
+    const updatedList = [...eventsData, newEvent];
+    setEventsData(updatedList);
+    commitUpdates({ eventsData: updatedList });
   };
 
   const deleteEvent = (eventId) => {
-    setEventsData((prev) => prev.filter((ev) => ev.id !== eventId));
+    const updatedList = eventsData.filter((ev) => ev.id !== eventId);
+    setEventsData(updatedList);
+    commitUpdates({ eventsData: updatedList });
   };
 
   // Schedule CRUD
   const updateSchedule = (newTimeline) => {
-    setScheduleData((prev) => ({ ...prev, timeline: newTimeline }));
+    const updated = { ...scheduleData, timeline: newTimeline };
+    setScheduleData(updated);
+    commitUpdates({ scheduleData: updated });
   };
 
   const updateScheduleInfo = (info) => {
-    setScheduleData((prev) => ({ ...prev, ...info }));
+    const updated = { ...scheduleData, ...info };
+    setScheduleData(updated);
+    commitUpdates({ scheduleData: updated });
   };
 
   const addScheduleSlot = (newSlot) => {
-    setScheduleData((prev) => ({
-      ...prev,
-      timeline: [...prev.timeline, newSlot],
-    }));
+    const updated = {
+      ...scheduleData,
+      timeline: [...scheduleData.timeline, newSlot],
+    };
+    setScheduleData(updated);
+    commitUpdates({ scheduleData: updated });
   };
 
   const updateScheduleSlot = (slotId, updatedSlot) => {
-    setScheduleData((prev) => ({
-      ...prev,
-      timeline: prev.timeline.map((slot) => (slot.id === slotId ? { ...slot, ...updatedSlot } : slot)),
-    }));
+    const updated = {
+      ...scheduleData,
+      timeline: scheduleData.timeline.map((slot) =>
+        slot.id === slotId ? { ...slot, ...updatedSlot } : slot
+      ),
+    };
+    setScheduleData(updated);
+    commitUpdates({ scheduleData: updated });
   };
 
   const deleteScheduleSlot = (slotId) => {
-    setScheduleData((prev) => ({
-      ...prev,
-      timeline: prev.timeline.filter((slot) => slot.id !== slotId),
-    }));
+    const updated = {
+      ...scheduleData,
+      timeline: scheduleData.timeline.filter((slot) => slot.id !== slotId),
+    };
+    setScheduleData(updated);
+    commitUpdates({ scheduleData: updated });
   };
 
   // Announcements CRUD
   const addAnnouncement = (newAnnouncement) => {
-    setAnnouncementsData((prev) => [newAnnouncement, ...prev]);
+    const updated = [newAnnouncement, ...announcementsData];
+    setAnnouncementsData(updated);
+    commitUpdates({ announcementsData: updated });
   };
 
   const updateAnnouncement = (id, updatedFields) => {
-    setAnnouncementsData((prev) =>
-      prev.map((ann) => (ann.id === id ? { ...ann, ...updatedFields } : ann))
+    const updated = announcementsData.map((ann) =>
+      ann.id === id ? { ...ann, ...updatedFields } : ann
     );
+    setAnnouncementsData(updated);
+    commitUpdates({ announcementsData: updated });
   };
 
   const deleteAnnouncement = (id) => {
-    setAnnouncementsData((prev) => prev.filter((a) => a.id !== id));
+    const updated = announcementsData.filter((a) => a.id !== id);
+    setAnnouncementsData(updated);
+    commitUpdates({ announcementsData: updated });
   };
 
   // Contact CRUD
   const updateContactData = (newData) => {
-    setContactData((prev) => ({ ...prev, ...newData }));
+    const updated = { ...contactData, ...newData };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const addFacultyCoordinator = (coordinator) => {
-    setContactData((prev) => ({
-      ...prev,
-      facultyCoordinators: [...prev.facultyCoordinators, coordinator],
-    }));
+    const updated = {
+      ...contactData,
+      facultyCoordinators: [...contactData.facultyCoordinators, coordinator],
+    };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const updateFacultyCoordinator = (index, updatedCoordinator) => {
-    setContactData((prev) => {
-      const updated = [...prev.facultyCoordinators];
-      updated[index] = updatedCoordinator;
-      return { ...prev, facultyCoordinators: updated };
-    });
+    const updatedList = [...contactData.facultyCoordinators];
+    updatedList[index] = updatedCoordinator;
+    const updated = { ...contactData, facultyCoordinators: updatedList };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const deleteFacultyCoordinator = (index) => {
-    setContactData((prev) => ({
-      ...prev,
-      facultyCoordinators: prev.facultyCoordinators.filter((_, idx) => idx !== index),
-    }));
+    const updatedList = contactData.facultyCoordinators.filter((_, idx) => idx !== index);
+    const updated = { ...contactData, facultyCoordinators: updatedList };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const addStudentCoordinator = (coordinator) => {
-    setContactData((prev) => ({
-      ...prev,
-      studentCoordinators: [...prev.studentCoordinators, coordinator],
-    }));
+    const updated = {
+      ...contactData,
+      studentCoordinators: [...contactData.studentCoordinators, coordinator],
+    };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const updateStudentCoordinator = (index, updatedCoordinator) => {
-    setContactData((prev) => {
-      const updated = [...prev.studentCoordinators];
-      updated[index] = updatedCoordinator;
-      return { ...prev, studentCoordinators: updated };
-    });
+    const updatedList = [...contactData.studentCoordinators];
+    updatedList[index] = updatedCoordinator;
+    const updated = { ...contactData, studentCoordinators: updatedList };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const deleteStudentCoordinator = (index) => {
-    setContactData((prev) => ({
-      ...prev,
-      studentCoordinators: prev.studentCoordinators.filter((_, idx) => idx !== index),
-    }));
+    const updatedList = contactData.studentCoordinators.filter((_, idx) => idx !== index);
+    const updated = { ...contactData, studentCoordinators: updatedList };
+    setContactData(updated);
+    commitUpdates({ contactData: updated });
   };
 
   const resetToDefaults = () => {
