@@ -61,9 +61,9 @@ export default function EventCard({ event, index = 0 }) {
     'clash-of-squadz': 'Aim. Survive. Dominate.',
   };
   const tagline =
-    customTagline ||
-    defaultTaglines[id] ||
-    (track === 'TECHNICAL' ? 'Design. Develop. Deploy.' : 'Create. Compete. Conquer.');
+    customTagline !== undefined
+      ? customTagline
+      : (defaultTaglines[id] || (track === 'TECHNICAL' ? 'Design. Develop. Deploy.' : 'Create. Compete. Conquer.'));
 
   // Select minimalist vector tech icon
   const renderIcon = () => {
@@ -195,18 +195,20 @@ export default function EventCard({ event, index = 0 }) {
       )}
 
       {/* 5. GOLDEN ITALIC CATCHPHRASE */}
-      <p
-        style={{
-          fontSize: '0.92rem',
-          fontStyle: 'italic',
-          fontWeight: 700,
-          color: '#f2c438',
-          marginBottom: '1rem',
-          letterSpacing: '0.01em',
-        }}
-      >
-        {tagline}
-      </p>
+      {tagline ? (
+        <p
+          style={{
+            fontSize: '0.92rem',
+            fontStyle: 'italic',
+            fontWeight: 700,
+            color: '#f2c438',
+            marginBottom: '1rem',
+            letterSpacing: '0.01em',
+          }}
+        >
+          {tagline}
+        </p>
+      ) : null}
 
       {/* 6. SHORT DESCRIPTION */}
       <p

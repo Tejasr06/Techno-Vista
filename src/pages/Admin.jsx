@@ -1261,6 +1261,19 @@ export default function Admin() {
                   </div>
 
                   <div>
+                    <label style={{ display: 'block', fontSize: '0.84rem', color: '#f2c438', fontWeight: 600, marginBottom: '0.4rem' }}>
+                      Yellow Tagline (Catchphrase on Event Card)
+                    </label>
+                    <input
+                      type="text"
+                      value={eventEditForm.tagline || ''}
+                      placeholder="e.g. Think Fast, Code Faster, Rank First"
+                      onChange={(e) => setEventEditForm({ ...eventEditForm, tagline: e.target.value })}
+                      style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(242, 196, 56, 0.45)', color: '#ffffff' }}
+                    />
+                  </div>
+
+                  <div>
                     <label style={{ display: 'block', fontSize: '0.84rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>
                       Category / Domain
                     </label>
