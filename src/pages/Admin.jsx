@@ -2653,7 +2653,8 @@ export default function Admin() {
                   onClick={() => {
                     addStudentCoordinator({
                       name: 'Student Convener Name',
-                      role: 'Lead Student Organizer',
+                      designation: '7th Sem, Dept. of ISE',
+                      role: 'Student Coordinator',
                       phone: '+91 98765 43210',
                     });
                     showToast('Added new student coordinator card.');
@@ -2702,8 +2703,15 @@ export default function Admin() {
                     />
                     <input
                       type="text"
+                      value={stu.designation || ''}
+                      placeholder="Semester / Department (e.g. 7th Sem, Dept. of ISE)"
+                      onChange={(e) => updateStudentCoordinator(sIdx, { ...stu, designation: e.target.value })}
+                      style={{ padding: '0.6rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
+                    />
+                    <input
+                      type="text"
                       value={stu.role}
-                      placeholder="Role (e.g. Lead Student Convener)"
+                      placeholder="Role (e.g. Student Coordinator)"
                       onChange={(e) => updateStudentCoordinator(sIdx, { ...stu, role: e.target.value })}
                       style={{ padding: '0.6rem', borderRadius: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
                     />

@@ -62,22 +62,26 @@ export const CONTACT_DATA = {
   studentCoordinators: [
     {
       name: "Student President / Lead (To be updated)",
-      role: "Overall Fest President, 7th Sem ISE",
+      designation: "7th Sem, Dept. of ISE",
+      role: "Student Coordinator",
       phone: "[+91 XXXXX XXXXX - Editable]",
     },
     {
       name: "Student Vice President / Lead (To be updated)",
-      role: "Fest Vice President, 7th Sem ISE",
+      designation: "7th Sem, Dept. of ISE",
+      role: "Student Coordinator",
       phone: "[+91 XXXXX XXXXX - Editable]",
     },
     {
       name: "Technical Affairs Lead (To be updated)",
-      role: "Technical Operations, 5th Sem ISE",
+      designation: "5th Sem, Dept. of ISE",
+      role: "Technical Lead",
       phone: "[+91 XXXXX XXXXX - Editable]",
     },
     {
       name: "Public Relations & Registrations Lead (To be updated)",
-      role: "Registration Desk Lead, 5th Sem ISE",
+      designation: "5th Sem, Dept. of ISE",
+      role: "Registration Desk Lead",
       phone: "[+91 XXXXX XXXXX - Editable]",
     },
   ],

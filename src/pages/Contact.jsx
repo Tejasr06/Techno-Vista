@@ -138,47 +138,58 @@ export default function Contact() {
               }}
             >
               <UserCheck size={18} />
-              <span>STUDENT COORDINATORS (EDITABLE)</span>
+              <span>STUDENT COORDINATORS</span>
             </div>
 
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                 gap: '1.5rem',
               }}
             >
-              {contactData.studentCoordinators.map((stu, idx) => (
-                <div
-                  key={idx}
-                  className="glass-card"
-                  style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}
-                >
-                  <span className="badge badge-purple" style={{ alignSelf: 'flex-start' }}>
-                    {stu.role}
-                  </span>
-                  <h4 style={{ fontSize: '1.15rem', color: '#ffffff' }}>
-                    {stu.name}
-                  </h4>
+              {contactData.studentCoordinators.map((stu, idx) => {
+                const isCombinedRole = stu.role && stu.role.toLowerCase().includes('7th sem');
+                const badgeText = isCombinedRole ? 'Student Coordinator' : (stu.role || 'Student Coordinator');
+                const designationText = stu.designation || (isCombinedRole ? '7th Sem, Dept. of ISE' : '');
 
+                return (
                   <div
-                    style={{
-                      marginTop: '0.5rem',
-                      paddingTop: '0.75rem',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.4rem',
-                      fontSize: '0.84rem',
-                    }}
+                    key={idx}
+                    className="glass-card"
+                    style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
-                      <Phone size={14} className="text-purple-400" />
-                      <span>{stu.phone || stu.contact}</span>
+                    <span className="badge badge-purple" style={{ alignSelf: 'flex-start' }}>
+                      {badgeText}
+                    </span>
+                    <h3 style={{ fontSize: '1.2rem', color: '#ffffff' }}>
+                      {stu.name}
+                    </h3>
+                    {designationText && (
+                      <div style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
+                        {designationText}
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        marginTop: '0.5rem',
+                        paddingTop: '0.75rem',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.4rem',
+                        fontSize: '0.86rem',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
+                        <Phone size={14} className="text-purple-400" />
+                        <span>{stu.phone || stu.contact}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
