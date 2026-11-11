@@ -138,7 +138,7 @@ export default function Contact() {
               }}
             >
               <UserCheck size={18} />
-              <span>STUDENT COORDINATORS</span>
+              <span>STUDENT COORDINATORS (EDITABLE)</span>
             </div>
 
             <div
