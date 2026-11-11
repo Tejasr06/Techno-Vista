@@ -2572,7 +2572,6 @@ export default function Admin() {
                       designation: 'Assistant Professor, Dept. of ISE',
                       role: 'Faculty Convener',
                       phone: '+91 98765 43210',
-                      email: 'faculty@sairamce.edu.in',
                     });
                     showToast('Added new faculty coordinator card.');
                   }}
@@ -2656,7 +2655,6 @@ export default function Admin() {
                       name: 'Student Convener Name',
                       role: 'Lead Student Organizer',
                       phone: '+91 98765 43210',
-                      email: 'student@sairamce.edu.in',
                     });
                     showToast('Added new student coordinator card.');
                   }}

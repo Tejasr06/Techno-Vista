@@ -360,11 +360,11 @@ export default function FestChatBot({ isOpen, onClose }) {
     // 9. CONTACT & COORDINATORS (Dynamically pulls contactData)
     if (q.includes('contact') || q.includes('coordinator') || q.includes('phone') || q.includes('call') || q.includes('lead') || q.includes('help') || q.includes('email') || q.includes('faculty') || q.includes('student')) {
       const faculty = (currentContact?.facultyCoordinators || [])
-        .map((f) => `• ${cleanText(f.name)} (${cleanText(f.designation || f.role || 'Faculty Convener')})${f.phone ? ` | 📞 ${cleanText(f.phone)}` : ''}${f.email ? ` | ✉️ ${cleanText(f.email)}` : ''}`)
+        .map((f) => `• ${cleanText(f.name)} (${cleanText(f.designation || f.role || 'Faculty Convener')})${f.phone || f.contact ? ` | 📞 ${cleanText(f.phone || f.contact)}` : ''}`)
         .join('\n');
 
       const students = (currentContact?.studentCoordinators || [])
-        .map((s) => `• ${cleanText(s.name)} (${cleanText(s.role || 'Student Lead')})${s.phone ? ` | 📞 ${cleanText(s.phone)}` : ''}${s.email ? ` | ✉️ ${cleanText(s.email)}` : ''}`)
+        .map((s) => `• ${cleanText(s.name)} (${cleanText(s.role || 'Student Lead')})${s.phone || s.contact ? ` | 📞 ${cleanText(s.phone || s.contact)}` : ''}`)
         .join('\n');
 
       return {

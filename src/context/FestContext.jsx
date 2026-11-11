@@ -132,8 +132,8 @@ export function FestProvider({ children }) {
               ...initialContactData.socialLinks,
               ...(parsed.contactData.socialLinks || {}),
             },
-            facultyCoordinators: parsed.contactData.facultyCoordinators || initialContactData.facultyCoordinators,
-            studentCoordinators: parsed.contactData.studentCoordinators || initialContactData.studentCoordinators,
+            facultyCoordinators: (parsed.contactData.facultyCoordinators || initialContactData.facultyCoordinators).map(({ email, ...rest }) => rest),
+            studentCoordinators: (parsed.contactData.studentCoordinators || initialContactData.studentCoordinators).map(({ email, ...rest }) => rest),
             travelInfo: parsed.contactData.travelInfo || initialContactData.travelInfo,
           };
         }

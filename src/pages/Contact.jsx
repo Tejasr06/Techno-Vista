@@ -114,11 +114,7 @@ export default function Contact() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
                       <Phone size={14} className="text-cyan-400" />
-                      <span>{fac.phone}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
-                      <Mail size={14} className="text-cyan-400" />
-                      <span>{fac.email}</span>
+                      <span>{fac.phone || fac.contact}</span>
                     </div>
                   </div>
                 </div>
@@ -142,7 +138,7 @@ export default function Contact() {
               }}
             >
               <UserCheck size={18} />
-              <span>STUDENT COORDINATORS (EDITABLE)</span>
+              <span>STUDENT COORDINATORS</span>
             </div>
 
             <div
@@ -178,11 +174,7 @@ export default function Contact() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
                       <Phone size={14} className="text-purple-400" />
-                      <span>{stu.phone}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#cbd5e1' }}>
-                      <Mail size={14} className="text-purple-400" />
-                      <span>{stu.email}</span>
+                      <span>{stu.phone || stu.contact}</span>
                     </div>
                   </div>
                 </div>
